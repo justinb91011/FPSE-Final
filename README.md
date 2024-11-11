@@ -16,7 +16,7 @@ Possible List of Libraries:
 
 - Core: For handling the core logic of the game.
 - Yojson/Sexp: For persistence (storing game state) in the command-line version.
-- Also plan to use ReScript for our front-end.
+- ReScript: For our front-end to take advantage of the JS libraries.
 
 
 # Implementation Plan
