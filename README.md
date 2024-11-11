@@ -14,9 +14,23 @@ We will also create a front-end for the game that includes the options to save a
 
 Possible List of Libraries:
 
-- Core: For handling the core logic of the game.
-- Yojson/Sexp: For persistence (storing game state) in the command-line version.
-- ReScript: For our front-end to take advantage of the JS libraries.
+- Core: 
+    - An extension of Base w/ additional functionality.
+    - Gives us the robust data structures & utilities.
+- OUnit2 (Testing):
+    - Allows to write and run unit tests for modules.
+- Dune (Build System):
+    - Building & managing our project efficiently.
+- ReScript:
+    - To write the frontend for UNO, compiles to JS and is operable with OCaml.
+- React:
+    - ReScript bindings to React can be used to create an interactive UI.
+- bs-css:
+    - To style the front-end with CSS-in-JS solutions directly in Rescript
+- Dream:
+    - For the backend
+- Lwt:
+    - Handling asynchronous tasks (API calls or WebSocket communication in backend)
 
 
 # Implementation Plan
