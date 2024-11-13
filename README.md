@@ -12,7 +12,10 @@ The medium and hard difficulties will make use of an algorithm we are planning t
 
 We will also create a front-end for the game that includes the options to save and load games.
 
-Possible List of Libraries:
+# More on the Algorithm: 
+We are attempting to create an UNO AI algorithm where the CPU players will make the most optimal moves in order to win the game. The difficulty in creating this algorithm, is that it is not as “straightforward” or well documented as ones written for games like Chess. Thus, we are looking to develop our own default ranking system for cards with the room to change based on the game state and other players. We will then feed this into a minimax algorithm that we will tailor to work with our ranking system. OCaml will work with this because of its functional nature, strong type system, and efficient handling of recursive structures, thus making it ideal for both designing our ranking system and implementing the minimax algorithm. We can try a similar approach as we did in Assignment 5 where we memoized computations stored in a map and used them later, if and when needed. The AI will be built to make decisions quickly, allowing for smooth gameplay. For example, in a situation where only one card is playable, it will choose that card. However, in a case where many cards are playable, the AI will choose the card which maximizes it’s chances of winning the game in the long-run or thwarts another player from winning.
+
+# Possible List of Libraries:
 
 - Core: 
     - An extension of Base w/ additional functionality.
