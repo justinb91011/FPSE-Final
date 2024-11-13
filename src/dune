@@ -1,0 +1,35 @@
+(library
+ (name card)
+ (modules card)
+ (libraries core)
+)
+
+(library
+ (name deck)
+ (modules deck)
+ (libraries core card)
+)
+
+(library
+ (name cpu)
+ (modules cpu)
+ (libraries core card)
+)
+
+(library
+  (name player)
+  (modules player)
+  (libraries core card)
+)
+
+(library
+  (name algorithm)
+  (modules algorithm)
+  (libraries core card cpu)
+)
+
+(library
+  (name game)
+  (modules game)
+  (libraries core card cpu player algorithm)
+)

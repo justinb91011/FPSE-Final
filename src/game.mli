@@ -1,5 +1,12 @@
 
+
 module type Game = sig
+  module Player : Player
+  (** [Player] represents the human player module included in the game. *)
+
+  module CPU : CPU
+  (** [CPU] represents the CPU player module included in the game. *)
+
   type t
   (** [t] represents the state of the game. *)
 
@@ -9,6 +16,14 @@ module type Game = sig
 
   val current_player : t -> int
   (** [current_player game] returns the index of the current player whose turn it is. *)
+
+  val get_player : t -> int -> Player.t option
+  (** [get_player game player_index] returns the [Player.t] instance for the given [player_index]
+      if the player is human, or [None] if it is a CPU. *)
+
+  val get_cpu : t -> int -> CPU.t option
+  (** [get_cpu game player_index] returns the [CPU.t] instance for the given [player_index]
+      if the player is a CPU, or [None] if it is the human player. *)
 
   val top_card : t -> Card.t
   (** [top_card game] returns the top card of the discard pile, which determines valid plays. *)
