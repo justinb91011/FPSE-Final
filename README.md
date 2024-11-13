@@ -21,9 +21,9 @@ Possible List of Libraries:
     - Allows to write and run unit tests for modules.
 - Dune (Build System):
     - Building & managing our project efficiently.
-- ReScript:
+- ReScript: (HAS BEEN DOWNLOADED)
     - To write the frontend for UNO, compiles to JS and is operable with OCaml.
-- React:
+- React: (HAS BEEN DOWNLOADED)
     - ReScript bindings to React can be used to create an interactive UI.
 - bs-css:
     - To style the front-end with CSS-in-JS solutions directly in Rescript

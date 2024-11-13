@@ -31,5 +31,5 @@
 (library
   (name game)
   (modules game)
-  (libraries core card cpu player algorithm)
+  (libraries core card cpu player algorithm deck)
 )
