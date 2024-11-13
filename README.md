@@ -43,3 +43,15 @@ Possible List of Libraries:
 - [~1-2 days] We will settle on a final design/look for the front-end and begin implementing it.
 - [~2-4 days] We will wrap up our front-end and try to have it work with out back-end.
 - [~3-6 days] We will undergo extensive test-runs to make sure our game is running as we expect.
+
+
+# UNO Draft
+Here, the pictures shown in UNO Draft.pdf will be explained.
+
+- First Picture: The first picture is a mockup of what our home page will be. We are wanting to include a dropdown where the player selects a 
+difficulty from easy, medium, and hard. Once a difficulty is chosen, then the player may press the Play Game button and begin the game.
+
+- Second Picture: The second picture depicts the start state of the game where every player has 7 cards, and there is a deck in the middle.
+
+- Third Picture: The third picture depicts the wining state of the game where one player is completely out of cards. A You Won message will be
+displayed when the win condition is met, or a You Lost message will be displayed if an opponent wins instead.
