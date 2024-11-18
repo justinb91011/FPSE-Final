@@ -5,6 +5,12 @@
 )
 
 (library
+ (name uno_card)
+ (modules uno_card)
+ (libraries card)
+)
+
+(library
  (name deck)
  (modules deck)
  (libraries core card)
