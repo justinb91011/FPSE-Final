@@ -14,12 +14,9 @@
   ],
   "suffix": ".res.mjs",
   "bs-dependencies": [
-    "@rescript/core",
     "@rescript/react"
   ],
-  "bsc-flags": [
-    "-open RescriptCore"
-  ],
+  "bsc-flags": [],
   "jsx": {
     "version": 4
   }
