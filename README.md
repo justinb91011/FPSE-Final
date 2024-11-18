@@ -29,11 +29,13 @@ We are attempting to create an UNO AI algorithm where the CPU players will make 
 - React: (HAS BEEN DOWNLOADED)
     - ReScript bindings to React can be used to create an interactive UI.
 - bs-css:
-    - To style the front-end with CSS-in-JS solutions directly in Rescript
+    - To style the front-end with CSS-in-JS solutions directly in Rescript.
 - Dream:
-    - For the backend
+    - For the backend.
 - Lwt:
-    - Handling asynchronous tasks (API calls or WebSocket communication in backend)
+    - Handling asynchronous tasks (API calls or WebSocket communication in backend).
+- Bisect
+    - Demonstrate coverage for Code Checkpoint and Demo & Final Code Submissions.
 
 
 # Implementation Plan
