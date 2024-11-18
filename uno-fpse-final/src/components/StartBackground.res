@@ -6,10 +6,18 @@ let make = () => {
     ~backgroundPosition="center",
     ~height="100vh",
     ~width="100vw",
+    ~display="flex", /* Use flexbox */
+    ~justifyContent="center", /* Center horizontally */
+    ~alignItems="center", /* Center vertically */
     ()
   )
 
   <div style=backgroundStyle>
-    <h1> {React.string("Welcome to UNO!")} </h1>
+    <div>
+      <h1 className="text-4xl font-bold text-white mb-6"> </h1>
+      <Button onClick={_ => Js.log("Button Clicked!")}>
+        {React.string("Start Game")}
+      </Button>
+    </div>
   </div>
 }
