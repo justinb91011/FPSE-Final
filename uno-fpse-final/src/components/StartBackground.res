@@ -66,13 +66,13 @@ let make = () => {
           <div className="flex justify-between mt-6">
             <Button
               onClick={_ => handleCancelClick()}
-              className="px-4 py-2 bg-red-600 text-white font-bold rounded"
+              className="px-4 py-2 bg-red-500 text-white font-bold rounded"
             >
               {React.string("Cancel")}
             </Button>
             <Button
               onClick={_ => handleFormStartClick()}
-              className="px-4 py-2 bg-green-600 text-white font-bold rounded"
+              className="px-4 py-2 bg-green-500 text-white font-bold rounded"
             >
               {React.string("Start")}
             </Button>

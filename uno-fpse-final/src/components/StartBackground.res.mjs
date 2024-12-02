@@ -25,12 +25,12 @@ function StartBackground(props) {
               children: [
                 JsxRuntime.jsx("div", {
                       children: showForm ? null : JsxRuntime.jsx(Button.make, {
-                              children: "Start Game",
                               onClick: (function (param) {
                                   setShowForm(function (param) {
                                         return true;
                                       });
-                                })
+                                }),
+                              children: "Start Game"
                             }),
                       style: {
                         textAlign: "center"
@@ -45,22 +45,22 @@ function StartBackground(props) {
                           JsxRuntime.jsxs("div", {
                                 children: [
                                   JsxRuntime.jsx(Button.make, {
-                                        children: "Easy",
                                         onClick: (function (param) {
                                             console.log("Easy Selected!");
-                                          })
+                                          }),
+                                        children: "Easy"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
-                                        children: "Medium",
                                         onClick: (function (param) {
                                             console.log("Medium Selected!");
-                                          })
+                                          }),
+                                        children: "Medium"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
-                                        children: "Hard",
                                         onClick: (function (param) {
                                             console.log("Hard Selected!");
-                                          })
+                                          }),
+                                        children: "Hard"
                                       })
                                 ],
                                 className: "flex flex-col gap-4"
@@ -68,20 +68,20 @@ function StartBackground(props) {
                           JsxRuntime.jsxs("div", {
                                 children: [
                                   JsxRuntime.jsx(Button.make, {
-                                        children: "Cancel",
-                                        className: "px-4 py-2 bg-red-600 text-white font-bold rounded",
+                                        className: "px-4 py-2 bg-red-500 text-white font-bold rounded",
                                         onClick: (function (param) {
                                             setShowForm(function (param) {
                                                   return false;
                                                 });
-                                          })
+                                          }),
+                                        children: "Cancel"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
-                                        children: "Start",
-                                        className: "px-4 py-2 bg-green-600 text-white font-bold rounded",
+                                        className: "px-4 py-2 bg-green-500 text-white font-bold rounded",
                                         onClick: (function (param) {
                                             console.log("Start Button Clicked!");
-                                          })
+                                          }),
+                                        children: "Start"
                                       })
                                 ],
                                 className: "flex justify-between mt-6"
