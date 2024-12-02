@@ -9,6 +9,7 @@ function StartBackground(props) {
         return false;
       });
   var setShowForm = match[1];
+  var showForm = match[0];
   var backgroundStyle = {
     backgroundImage: "url('/background.jpg')",
     backgroundPosition: "center",
@@ -22,25 +23,20 @@ function StartBackground(props) {
   };
   return JsxRuntime.jsxs("div", {
               children: [
-                JsxRuntime.jsxs("div", {
-                      children: [
-                        JsxRuntime.jsx("h1", {
-                              className: "text-4xl font-bold text-white mb-6"
-                            }),
-                        JsxRuntime.jsx(Button.make, {
+                JsxRuntime.jsx("div", {
+                      children: showForm ? null : JsxRuntime.jsx(Button.make, {
                               children: "Start Game",
                               onClick: (function (param) {
                                   setShowForm(function (param) {
                                         return true;
                                       });
                                 })
-                            })
-                      ],
+                            }),
                       style: {
                         textAlign: "center"
                       }
                     }),
-                match[0] ? JsxRuntime.jsxs("div", {
+                showForm ? JsxRuntime.jsxs("div", {
                         children: [
                           JsxRuntime.jsx("h2", {
                                 children: "Select Your Difficulty Level",
@@ -68,6 +64,27 @@ function StartBackground(props) {
                                       })
                                 ],
                                 className: "flex flex-col gap-4"
+                              }),
+                          JsxRuntime.jsxs("div", {
+                                children: [
+                                  JsxRuntime.jsx(Button.make, {
+                                        children: "Cancel",
+                                        className: "px-4 py-2 bg-red-600 text-white font-bold rounded",
+                                        onClick: (function (param) {
+                                            setShowForm(function (param) {
+                                                  return false;
+                                                });
+                                          })
+                                      }),
+                                  JsxRuntime.jsx(Button.make, {
+                                        children: "Start",
+                                        className: "px-4 py-2 bg-green-600 text-white font-bold rounded",
+                                        onClick: (function (param) {
+                                            console.log("Start Button Clicked!");
+                                          })
+                                      })
+                                ],
+                                className: "flex justify-between mt-6"
                               })
                         ],
                         style: {
@@ -75,6 +92,7 @@ function StartBackground(props) {
                           left: "50%",
                           padding: "20px",
                           position: "absolute",
+                          textAlign: "center",
                           top: "50%",
                           borderRadius: "8px",
                           boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
