@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as Button from "../Button.res.mjs";
 import * as JsxRuntime from "react/jsx-runtime";
+import * as RescriptReactRouter from "@rescript/react/src/RescriptReactRouter.res.mjs";
 
 function StartBackground(props) {
   var match = React.useState(function () {
@@ -10,6 +11,11 @@ function StartBackground(props) {
       });
   var setShowForm = match[1];
   var showForm = match[0];
+  var match$1 = React.useState(function () {
+        
+      });
+  var setSelectedDifficulty = match$1[1];
+  var selectedDifficulty = match$1[0];
   var backgroundStyle = {
     backgroundImage: "url('/background.jpg')",
     backgroundPosition: "center",
@@ -20,6 +26,21 @@ function StartBackground(props) {
     backgroundSize: "cover",
     alignItems: "flex-end",
     justifyContent: "center"
+  };
+  var handleFormStartClick = function () {
+    if (selectedDifficulty !== undefined) {
+      return RescriptReactRouter.push("/game/" + selectedDifficulty);
+    } else {
+      console.log("Please select a difficulty level");
+      return ;
+    }
+  };
+  var isSelected = function (difficulty) {
+    if (selectedDifficulty !== undefined) {
+      return selectedDifficulty === difficulty;
+    } else {
+      return false;
+    }
   };
   return JsxRuntime.jsxs("div", {
               children: [
@@ -45,20 +66,29 @@ function StartBackground(props) {
                           JsxRuntime.jsxs("div", {
                                 children: [
                                   JsxRuntime.jsx(Button.make, {
+                                        className: isSelected("Easy") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-gray-200 text-black rounded",
                                         onClick: (function (param) {
-                                            console.log("Easy Selected!");
+                                            setSelectedDifficulty(function (param) {
+                                                  return "Easy";
+                                                });
                                           }),
                                         children: "Easy"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
+                                        className: isSelected("Medium") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-gray-200 text-black rounded",
                                         onClick: (function (param) {
-                                            console.log("Medium Selected!");
+                                            setSelectedDifficulty(function (param) {
+                                                  return "Medium";
+                                                });
                                           }),
                                         children: "Medium"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
+                                        className: isSelected("Hard") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-gray-200 text-black rounded",
                                         onClick: (function (param) {
-                                            console.log("Hard Selected!");
+                                            setSelectedDifficulty(function (param) {
+                                                  return "Hard";
+                                                });
                                           }),
                                         children: "Hard"
                                       })
@@ -79,7 +109,7 @@ function StartBackground(props) {
                                   JsxRuntime.jsx(Button.make, {
                                         className: "px-4 py-2 bg-green-500 text-white font-bold rounded",
                                         onClick: (function (param) {
-                                            console.log("Start Button Clicked!");
+                                            handleFormStartClick();
                                           }),
                                         children: "Start"
                                       })
