@@ -1,12 +1,12 @@
 (* This module will serve as the library for any playing card game *)
 
 module type Card_game_rules = sig 
-  type color [@@deriving compare]
+  type color [@@deriving compare, equal, sexp]
   (** [color] is the possible color for the cards. *)
 
-  type value
+  type value [@@deriving compare, equal, sexp]
 
-  val is_playable : t -> t -> bool
+  val is_playable : color -> value -> color -> value -> bool
   (** [is_playable card1 card2] returns [true] if [card1] can be played on top of [card2], 
       based on color, value, or wild rules. *)
 
@@ -21,7 +21,7 @@ module type Card_game_rules = sig
 end
 
 module Make (Card : Card_game_rules) : sig
-  type t
+  type t [@@deriving compare, equal, sexp]
   (** [t] represents a card using a combination of [color] and [value]. *)
 
   val create : Card.color -> Card.value -> t
