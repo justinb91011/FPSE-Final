@@ -1,3 +1,5 @@
+open Core
+
 module UnoCard = struct
   type color = Red | Yellow | Green | Blue | WildColor [@@deriving compare, equal, sexp]
 
@@ -7,8 +9,8 @@ module UnoCard = struct
     match (color1, value1), (color2, value2) with
     | (_, WildValue), _ -> true
     | (WildColor, _), _ -> true
-    | (c1, _), (c2, _) when c1 = c2 -> true
-    | (_, v1), (_, v2) when v1 = v2 -> true
+    | (c1, _), (c2, _) when equal_color c1 c2 -> true
+    | (_, v1), (_, v2) when equal_value v1 v2 -> true
     | _ -> false
 end
 

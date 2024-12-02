@@ -19,7 +19,7 @@ module Deck = struct
         else
           deck_creator ((UnoCardInstance.create curr_color x) :: acc) xs curr_color
       in
-    let color = [UnoCard.Red; UnoCard.Yellow; UnoCard.Green; UnoCard.Blue; UnoCard.WildColor] in
+    let colors = [UnoCard.Red; UnoCard.Yellow; UnoCard.Green; UnoCard.Blue; UnoCard.WildColor] in
     let numbers =
       List.concat_map
         ~f:(fun x ->

@@ -1,6 +1,6 @@
 open Uno_card
 
-module Deck = sig
+module Deck : sig
   type t = UnoCardInstance.t list
   (** [t] represents the entire deck of cards. *)
 

@@ -1,4 +1,4 @@
-open Core
+(* open Core *)
 
 module type Card_game_rules = sig
   type color [@@deriving compare, equal, sexp]
