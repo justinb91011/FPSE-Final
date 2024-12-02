@@ -5,8 +5,22 @@ import * as JsxRuntime from "react/jsx-runtime";
 function Game(props) {
   var difficulty = props.difficulty;
   console.log("This will be a " + difficulty + " game");
+  var backgroundStyle = {
+    backgroundImage: "url('/gamecolor.jpg')",
+    backgroundPosition: "center",
+    height: "100vh",
+    width: "100vw",
+    backgroundSize: "cover"
+  };
   return JsxRuntime.jsx("div", {
-              children: "Game Page for " + difficulty + " Difficulty"
+              children: JsxRuntime.jsx("h1", {
+                    children: "Game Page for " + difficulty + " Difficulty",
+                    style: {
+                      color: "white",
+                      textAlign: "center"
+                    }
+                  }),
+              style: backgroundStyle
             });
 }
 

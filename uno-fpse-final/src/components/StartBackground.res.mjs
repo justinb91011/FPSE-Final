@@ -66,7 +66,7 @@ function StartBackground(props) {
                           JsxRuntime.jsxs("div", {
                                 children: [
                                   JsxRuntime.jsx(Button.make, {
-                                        className: isSelected("Easy") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-gray-200 text-black rounded",
+                                        className: isSelected("Easy") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-yellow-400 text-black rounded",
                                         onClick: (function (param) {
                                             setSelectedDifficulty(function (param) {
                                                   return "Easy";
@@ -75,7 +75,7 @@ function StartBackground(props) {
                                         children: "Easy"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
-                                        className: isSelected("Medium") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-gray-200 text-black rounded",
+                                        className: isSelected("Medium") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-yellow-400 text-black rounded",
                                         onClick: (function (param) {
                                             setSelectedDifficulty(function (param) {
                                                   return "Medium";
@@ -84,7 +84,7 @@ function StartBackground(props) {
                                         children: "Medium"
                                       }),
                                   JsxRuntime.jsx(Button.make, {
-                                        className: isSelected("Hard") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-gray-200 text-black rounded",
+                                        className: isSelected("Hard") ? "px-4 py-2 bg-blue-500 text-white font-bold rounded" : "px-4 py-2 bg-yellow-400 text-black rounded",
                                         onClick: (function (param) {
                                             setSelectedDifficulty(function (param) {
                                                   return "Hard";

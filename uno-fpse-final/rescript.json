@@ -14,8 +14,7 @@
   ],
   "suffix": ".res.mjs",
   "bs-dependencies": [
-    "@rescript/react",
-    "rescript-react-router-dom"
+    "@rescript/react"
   ],
   "bsc-flags": [],
   "jsx": {

@@ -1,4 +1,3 @@
-// StartBackground.res
 @react.component
 let make = () => {
   // State to track if the form should be displayed
@@ -78,7 +77,7 @@ let make = () => {
                 if isSelected("Easy") {
                   "px-4 py-2 bg-blue-500 text-white font-bold rounded"
                 } else {
-                  "px-4 py-2 bg-gray-200 text-black rounded"
+                  "px-4 py-2 bg-yellow-400 text-black rounded"
                 }
               }
             >
@@ -90,7 +89,7 @@ let make = () => {
                 if isSelected("Medium") {
                   "px-4 py-2 bg-blue-500 text-white font-bold rounded"
                 } else {
-                  "px-4 py-2 bg-gray-200 text-black rounded"
+                  "px-4 py-2 bg-yellow-400 text-black rounded"
                 }
               }
             >
@@ -102,7 +101,7 @@ let make = () => {
                 if isSelected("Hard") {
                   "px-4 py-2 bg-blue-500 text-white font-bold rounded"
                 } else {
-                  "px-4 py-2 bg-gray-200 text-black rounded"
+                  "px-4 py-2 bg-yellow-400 text-black rounded"
                 }
               }
             >
