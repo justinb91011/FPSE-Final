@@ -21,7 +21,7 @@
 (library
  (name cpu)
  (modules cpu)
- (libraries core card)
+ (libraries core card uno_card)
 )
 
 (library
