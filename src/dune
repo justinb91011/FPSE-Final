@@ -2,18 +2,20 @@
  (name card)
  (modules card)
  (libraries core)
+ (preprocess (pps ppx_jane))
 )
 
 (library
  (name uno_card)
  (modules uno_card)
  (libraries card)
+ (preprocess (pps ppx_jane))
 )
 
 (library
  (name deck)
  (modules deck)
- (libraries core card)
+ (libraries core card uno_card)
 )
 
 (library
@@ -25,7 +27,7 @@
 (library
   (name player)
   (modules player)
-  (libraries core card)
+  (libraries core card uno_card)
 )
 
 (library
