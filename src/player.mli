@@ -7,6 +7,9 @@ module Player : sig
   val create : string -> t
   (** [create name] initializes a player with the given [name]. *)
 
+  val get_name : t -> string
+  (** [get_name player] returns the player's name. *)
+
   val get_hand : t -> UnoCardInstance.t list
   (** [get_hand player] returns the list of cards in the player's hand. *)
 
