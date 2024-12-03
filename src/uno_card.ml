@@ -5,6 +5,15 @@ module UnoCard = struct
 
   type value = Number of int | Skip | Reverse | DrawTwo | DrawFour | WildValue [@@deriving compare, equal, sexp]
   
+    (* Function to check equality of colors *)
+  let equal_color c1 c2 =
+    if c1 = c2 then true
+    else false
+  
+  (* Function to check equality of values *)
+  let equal_value v1 v2 =
+    if v1 = v2 then true
+    else false
   let is_playable (color1 : color) (value1 : value) (color2 : color) (value2 : value) =
     match (color1, value1), (color2, value2) with
     | (_, WildValue), _ -> true
