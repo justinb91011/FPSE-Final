@@ -1,5 +1,17 @@
+(library
+ (name card_tests)
+ (modules card_tests)
+ (libraries core ounit2 card)
+ (preprocess (pps ppx_jane)))
+
+(library
+ (name deck_tests)
+ (modules deck_tests)
+ (libraries core ounit2 deck)
+ (preprocess (pps ppx_jane)))
+
 (test 
  (name tests)
  (modules tests)
- (libraries core ounit2)
+ (libraries core ounit2 card_tests deck_tests)
 )
