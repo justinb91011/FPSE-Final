@@ -30,14 +30,14 @@
   (libraries core card uno_card)
 )
 
-(library
-  (name algorithm)
-  (modules algorithm)
-  (libraries core card cpu)
-)
+; (library
+;   (name algorithm)
+;   (modules algorithm)
+;   (libraries core card cpu)
+; )
 
-(library
-  (name game)
-  (modules game)
-  (libraries core card cpu player algorithm deck)
-)
+; (library
+;   (name game)
+;   (modules game)
+;   (libraries core card cpu player algorithm deck)
+; )

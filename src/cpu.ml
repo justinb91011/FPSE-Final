@@ -1,6 +1,5 @@
 open Core
 open Uno_card
-open Deck
 
 module CPU = struct
   type difficulty = Easy | Medium | Hard
@@ -26,33 +25,25 @@ module CPU = struct
       cpu
       (* FILLER IMPLEMENTATION, might not need *)
   
-  let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
+  let choose_card (cpu : t) (options : UnoCardInstance.t list) =
     match cpu.diff with
     | Easy ->
-      let playable_cards =
-        List.filter
-          ~f:(fun card ->
-            UnoCard.is_playable
-              (UnoCardInstance.get_color card) (UnoCardInstance.get_value card)
-              (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card))
-          cpu.hand
-      in
-      if List.is_empty playable_cards then
-        (* Draw a card if no playable cards *)
-        let drawn_card, updated_deck = Deck.draw_card deck in
-        let updated_cpu = { cpu with hand = drawn_card :: cpu.hand } in
-        (drawn_card, updated_deck, updated_cpu) (* Return drawn card and the new deck *)
+      if List.is_empty options then
+        failwith "No playable cards available."
       else
-        (* Play a random playable card *)
-        let chosen_card = List.random_element_exn playable_cards in
-        (chosen_card, deck, cpu)
-
+        List.random_element_exn options
     | Medium ->
-      failwith "Medium difficulty not implemented yet."
-
+      if Random.bool () then
+        List.random_element_exn options
+      else
+        List.hd_exn options
+        (* HERE IS WHERE WE WOULD USE OUR ALGORITHM *)
     | Hard ->
-      failwith "Hard difficulty not implemented yet."
-
+      if List.is_empty options then
+        failwith "No playable cards available."
+      else
+        List.hd_exn options
+        (* HERE IS WHERE WE WOULD USE OUR ALGORITHM *)
 
   let has_won (cpu : t) : bool =
     List.is_empty cpu.hand

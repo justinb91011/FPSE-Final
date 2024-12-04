@@ -32,7 +32,7 @@ module Deck = struct
                           DrawFour; DrawFour; DrawFour; DrawFour; 
                           WildValue; WildValue; WildValue; WildValue] in
     let values = numbers @ special_values in
-    List.fold_left ~init:[] colors ~f:(fun acc color -> deck_creator acc values color)
+    List.rev (List.fold_left ~init:[] colors ~f:(fun acc color -> deck_creator acc values color))
 
   let shuffle (deck : t) : t = 
     List.permute deck
