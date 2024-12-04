@@ -16,25 +16,4 @@ end
 
 module UnoCardInstance = Card.Make(UnoCard)
 
-module UnoCardUtils = struct
-  include UnoCardInstance
 
-  (* Function to convert a card to a string *)
-  let to_string card =
-    let color_to_string = function
-      | UnoCard.Red -> "Red"
-      | UnoCard.Yellow -> "Yellow"
-      | UnoCard.Green -> "Green"
-      | UnoCard.Blue -> "Blue"
-      | UnoCard.WildColor -> "Wild"
-    in
-    let value_to_string = function
-      | UnoCard.Number n -> string_of_int n
-      | UnoCard.Skip -> "Skip"
-      | UnoCard.Reverse -> "Reverse"
-      | UnoCard.DrawTwo -> "DrawTwo"
-      | UnoCard.DrawFour -> "DrawFour"
-      | UnoCard.WildValue-> "Wild"
-    in
-    Printf.sprintf "%s %s" (color_to_string (get_color card)) (value_to_string (get_value card))
-end
