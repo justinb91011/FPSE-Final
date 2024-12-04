@@ -12,7 +12,7 @@ module type Card_game_rules = sig
 end
 
 module Make (Card : Card_game_rules) = struct  
-  type t = { color : Card.color; value : Card.value } [@@deriving compare, equal, sexp]
+  type t = { color : Card.color; value : Card.value } [@@deriving compare, equal, sexp] 
   (** [t] represents a card using a combination of [color] and [value]. *)
 
   let create (card_color : Card.color) (card_value : Card.value) = 
