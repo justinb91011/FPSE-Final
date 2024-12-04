@@ -2,20 +2,21 @@
  (name card)
  (modules card)
  (libraries core)
- (preprocess (pps ppx_jane))
+ (preprocess (pps ppx_jane bisect_ppx))
 )
 
 (library
  (name uno_card)
  (modules uno_card)
  (libraries card)
- (preprocess (pps ppx_jane))
+ (preprocess (pps ppx_jane bisect_ppx))
 )
 
 (library
  (name deck)
  (modules deck)
  (libraries core card uno_card)
+ (preprocess (pps bisect_ppx))
 )
 
 (library
