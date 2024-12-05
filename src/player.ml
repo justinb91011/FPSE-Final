@@ -19,16 +19,21 @@ module Player = struct
   let add_cards (player : t) (cards : UnoCardInstance.t list) : t =
     {player with hand = player.hand @ cards}
 
-  let play_card (player : t) (card : UnoCardInstance.t) : t =
-    if UnoCard.is_playable (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) then
-      player
+  let play_card (player : t) (card : UnoCardInstance.t) (top_card : UnoCardInstance.t) : t =
+    if UnoCard.is_playable 
+      (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) 
+      (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
+    then
+      let rec remove_first_occurrence hand =
+        match hand with
+        | [] -> failwith "Card must be in hand. Should not be reached."
+        | c :: rest ->
+          if UnoCardInstance.equal c card then rest
+          else c :: remove_first_occurrence rest
+      in
+      {player with hand = remove_first_occurrence player.hand}
     else
-      player
-
-  let choose_card (_player : t) (options : UnoCardInstance.t list) : UnoCardInstance.t =
-    match options with
-    | [] -> failwith "No playable cards available."
-    | card :: _ -> card
+      failwith "Card is not playable"
 
   let has_won (player : t) : bool =
     List.is_empty player.hand

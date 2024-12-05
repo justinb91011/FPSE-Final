@@ -16,11 +16,8 @@ module Player : sig
   val add_cards : t -> UnoCardInstance.t list -> t
   (** [add_cards player cards] adds [cards] to the player's hand and returns the updated player. *)
 
-  val play_card : t -> UnoCardInstance.t -> t
-  (** [play_card player card] removes the given [card] from the player's hand if it is playable. *)
-
-  val choose_card : t -> UnoCardInstance.t list -> UnoCardInstance.t
-  (** [choose_card player options] allows the player to select a card to play from [options]. *)
+  val play_card : t -> UnoCardInstance.t -> UnoCardInstance.t -> t
+  (** [play_card player card top_card] removes the given [card] from the player's hand if it is playable. *)
 
   val has_won : t -> bool
   (** [has_won player] returns [true] if the player has no cards left, [false] otherwise. *)

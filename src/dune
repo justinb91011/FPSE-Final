@@ -29,6 +29,7 @@
   (name player)
   (modules player)
   (libraries core card uno_card)
+  (preprocess (pps bisect_ppx))
 )
 
 ; (library

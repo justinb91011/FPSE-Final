@@ -10,8 +10,19 @@
  (libraries core ounit2 deck)
  (preprocess (pps ppx_jane)))
 
+(library
+ (name uno_card_tests)
+ (modules uno_card_tests)
+ (libraries core ounit2 card uno_card)
+)
+
+(library
+ (name player_tests)
+ (modules player_tests)
+ (libraries core ounit2 player uno_card))
+
 (test 
  (name tests)
  (modules tests)
- (libraries core ounit2 card_tests deck_tests)
+ (libraries core ounit2 card_tests deck_tests uno_card_tests player_tests)
 )

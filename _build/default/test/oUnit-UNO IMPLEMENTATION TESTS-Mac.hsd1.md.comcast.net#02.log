@@ -1,0 +1,18 @@
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Start test UNO IMPLEMENTATION TESTS:0:Card Tests:1:Card Playability.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Test UNO IMPLEMENTATION TESTS:0:Card Tests:1:Card Playability is successful.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: End test UNO IMPLEMENTATION TESTS:0:Card Tests:1:Card Playability.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Start test UNO IMPLEMENTATION TESTS:1:Deck Tests:1:Deck Shufffle.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Test UNO IMPLEMENTATION TESTS:1:Deck Tests:1:Deck Shufffle is successful.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: End test UNO IMPLEMENTATION TESTS:1:Deck Tests:1:Deck Shufffle.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Start test UNO IMPLEMENTATION TESTS:1:Deck Tests:3:Deck N Card Draws.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Test UNO IMPLEMENTATION TESTS:1:Deck Tests:3:Deck N Card Draws is successful.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: End test UNO IMPLEMENTATION TESTS:1:Deck Tests:3:Deck N Card Draws.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Start test UNO IMPLEMENTATION TESTS:1:Deck Tests:5:Deck Remaining Cards.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Test UNO IMPLEMENTATION TESTS:1:Deck Tests:5:Deck Remaining Cards is successful.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: End test UNO IMPLEMENTATION TESTS:1:Deck Tests:5:Deck Remaining Cards.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Start test UNO IMPLEMENTATION TESTS:3:Player Tests:0:Player Creation.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Test UNO IMPLEMENTATION TESTS:3:Player Tests:0:Player Creation is successful.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: End test UNO IMPLEMENTATION TESTS:3:Player Tests:0:Player Creation.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Start test UNO IMPLEMENTATION TESTS:3:Player Tests:2:Player Card Played.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: Test UNO IMPLEMENTATION TESTS:3:Player Tests:2:Player Card Played is successful.
+2024-12-05T04:04:12+00:00 Mac.hsd1.md.comcast.net#02 I: End test UNO IMPLEMENTATION TESTS:3:Player Tests:2:Player Card Played.
