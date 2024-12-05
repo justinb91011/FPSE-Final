@@ -1,7 +1,8 @@
+open Core
 open OUnit2
 open Player
 open Uno_card
-open Core
+
 
 let test_create _ =
   let my_player = Player.create "Robert Griffin Justin" in

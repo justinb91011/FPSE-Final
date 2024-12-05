@@ -2,35 +2,31 @@
  (name card)
  (modules card)
  (libraries core)
- (preprocess (pps ppx_jane bisect_ppx))
-)
+ (preprocess (pps ppx_jane bisect_ppx)))
 
 (library
  (name uno_card)
  (modules uno_card)
  (libraries card)
- (preprocess (pps ppx_jane bisect_ppx))
-)
+ (preprocess (pps ppx_jane bisect_ppx)))
 
 (library
  (name deck)
  (modules deck)
  (libraries core card uno_card)
- (preprocess (pps bisect_ppx))
-)
+ (preprocess (pps bisect_ppx)))
 
 (library
  (name cpu)
  (modules cpu)
  (libraries core card uno_card deck)
-)
+ (preprocess (pps bisect_ppx)))
 
 (library
   (name player)
   (modules player)
   (libraries core card uno_card)
-  (preprocess (pps bisect_ppx))
-)
+  (preprocess (pps bisect_ppx)))
 
 (executable
  (name run_game)

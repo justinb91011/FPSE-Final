@@ -13,18 +13,21 @@ module CPU = struct
   let create (diff : difficulty) : t =
     { diff; hand = [] }
 
+  let get_difficulty (cpu : t) : difficulty =
+    cpu.diff
+
   let get_hand (cpu : t) : UnoCardInstance.t list = 
     cpu.hand
 
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
     { cpu with hand = cpu.hand @ cards }
 
-  let play_card (cpu : t) (card : UnoCardInstance.t) : t =
+  (* let play_card (cpu : t) (card : UnoCardInstance.t) : t =
     if UnoCard.is_playable (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) then
       cpu
     else
       cpu
-      (* FILLER IMPLEMENTATION, might not need *)
+      FILLER IMPLEMENTATION, might not need *)
   
       let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
           match cpu.diff with
@@ -44,11 +47,19 @@ module CPU = struct
             else
             (* Play a random playable card *)
               let chosen_card = List.random_element_exn playable_cards in
-              (chosen_card, deck, cpu)
+              let rec remove_first_occurrence hand =
+                match hand with
+                | [] -> failwith "Card must be in hand. Should not be reached." [@coverage off]
+                | c :: rest ->
+                  if UnoCardInstance.equal c chosen_card then rest
+                  else c :: remove_first_occurrence rest
+              in
+              let updated_cpu = {cpu with hand = remove_first_occurrence cpu.hand} in
+              (chosen_card, deck, updated_cpu)
             | Medium ->
-            failwith "Medium difficulty not implemented yet."
+            failwith "Medium difficulty not implemented yet." [@coverage off]
             | Hard ->
-            failwith "Hard difficulty not implemented yet."
+            failwith "Hard difficulty not implemented yet."[@coverage off]
         
 
   let has_won (cpu : t) : bool =

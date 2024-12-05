@@ -6,7 +6,8 @@ let series =
   [Card_tests.series;
    Deck_tests.series;
    Uno_card_tests.series;
-   Player_tests.series
+   Player_tests.series;
+   Cpu_tests.series
   ]
 
 let () = run_test_tt_main series
