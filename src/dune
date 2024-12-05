@@ -32,6 +32,20 @@
   (preprocess (pps bisect_ppx))
 )
 
+(executable
+ (name run_game)
+ (modules run_game)
+ (libraries
+   core
+   dream
+   lwt.unix
+   card
+   uno_card
+   deck
+   cpu
+   player)
+)
+
 ; (library
 ;   (name algorithm)
 ;   (modules algorithm)
