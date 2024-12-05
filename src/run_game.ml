@@ -83,30 +83,43 @@ let () =
       match !game_state with
       | None -> Dream.html "Game not initialized."
       | Some state ->
-        (* Read card_index from the query string instead of form data *)
-        match Dream.query request "card_index" with
-        | None -> Dream.html "No card selected."
-        | Some card_index_str ->
-          (try
-              let card_index = Int.of_string card_index_str in
-              let player_name, player = List.hd_exn state.players in
-              let hand = Player.get_hand player in
-              let card = List.nth_exn hand card_index in
-              let top_discard = List.hd_exn state.discard_pile in
+        (* First check if it's Player1's turn (current_player_index = 0) *)
+        if state.current_player_index <> 0 then
+          Dream.html "Not your turn to place a card"
+        else
+          match Dream.query request "card_index" with
+          | None -> Dream.html "No card selected."
+          | Some card_index_str ->
+            (try
+               let card_index = Int.of_string card_index_str in
+               let player_name, player = List.hd_exn state.players in
+               let hand = Player.get_hand player in
+               let card = List.nth_exn hand card_index in
+               let top_discard = List.hd_exn state.discard_pile in
 
-              (* Directly call play_card; it will raise if not playable *)
-              let player = Player.play_card player card top_discard in
+               (* Directly call play_card; it will raise if not playable *)
+               let player = Player.play_card player card top_discard in
 
-              let discard_pile = card :: state.discard_pile in
-              let state = { state with
-                discard_pile;
-                players = [(player_name, player)];
-              } in
+               let discard_pile = card :: state.discard_pile in
+               let state = { state with
+                 discard_pile;
+                 players = [(player_name, player)];
+                 current_player_index = 1; (* Update turn to the next player (CPU) *)
+               } in
               game_state := Some state;
-              Dream.html "You played a good card"
-            with
-            | Failure _ ->
-                Dream.html "Card is not playable on the current discard pile."
-            | _ ->
-                Dream.html "Invalid card index."))
+              (* Now get the new top card information *)
+              let top_discard = List.hd_exn state.discard_pile in
+              let top_color = UnoCardInstance.get_color top_discard in
+              let top_value = UnoCardInstance.get_value top_discard in
+              let top_card_str =
+                Printf.sprintf "%s %s"
+                  (Sexp.to_string (UnoCard.sexp_of_color top_color))
+                  (Sexp.to_string (UnoCard.sexp_of_value top_value))
+              in
+              Dream.html (Printf.sprintf "You played a good card! The top card is now: %s" top_card_str)
+             with
+             | Failure _ ->
+                Dream.html ~code:400 "Card is not playable on the current discard pile."
+             | _ ->
+                Dream.html ~code:400"Invalid card index."))
   ]
