@@ -1,0 +1,38 @@
+# Ranking System
+- Normal numbered cards possible ranking:
+    - If the current numbered card does match color or number then it should be ranked as 1:
+    - If you have more than one color or number that can match it choose based on which you have more color cards of
+    - If there is a scenario where you have the same amount of each color, choose the card that are numbered 1-9 randomly 
+    - If you only only have 0 numbered cards choose randomly 
+- Action cards ranking:
+    Any reverse card that can be played has a ranking of 2
+    - If the person in front of you has more cards, the reverse ranking should be 1
+    - If the person behind you has more cards, the reverse ranking should be 3
+    - If the person behind and in front have an absolute difference amount of cards that is 1, the ranking is 2
+    - For any of these scenarios if you want to play the reverse card choose the reverse card that you have the most color of in your deck.
+    - If there is a scenario where you have the same amount of each color, choose a rever card randomly 
+- Skip card default ranking to 3
+    - If the player in front of you has less than or equal to 3 cards, the skip have a ranking of 4.
+    - If the player 2 turns ahead of you has less than or equal to 3 cards, and if the person in front of you has more than 3 cards then its ranking is 2
+    - If both scenarios are true, then the skip ranking is 3
+    - In any of these scenarios if you have multiple skip cards choose the one which you have the most color of 
+    - If there is a scenario where you have the same amount of each color, choose a skip card randomly 
+- Draw 2 card default ranking is 4
+    - If the player in front of you has less than 3 cards, draw 2 ranking is 5
+    - In any of these scenarios if you have multiple +2 cards choose the one which you have the most color of 
+    - If there is a scenario where you have the same amount of each color, choose a +2 card randomly 
+- Draw 4 Wild card default ranking is 6
+    - If you have more than 3 cards, Draw 4 is ranked 5 (it can be seen as more advantageous to save draw 4’s until later in the game
+    - If the player in front of you has more than 3 cards, the ranking is 5
+    - If a plus 4 is on the stack, then other plus 4’s should be ranked 7
+- COLORS:
+    - When choosing colors, choose the color that you have the most of in your hand.
+    - If the number of cards per color is the same, then choose a color at random to set for the draw 4.
+    - IF you have more than 2 cards in your hand, and either of the other players have one card, and they drew a card last turn on a particular color, then set it to that color.
+- Wild Cards have default ranking 4
+    - If you have more than 3 cards than the ranking is 3
+    - If you have less than 3 cards than the ranking is 5
+- Colors:
+    - If the number of cards per color is the same, then choose a color at random to set for the wild card.
+    - When choosing colors, choose the color that you have the most of in your hand.
+    - IF you have more than 2 cards in your hand, and either of the other players have one card, and they drew a card last turn on a particular color, then set it to that color.
