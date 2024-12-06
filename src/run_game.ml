@@ -60,14 +60,23 @@ let next_player_index state =
 (* Modified play_cpu_turn to return (new_state, card, cpu_index) *)
 let play_cpu_turn state =
   let cpu_index = state.current_player_index in
-  let _, current_cpu = List.nth_exn state.cpus (cpu_index - 1) in
+  let (_, current_cpu) = List.nth_exn state.cpus (cpu_index - 1) in
   let top_discard = List.hd_exn state.discard_pile in
 
-  (* Choose a card and update deck and CPU *)
+  (* CPU chooses a card *)
   let card, new_deck, updated_cpu = CPU.choose_card current_cpu top_discard state.deck in
 
-  (* Update the discard pile and CPU state *)
-  let new_discard_pile = card :: state.discard_pile in
+  (* Determine if CPU played the card *)
+  let card_played = not (List.exists (CPU.get_hand updated_cpu) ~f:(UnoCardInstance.equal card)) in
+
+  (* Update discard pile only if card was actually played *)
+  let new_discard_pile =
+    if card_played then
+      card :: state.discard_pile
+    else
+      state.discard_pile
+  in
+
   let updated_cpus =
     List.mapi state.cpus ~f:(fun i (name, cpu) ->
       if i = cpu_index - 1 then (name, updated_cpu)
@@ -130,7 +139,10 @@ let () =
                         current_player_index = 1;
                       } in
                       game_state := Some state;
-                      Dream.html (Printf.sprintf "Card played successfully!")
+                      if Player.has_won player then
+                        Dream.html "Player1 has won the game. Game over."
+                      else 
+                        Dream.html (Printf.sprintf "Card played successfully!")
                     else
                       Dream.html ~code:400 "Card is not playable. Please choose a different card."
                 end
@@ -223,19 +235,27 @@ let () =
         if state.current_player_index = 0 then
           Dream.html "It's the player's turn."
         else
-          let (new_state, played_card, cpu_index) = play_cpu_turn state in
+          let (new_state, chosen_card, cpu_index) = play_cpu_turn state in
           game_state := Some new_state;
-
-          let played_color = UnoCardInstance.get_color played_card in
-          let played_value = UnoCardInstance.get_value played_card in
-          let played_card_str =
-            Printf.sprintf "%s %s"
-              (Sexp.to_string (UnoCard.sexp_of_color played_color))
-              (Sexp.to_string (UnoCard.sexp_of_value played_value))
-          in
-
-          (* CPU indexing starts at 1 for CPU1, 2 for CPU2, etc. *)
-          Dream.html (Printf.sprintf "CPU%d turn completed. Played: %s" cpu_index played_card_str)
+    
+          let new_top = List.hd_exn new_state.discard_pile in
+          if UnoCardInstance.equal chosen_card new_top then
+            (* CPU played the chosen_card *)
+            let (_, updated_cpu) = List.nth_exn new_state.cpus (cpu_index - 1) in
+            if CPU.has_won updated_cpu then
+              Dream.html (Printf.sprintf "CPU%d has won the game. Game over." cpu_index)
+            else 
+              let played_color = UnoCardInstance.get_color chosen_card in
+              let played_value = UnoCardInstance.get_value chosen_card in
+              let played_card_str =
+                Printf.sprintf "%s %s"
+                  (Sexp.to_string (UnoCard.sexp_of_color played_color))
+                  (Sexp.to_string (UnoCard.sexp_of_value played_value))
+              in
+              Dream.html (Printf.sprintf "CPU%d turn completed. Played: %s" cpu_index played_card_str)
+          else
+            (* CPU did not play the card, only drew it *)
+            Dream.html (Printf.sprintf "CPU%d turn completed. Drew a card." cpu_index)
     );
 
     Dream.get "/cpu_hands" (fun _ ->
