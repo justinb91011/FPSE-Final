@@ -22,12 +22,6 @@ module CPU = struct
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
     { cpu with hand = cpu.hand @ cards }
 
-  (* let play_card (cpu : t) (card : UnoCardInstance.t) : t =
-    if UnoCard.is_playable (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) then
-      cpu
-    else
-      cpu
-      FILLER IMPLEMENTATION, might not need *)
   
       let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
           match cpu.diff with
