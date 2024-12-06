@@ -1,0 +1,16 @@
+# dune test
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /Users/justinbravo/.cache/dune/db
+# Workspace root: "/Users/justinbravo/Desktop/FPSE FINAL"
+# Auto-detected concurrency: 8
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /Users/justinbravo/.opam/5.2.0/bin/ocamlc.opt -config > /var/folders/cv/l12zrp5d2pzdmw_x743nlz2m0000gn/T/dune_52f4ad_output
