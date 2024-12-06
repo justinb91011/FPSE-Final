@@ -57,31 +57,29 @@ let next_player_index state =
   let num_players = List.length state.players + List.length state.cpus in
   (state.current_player_index + state.direction + num_players) mod num_players
 
-let play_cpu_turn state =
-  let _, current_cpu = List.nth_exn state.cpus (state.current_player_index - 1) in
-  let top_discard = List.hd_exn state.discard_pile in
-
-  let card, new_deck, updated_cpu = CPU.choose_card current_cpu top_discard state.deck in
-  if UnoCard.is_playable
-       (UnoCardInstance.get_color card) (UnoCardInstance.get_value card)
-       (UnoCardInstance.get_color top_discard) (UnoCardInstance.get_value top_discard)
-  then
-    (* Play the chosen card *)
+  let play_cpu_turn state =
+    let _, current_cpu = List.nth_exn state.cpus (state.current_player_index - 1) in
+    let top_discard = List.hd_exn state.discard_pile in
+  
+    (* Choose a card and update deck and CPU *)
+    let card, new_deck, updated_cpu = CPU.choose_card current_cpu top_discard state.deck in
+  
+    (* Update the discard pile and CPU state *)
     let new_discard_pile = card :: state.discard_pile in
     let updated_cpus =
       List.mapi state.cpus ~f:(fun i (name, cpu) ->
         if i = state.current_player_index - 1 then (name, updated_cpu)
         else (name, cpu))
     in
+  
+    (* Return updated state *)
     { state with
       deck = new_deck;
       discard_pile = new_discard_pile;
       cpus = updated_cpus;
       current_player_index = next_player_index state
     }
-  else
-    (* Invalid choice should not happen, but handle gracefully *)
-    state
+  
 
 let () = initialize_game ()
 
