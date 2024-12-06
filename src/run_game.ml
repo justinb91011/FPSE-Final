@@ -11,7 +11,7 @@ type game_state = {
   cpus : (string * CPU.t) list;
   current_player_index : int;
   direction : int;  (* 1 for clockwise, -1 for counterclockwise *)
-} [@@ocaml.warning "-69"]
+}
 
 let game_state = ref None
 
@@ -57,29 +57,31 @@ let next_player_index state =
   let num_players = List.length state.players + List.length state.cpus in
   (state.current_player_index + state.direction + num_players) mod num_players
 
-  let play_cpu_turn state =
-    let _, current_cpu = List.nth_exn state.cpus (state.current_player_index - 1) in
-    let top_discard = List.hd_exn state.discard_pile in
-  
-    (* Choose a card and update deck and CPU *)
-    let card, new_deck, updated_cpu = CPU.choose_card current_cpu top_discard state.deck in
-  
-    (* Update the discard pile and CPU state *)
-    let new_discard_pile = card :: state.discard_pile in
-    let updated_cpus =
-      List.mapi state.cpus ~f:(fun i (name, cpu) ->
-        if i = state.current_player_index - 1 then (name, updated_cpu)
-        else (name, cpu))
-    in
-  
-    (* Return updated state *)
-    { state with
-      deck = new_deck;
-      discard_pile = new_discard_pile;
-      cpus = updated_cpus;
-      current_player_index = next_player_index state
-    }
-  
+(* Modified play_cpu_turn to return (new_state, card, cpu_index) *)
+let play_cpu_turn state =
+  let cpu_index = state.current_player_index in
+  let _, current_cpu = List.nth_exn state.cpus (cpu_index - 1) in
+  let top_discard = List.hd_exn state.discard_pile in
+
+  (* Choose a card and update deck and CPU *)
+  let card, new_deck, updated_cpu = CPU.choose_card current_cpu top_discard state.deck in
+
+  (* Update the discard pile and CPU state *)
+  let new_discard_pile = card :: state.discard_pile in
+  let updated_cpus =
+    List.mapi state.cpus ~f:(fun i (name, cpu) ->
+      if i = cpu_index - 1 then (name, updated_cpu)
+      else (name, cpu))
+  in
+
+  let new_state = { state with
+    deck = new_deck;
+    discard_pile = new_discard_pile;
+    cpus = updated_cpus;
+    current_player_index = next_player_index state
+  } in
+
+  (new_state, card, cpu_index)
 
 let () = initialize_game ()
 
@@ -128,15 +130,6 @@ let () =
                         current_player_index = 1;
                       } in
                       game_state := Some state;
-
-                      (* let top_discard = List.hd_exn state.discard_pile in
-                      let top_color = UnoCardInstance.get_color top_discard in
-                      let top_value = UnoCardInstance.get_value top_discard in
-                      let top_card_str =
-                        Printf.sprintf "%s %s"
-                          (Sexp.to_string (UnoCard.sexp_of_color top_color))
-                          (Sexp.to_string (UnoCard.sexp_of_value top_value))
-                      in *)
                       Dream.html (Printf.sprintf "Card played successfully!")
                     else
                       Dream.html ~code:400 "Card is not playable. Please choose a different card."
@@ -230,9 +223,19 @@ let () =
         if state.current_player_index = 0 then
           Dream.html "It's the player's turn."
         else
-          let state = play_cpu_turn state in
-          game_state := Some state;
-          Dream.html "CPU turn completed."
+          let (new_state, played_card, cpu_index) = play_cpu_turn state in
+          game_state := Some new_state;
+
+          let played_color = UnoCardInstance.get_color played_card in
+          let played_value = UnoCardInstance.get_value played_card in
+          let played_card_str =
+            Printf.sprintf "%s %s"
+              (Sexp.to_string (UnoCard.sexp_of_color played_color))
+              (Sexp.to_string (UnoCard.sexp_of_value played_value))
+          in
+
+          (* CPU indexing starts at 1 for CPU1, 2 for CPU2, etc. *)
+          Dream.html (Printf.sprintf "CPU%d turn completed. Played: %s" cpu_index played_card_str)
     );
 
     Dream.get "/cpu_hands" (fun _ ->
