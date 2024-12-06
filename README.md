@@ -1,13 +1,22 @@
 # Progress
 
-With respect to what is working/complete on the backend, we have implemented all the modules (with the exception of algorithm, as we're still finalizing our approach, more on this later) that we will need. We have also tested our modules for 100% coverage (card.ml & uno_card.ml have types that aren't tested but for some reason the [@@coverage off] macro isn't working as expected) and we will be looking to implement even more extensive tests later. We created a generic library, card.ml, that can be extrapolated and used on any card game. We have our specialized UNO functor in the uno_card.ml.
+With respect to what is working/complete on the backend, we have implemented all the modules (with the exception of algorithm, as we're still finalizing our approach, more on this later) that we will need. We have also tested our modules for 100% coverage (card.ml & uno_card.ml have types that aren't tested but for some reason the [@@coverage off] macro isn't working as expected) and we will be looking to implement even more extensive tests later. We created a generic library, card.ml, that can be extrapolated and used on any card game. We have our specialized UNO functor in the uno_card.ml. 
+
+More on the backend. :
+
+"/" GET Request:  You can now run the backend server. First run a dune build and then travel to the src foulder. Then run the command:
+dune exec ./run_game.exe. This will run the backend server on http://localhost:8080. Now we haven't connected the backend to the frontend yet, but we will do so soon. For now we can play an easy game on the backendserver but you will have to use Postman in order to make the API calls. Now there are different API calls that you need to make. The game is already initialized with a get request when you do: dune exec ./run_game.exe.
+On Postman you can do a get request to http://localhost:8080. The response back should be Welcome to UNO! It should also tell you what the Player's(You) hand/cards are at the start of the game and it will tell you the top card of the discard pile(this is the card that you have to match it with), now it doesn't tell you but the two CPU's you will be playing against will also be given their hands as well(this is not a response in the original get request because you shouldn't know the CPU's hand because that would be cheating).
+
+"/play?card_index=#" Post Request: Now we made it so the Player will always start off the game. For the Player to play a card it will be a POST request(http://localhost:8080/play)) and it will take a parameter called card_index. The card_index parameter you must pass is associated with the card you wanna play. The first card in your hand will have card_index=0, and the last card(at the start of the game) will have card_index =6. So the card_index you pass  will play the card that has that card_index. There are different scenarios that can happen when you play a card: You play a card and its valid, the response you get back "Card played successfully!". Now lets say you try playing a card and its not playable but you still have a playable card in your hand it will return - "Card is not playable. Please choose a different card." Now lets say you don't have a playable card in your deck. Still send in a post request send in card_index=0. This will activate another case where you have to draw the card. Now if the card that you drew can be played you will get the message - "No playable card in your hand; you drew %s and played it! Top card: %s", if the card that you drew cannot be played you will get the message - "No playable card in your hand; you drew %s and kept it. Turn ends." We also did some error checking if you try sending in an invalid card_index you will get a 400 Bad Request saying "Invalid card index". Also once a player has played a card or drew a card his turn will be up and then the next turn will be the CPU's. We made is so if you try to do 2 play Post Requests the second request will return a 400 Bad Request with the message - "Not your turn to place a card".
+
+
+More on the frontend:
+
+So for right now the backend and the frontend are not connected to each other. However we have done work on our frontend as well. In order to start the frontend you need to travel to the uno-fpse-final folder. Once you are here download all the dependencies you will need by doing npm install. In order to run the frontend you will need to npm run dev. Open the localhost link you get from this and open it on any browser(Recommend Firefox Developer Edition). This will take you to the homepage of the frontend of our application. There is a start Game on the homepage that you can click on and it will open up a form that will ask the user to select their difficulty level. Once you have chosen to the Difficulty Level click on Start. This will you take to the /game/{Difficulty Level}. For right now we don't have the backend and frontend connected so we can't run the game visually. We have added a Quit Button to the bottom left of the Screen. When this is clicked it will ask the User again if its sure it wants to quit. If no is clicked the game will continue, if yes is clicked the user will be brought back to the initial frontend homepage. 
+
 
 Moving on to what's not working/complete on the backend, we are still needing to finalize our algorithm. Currently, we have the easy implementation of the algorithm finished and can be found in cpu.ml lines 28 - 52. However, in order to implement the Medium difficulty, we need the Hard difficulty first as the Medium level will make use of both the Hard and Easy levels with certain and intricate probabilities.
-
-
-
-
-
 
 # Overview
 
@@ -23,31 +32,31 @@ The medium and hard difficulties will make use of an algorithm we are planning t
 
 We will also create a front-end for the game that includes the options to save and load games.
 
-# More on the Algorithm: 
+# More on the Algorithm:
+
 We are attempting to create an UNO AI algorithm where the CPU players will make the most optimal moves in order to win the game. The difficulty in creating this algorithm, is that it is not as “straightforward” or well documented as ones written for games like Chess. Thus, we are looking to develop our own default ranking system for cards with the room to change based on the game state and other players. We will then feed this into a minimax algorithm that we will tailor to work with our ranking system. OCaml will work with this because of its functional nature, strong type system, and efficient handling of recursive structures, thus making it ideal for both designing our ranking system and implementing the minimax algorithm. We can try a similar approach as we did in Assignment 5 where we memoized computations stored in a map and used them later, if and when needed. The AI will be built to make decisions quickly, allowing for smooth gameplay. For example, in a situation where only one card is playable, it will choose that card. However, in a case where many cards are playable, the AI will choose the card which maximizes it’s chances of winning the game in the long-run or thwarts another player from winning.
 
 # Possible List of Libraries:
 
-- Core: 
-    - An extension of Base w/ additional functionality.
-    - Gives us the robust data structures & utilities.
+- Core:
+  - An extension of Base w/ additional functionality.
+  - Gives us the robust data structures & utilities.
 - OUnit2 (Testing):
-    - Allows to write and run unit tests for modules.
+  - Allows to write and run unit tests for modules.
 - Dune (Build System):
-    - Building & managing our project efficiently.
+  - Building & managing our project efficiently.
 - ReScript: (HAS BEEN DOWNLOADED)
-    - To write the frontend for UNO, compiles to JS and is operable with OCaml.
+  - To write the frontend for UNO, compiles to JS and is operable with OCaml.
 - React: (HAS BEEN DOWNLOADED)
-    - ReScript bindings to React can be used to create an interactive UI.
+  - ReScript bindings to React can be used to create an interactive UI.
 - bs-css:
-    - To style the front-end with CSS-in-JS solutions directly in Rescript.
+  - To style the front-end with CSS-in-JS solutions directly in Rescript.
 - Dream:
-    - For the backend.
+  - For the backend.
 - Lwt:
-    - Handling asynchronous tasks (API calls or WebSocket communication in backend).
+  - Handling asynchronous tasks (API calls or WebSocket communication in backend).
 - Bisect
-    - Demonstrate coverage for Code Checkpoint and Demo & Final Code Submissions.
-
+  - Demonstrate coverage for Code Checkpoint and Demo & Final Code Submissions.
 
 # Implementation Plan
 
@@ -60,14 +69,12 @@ We are attempting to create an UNO AI algorithm where the CPU players will make 
 - [~2-4 days] We will wrap up our front-end and try to have it work with out back-end.
 - [~3-6 days] We will undergo extensive test-runs to make sure our game is running as we expect.
 
-
 # UNO Draft
+
 Here, the pictures shown in UNO Draft.pdf will be explained.
 
-- First Picture: The first picture is a mockup of what our home page will be. We are wanting to include a dropdown where the player selects a 
-difficulty from easy, medium, and hard. Once a difficulty is chosen, then the player may press the Play Game button and begin the game.
-
+- First Picture: The first picture is a mockup of what our home page will be. We are wanting to include a dropdown where the player selects a
+  difficulty from easy, medium, and hard. Once a difficulty is chosen, then the player may press the Play Game button and begin the game.
 - Second Picture: The second picture depicts the start state of the game where every player has 7 cards, and there is a deck in the middle.
-
 - Third Picture: The third picture depicts the wining state of the game where one player is completely out of cards. A You Won message will be
-displayed when the win condition is met, or a You Lost message will be displayed if an opponent wins instead.
+  displayed when the win condition is met, or a You Lost message will be displayed if an opponent wins instead.
