@@ -18,7 +18,7 @@
       <h2>57.14%</h2>
     </div>
     <div id="navbar">
-      <span class="some-visited" style="bottom:44.00%"></span>
+      <span class="some-visited" style="bottom:42.31%"></span>
     </div>
     <div id="report">
       <div id="lines-layer">
@@ -36,18 +36,19 @@
 <a id="L11"></a><span > </span>
 <a id="L12"></a><span > </span>
 <a id="L13"></a><span > </span>
-<a id="L14"></a><span class="some-visited"> </span>
-<a id="L15"></a><span > </span>
+<a id="L14"></a><span > </span>
+<a id="L15"></a><span class="some-visited"> </span>
 <a id="L16"></a><span > </span>
 <a id="L17"></a><span > </span>
-<a id="L18"></a><span class="visited"> </span>
-<a id="L19"></a><span > </span>
+<a id="L18"></a><span > </span>
+<a id="L19"></a><span class="visited"> </span>
 <a id="L20"></a><span > </span>
-<a id="L21"></a><span class="visited"> </span>
-<a id="L22"></a><span > </span>
+<a id="L21"></a><span > </span>
+<a id="L22"></a><span class="visited"> </span>
 <a id="L23"></a><span > </span>
-<a id="L24"></a><span class="visited"> </span>
-<a id="L25"></a><span > </span>
+<a id="L24"></a><span > </span>
+<a id="L25"></a><span class="visited"> </span>
+<a id="L26"></a><span > </span>
 </pre>
       </div>
       <div id="text-layer">
@@ -77,8 +78,10 @@
 <a href="#L23">23</a>
 <a href="#L24">24</a>
 <a href="#L25">25</a>
+<a href="#L26">26</a>
 </pre>
-<pre><code class="ocaml">module type Card_game_rules = sig
+<pre><code class="ocaml">(* THIS IS OUR LIBRARY! *)
+module type Card_game_rules = sig
   type color [@@deriving compare, equal, sexp]
   (** [color] is the possible color for the cards. *)
 
@@ -95,13 +98,13 @@ module Make (Card : Card_game_rules) = struct
   (** [t] represents a card using a combination of [color] and [value]. *)
 
   let create (card_color : Card.color) (card_value : Card.value) = 
-    <span data-count="1011">{</span>color = card_color; value = card_value}
+    <span data-count="1012">{</span>color = card_color; value = card_value}
 
   let get_color (card : t) =
-    <span data-count="41">c</span>ard.color
+    <span data-count="51">c</span>ard.color
 
   let get_value (card : t) =
-    <span data-count="41">c</span>ard.value
+    <span data-count="51">c</span>ard.value
 end
 </code></pre>
       </div>

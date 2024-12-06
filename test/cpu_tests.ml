@@ -66,13 +66,26 @@ let test_choose_card_easy_no_playable_card _ =
     (* If drawn card is playable, CPU should have played it immediately:
        The hand size remains at 2. *)
     assert_equal 2 (List.length updated_hand)
-  else begin
+  else (
     (* If drawn card is not playable, it's added to the hand:
        The hand size increases to 3, and the drawn card is in the hand *)
-    assert_equal 3 (List.length updated_hand); 
+    assert_equal 3 (List.length updated_hand);
     assert_bool "Drawn card should be in the CPU's hand."
       (List.exists updated_hand ~f:(UnoCardInstance.equal drawn_card))
-  end
+  );
+
+  (* Another test case, this time where the CPU draws a card but it is not playable, thus the card is added to their hand and their turn is over. *)
+  let new_top_card = UnoCardInstance.create Green (Number 7) in
+  let new_cpu = CPU.add_cards (CPU.create Easy) [card1; card2] in
+  let newly_drawn_card, new_deck, newly_updated_cpu = CPU.choose_card new_cpu new_top_card initial_deck in
+  (* Since the card that was drawn by the CPU was not instanly playable, we must check that the CPU hand now contains three cards,
+    including the newly drawn one, and that the new deck now has one less card. *)
+  assert_equal 3 (Deck.remaining_cards (CPU.get_hand newly_updated_cpu));
+  assert_bool "The CPU's hand should contain the newly drawn card." 
+    (List.exists (CPU.get_hand newly_updated_cpu) ~f:(UnoCardInstance.equal newly_drawn_card));
+  assert_equal 107 (Deck.remaining_cards new_deck)
+  
+
 
 let test_has_won _ =
   (* We will emulate a case in where a cpu plays a card and then has an empty hand => the CPU won UNO. *)
@@ -91,4 +104,4 @@ let series =
    "Cpu Card Addition" >:: test_add_cards;
    "Cpu Card Choice - Easy" >:: test_choose_card_easy;
    "Cpu Card Choice - Easy - Draw" >:: test_choose_card_easy_no_playable_card;
-   "Cpu Win Check - Easy >::" >:: test_has_won]
+   "Cpu Win Check - Easy" >:: test_has_won]

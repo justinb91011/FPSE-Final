@@ -187,9 +187,9 @@ module Deck = struct
     <span data-count="1">L</span>ist.permute deck
   
   let draw_card (deck : t) : UnoCardInstance.t * t =
-    <span data-count="4">m</span>atch deck with
+    <span data-count="5">m</span>atch deck with
     | <span data-count="1">[</span>] -&gt; failwith "Cannot draw from an empty deck."
-    | <span data-count="3">t</span>op_card :: rest -&gt; (top_card, rest)
+    | <span data-count="4">t</span>op_card :: rest -&gt; (top_card, rest)
 
   let draw_cards n (deck : t) : UnoCardInstance.t list * t =
     <span data-count="3">l</span>et rec draw acc n deck = 

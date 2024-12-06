@@ -51,7 +51,7 @@ module CPU = struct
         let chosen_card = List.random_element_exn playable_cards in
         let rec remove_first_occurrence hand =
           match hand with
-          | [] -> failwith "Card must be in hand. Should not be reached."
+          | [] -> failwith "Card must be in hand. Should not be reached." [@coverage off]
           | c :: rest ->
             if UnoCardInstance.equal c chosen_card then rest
             else c :: remove_first_occurrence rest
