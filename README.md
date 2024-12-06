@@ -1,4 +1,4 @@
-# Progress
+# Progress for Code Checkpoint
 
 With respect to what is working/complete on the backend, we have implemented all the modules (with the exception of algorithm, as we're still finalizing our approach, more on this later) that we will need. We have also tested our modules for 100% coverage (card.ml & uno_card.ml have types that aren't tested but for some reason the [@@coverage off] macro isn't working as expected) and we will be looking to implement even more extensive tests later. We created a generic library, card.ml, that can be extrapolated and used on any card game. We have our specialized UNO functor in the uno_card.ml.
 
