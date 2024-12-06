@@ -18,7 +18,7 @@
       <h2>57.14%</h2>
     </div>
     <div id="navbar">
-      <span class="some-visited" style="bottom:40.74%"></span>
+      <span class="some-visited" style="bottom:44.00%"></span>
     </div>
     <div id="report">
       <div id="lines-layer">
@@ -36,20 +36,18 @@
 <a id="L11"></a><span > </span>
 <a id="L12"></a><span > </span>
 <a id="L13"></a><span > </span>
-<a id="L14"></a><span > </span>
+<a id="L14"></a><span class="some-visited"> </span>
 <a id="L15"></a><span > </span>
-<a id="L16"></a><span class="some-visited"> </span>
+<a id="L16"></a><span > </span>
 <a id="L17"></a><span > </span>
-<a id="L18"></a><span > </span>
+<a id="L18"></a><span class="visited"> </span>
 <a id="L19"></a><span > </span>
-<a id="L20"></a><span class="visited"> </span>
-<a id="L21"></a><span > </span>
+<a id="L20"></a><span > </span>
+<a id="L21"></a><span class="visited"> </span>
 <a id="L22"></a><span > </span>
-<a id="L23"></a><span class="visited"> </span>
-<a id="L24"></a><span > </span>
+<a id="L23"></a><span > </span>
+<a id="L24"></a><span class="visited"> </span>
 <a id="L25"></a><span > </span>
-<a id="L26"></a><span class="visited"> </span>
-<a id="L27"></a><span > </span>
 </pre>
       </div>
       <div id="text-layer">
@@ -79,12 +77,8 @@
 <a href="#L23">23</a>
 <a href="#L24">24</a>
 <a href="#L25">25</a>
-<a href="#L26">26</a>
-<a href="#L27">27</a>
 </pre>
-<pre><code class="ocaml">(* open Core *)
-
-module type Card_game_rules = sig
+<pre><code class="ocaml">module type Card_game_rules = sig
   type color [@@deriving compare, equal, sexp]
   (** [color] is the possible color for the cards. *)
 

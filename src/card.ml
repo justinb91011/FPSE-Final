@@ -1,5 +1,4 @@
-(* open Core *)
-
+(* THIS IS OUR LIBRARY! *)
 module type Card_game_rules = sig
   type color [@@deriving compare, equal, sexp]
   (** [color] is the possible color for the cards. *)

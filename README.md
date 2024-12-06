@@ -1,3 +1,14 @@
+# Progress
+
+With respect to what is working/complete on the backend, we have implemented all the modules (with the exception of algorithm, as we're still finalizing our approach, more on this later) that we will need. We have also tested our modules for 100% coverage (card.ml & uno_card.ml have types that aren't tested but for some reason the [@@coverage off] macro isn't working as expected) and we will be looking to implement even more extensive tests later. We created a generic library, card.ml, that can be extrapolated and used on any card game. We have our specialized UNO functor in the uno_card.ml.
+
+Moving on to what's not working/complete on the backend, we are still needing to finalize our algorithm. Currently, we have the easy implementation of the algorithm finished and can be found in cpu.ml lines 28 - 52. However, in order to implement the Medium difficulty, we need the Hard difficulty first as the Medium level will make use of both the Hard and Easy levels with certain and intricate probabilities.
+
+
+
+
+
+
 # Overview
 
 Group Members: Justin Bravo, Robert Velez, Griffin Montalvo

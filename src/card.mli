@@ -1,5 +1,3 @@
-(* This module will serve as the library for any playing card game *)
-
 module type Card_game_rules = sig 
   type color [@@deriving compare, equal, sexp]
   (** [color] is the possible color for the cards. *)

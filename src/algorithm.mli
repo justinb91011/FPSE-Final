@@ -1,4 +1,3 @@
-
 module type Algorithm = sig
   val rank_card : Card.t -> hand:Card.t list -> opponents:int list -> int
   (** [rank_card card ~hand ~opponents] computes the rank of [card] based on the current [hand] 

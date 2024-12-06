@@ -48,48 +48,42 @@
 <a id="L24"></a><span > </span>
 <a id="L25"></a><span > </span>
 <a id="L26"></a><span > </span>
-<a id="L27"></a><span > </span>
-<a id="L28"></a><span > </span>
+<a id="L27"></a><span class="visited"> </span>
+<a id="L28"></a><span class="visited"> </span>
 <a id="L29"></a><span > </span>
 <a id="L30"></a><span > </span>
-<a id="L31"></a><span > </span>
-<a id="L32"></a><span > </span>
+<a id="L31"></a><span class="visited"> </span>
+<a id="L32"></a><span class="visited"> </span>
 <a id="L33"></a><span class="visited"> </span>
-<a id="L34"></a><span class="visited"> </span>
+<a id="L34"></a><span > </span>
 <a id="L35"></a><span > </span>
-<a id="L36"></a><span > </span>
-<a id="L37"></a><span class="visited"> </span>
+<a id="L36"></a><span class="visited"> </span>
+<a id="L37"></a><span > </span>
 <a id="L38"></a><span class="visited"> </span>
 <a id="L39"></a><span class="visited"> </span>
 <a id="L40"></a><span > </span>
 <a id="L41"></a><span > </span>
-<a id="L42"></a><span class="visited"> </span>
-<a id="L43"></a><span > </span>
+<a id="L42"></a><span > </span>
+<a id="L43"></a><span class="visited"> </span>
 <a id="L44"></a><span class="visited"> </span>
 <a id="L45"></a><span class="visited"> </span>
 <a id="L46"></a><span > </span>
-<a id="L47"></a><span > </span>
-<a id="L48"></a><span > </span>
+<a id="L47"></a><span class="visited"> </span>
+<a id="L48"></a><span class="visited"> </span>
 <a id="L49"></a><span class="visited"> </span>
-<a id="L50"></a><span class="visited"> </span>
+<a id="L50"></a><span > </span>
 <a id="L51"></a><span class="visited"> </span>
 <a id="L52"></a><span > </span>
-<a id="L53"></a><span class="visited"> </span>
-<a id="L54"></a><span class="visited"> </span>
-<a id="L55"></a><span class="visited"> </span>
+<a id="L53"></a><span > </span>
+<a id="L54"></a><span > </span>
+<a id="L55"></a><span > </span>
 <a id="L56"></a><span > </span>
-<a id="L57"></a><span class="visited"> </span>
+<a id="L57"></a><span > </span>
 <a id="L58"></a><span > </span>
 <a id="L59"></a><span > </span>
-<a id="L60"></a><span > </span>
+<a id="L60"></a><span class="visited"> </span>
 <a id="L61"></a><span > </span>
 <a id="L62"></a><span > </span>
-<a id="L63"></a><span > </span>
-<a id="L64"></a><span > </span>
-<a id="L65"></a><span > </span>
-<a id="L66"></a><span class="visited"> </span>
-<a id="L67"></a><span > </span>
-<a id="L68"></a><span > </span>
 </pre>
       </div>
       <div id="text-layer">
@@ -156,12 +150,6 @@
 <a href="#L60">60</a>
 <a href="#L61">61</a>
 <a href="#L62">62</a>
-<a href="#L63">63</a>
-<a href="#L64">64</a>
-<a href="#L65">65</a>
-<a href="#L66">66</a>
-<a href="#L67">67</a>
-<a href="#L68">68</a>
 </pre>
 <pre><code class="ocaml">open Core
 open Uno_card
@@ -187,12 +175,6 @@ module CPU = struct
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
     <span data-count="4">{</span> cpu with hand = cpu.hand @ cards }
 
-  (* let play_card (cpu : t) (card : UnoCardInstance.t) : t =
-    if UnoCard.is_playable (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) (UnoCardInstance.get_color card) (UnoCardInstance.get_value card) then
-      cpu
-    else
-      cpu
-      FILLER IMPLEMENTATION, might not need *)
   
       let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
           <span data-count="3">m</span>atch cpu.diff with

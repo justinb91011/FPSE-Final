@@ -1,5 +1,3 @@
-
-
 module type Game = sig
   module Player : Player
   (** [Player] represents the human player module included in the game. *)
