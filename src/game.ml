@@ -78,14 +78,14 @@ module Game = struct
           | 0 (* Player1 played Reverse *) -> (-1, 2)  (* direction = -1, turn = CPU#2 (index 2) *)
           | 1 (* CPU1 played Reverse *) -> (-1, 0)    (* direction = -1, turn = Player1 (index 0) *)
           | 2 (* CPU2 played Reverse *) -> (-1, 1)    (* direction = -1, turn = CPU#1 (index 1) *)
-          | _ -> (state.direction, state.current_player_index)
+          | _ -> (state.direction, state.current_player_index) [@coverage off]
         else
           (* Currently counterclockwise (direction = -1) *)
           match who_played with
           | 0 (* Player1 played Reverse *) -> (1, 1)  (* direction = 1, turn = CPU#1 (index 1) *)
           | 1 (* CPU1 played Reverse *) -> (1, 2)     (* direction = 1, turn = CPU#2 (index 2) *)
           | 2 (* CPU2 played Reverse *) -> (1, 0)     (* direction = 1, turn = Player1 (index 0) *)
-          | _ -> (state.direction, state.current_player_index)
+          | _ -> (state.direction, state.current_player_index) [@coverage off]
       in
       { state with direction = new_direction; current_player_index = new_turn }
     | _ ->

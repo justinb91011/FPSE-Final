@@ -20,12 +20,17 @@
  (modules player_tests)
  (libraries core ounit2 player uno_card))
 
- (library
+(library
  (name cpu_tests)
  (modules cpu_tests)
  (libraries core ounit2 cpu uno_card))
 
+(library
+ (name game_tests)
+ (modules game_tests)
+ (libraries core ounit2 game cpu player uno_card deck))
+
 (test 
  (name tests)
  (modules tests)
- (libraries core ounit2 card_tests deck_tests uno_card_tests player_tests cpu_tests))
+ (libraries core ounit2 card_tests deck_tests uno_card_tests player_tests cpu_tests game_tests))

@@ -91,7 +91,6 @@
 <a id="L67"></a><span > </span>
 <a id="L68"></a><span class="visited"> </span>
 <a id="L69"></a><span > </span>
-<a id="L70"></a><span > </span>
 </pre>
       </div>
       <div id="text-layer">
@@ -165,7 +164,6 @@
 <a href="#L67">67</a>
 <a href="#L68">68</a>
 <a href="#L69">69</a>
-<a href="#L70">70</a>
 </pre>
 <pre><code class="ocaml">open Core
 open Uno_card
@@ -180,16 +178,16 @@ module CPU = struct
   }
 
   let create (diff : difficulty) : t =
-    <span data-count="8">{</span> diff; hand = [] }
+    <span data-count="34">{</span> diff; hand = [] }
 
   let get_difficulty (cpu : t) : difficulty =
-    <span data-count="3">c</span>pu.diff
+    <span data-count="5">c</span>pu.diff
 
   let get_hand (cpu : t) : UnoCardInstance.t list = 
-    <span data-count="10">c</span>pu.hand
+    <span data-count="14">c</span>pu.hand
 
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
-    <span data-count="5">{</span> cpu with hand = cpu.hand @ cards }
+    <span data-count="31">{</span> cpu with hand = cpu.hand @ cards }
 
   let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
     <span data-count="4">m</span>atch cpu.diff with
@@ -235,7 +233,6 @@ module CPU = struct
 
   let has_won (cpu : t) : bool =
     <span data-count="2">L</span>ist.is_empty cpu.hand
-
 end
 </code></pre>
       </div>

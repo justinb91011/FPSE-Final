@@ -94,17 +94,17 @@ end
 
 module Make (Card : Card_game_rules) = struct
   
-  <span data-count="0">t</span>ype t = { <span data-count="0">c</span>olor : <span data-count="462">C</span>ard.color; <span data-count="0">v</span>alue : Card.value } [@@deriving compare, equal, sexp] [@@coverage off] 
+  <span data-count="0">t</span>ype t = { <span data-count="0">c</span>olor : <span data-count="504">C</span>ard.color; <span data-count="0">v</span>alue : Card.value } [@@deriving compare, equal, sexp] [@@coverage off] 
   (** [t] represents a card using a combination of [color] and [value]. *)
 
   let create (card_color : Card.color) (card_value : Card.value) = 
-    <span data-count="1012">{</span>color = card_color; value = card_value}
+    <span data-count="2318">{</span>color = card_color; value = card_value}
 
   let get_color (card : t) =
-    <span data-count="51">c</span>ard.color
+    <span data-count="52">c</span>ard.color
 
   let get_value (card : t) =
-    <span data-count="51">c</span>ard.value
+    <span data-count="89">c</span>ard.value
 end
 </code></pre>
       </div>

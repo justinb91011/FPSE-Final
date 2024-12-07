@@ -154,50 +154,50 @@ module Deck = struct
   type t = UnoCardInstance.t list
 
   let create_deck () : t =
-    <span data-count="9">l</span>et rec deck_creator acc values curr_color =
-      <span data-count="1530">m</span>atch curr_color, values with
-      | <span data-count="45">_</span>, [] -&gt; acc
-      | <span data-count="297">U</span>noCard.WildColor, x :: xs -&gt;
-        if (UnoCard.equal_valu<span data-count="297">e</span> x WildValu<span data-count="36">e</span> || UnoCard.equal_valu<span data-count="261">e</span> x DrawFou<span data-count="36">r</span>) then
-          <span data-count="72">d</span>eck_creator ((UnoCardInstance.creat<span data-count="72">e</span> curr_color x) :: acc) xs curr_color
+    <span data-count="21">l</span>et rec deck_creator acc values curr_color =
+      <span data-count="3570">m</span>atch curr_color, values with
+      | <span data-count="105">_</span>, [] -&gt; acc
+      | <span data-count="693">U</span>noCard.WildColor, x :: xs -&gt;
+        if (UnoCard.equal_valu<span data-count="693">e</span> x WildValu<span data-count="84">e</span> || UnoCard.equal_valu<span data-count="609">e</span> x DrawFou<span data-count="84">r</span>) then
+          <span data-count="168">d</span>eck_creator ((UnoCardInstance.creat<span data-count="168">e</span> curr_color x) :: acc) xs curr_color
         else
-          <span data-count="225">d</span>eck_creator acc xs curr_color
-      | <span data-count="1188">_</span>, x :: xs -&gt;
-        if (UnoCard.equal_valu<span data-count="1188">e</span> x WildValu<span data-count="144">e</span> || UnoCard.equal_valu<span data-count="1044">e</span> x DrawFou<span data-count="144">r</span>) then
-          <span data-count="288">d</span>eck_creator acc xs curr_color
+          <span data-count="525">d</span>eck_creator acc xs curr_color
+      | <span data-count="2772">_</span>, x :: xs -&gt;
+        if (UnoCard.equal_valu<span data-count="2772">e</span> x WildValu<span data-count="336">e</span> || UnoCard.equal_valu<span data-count="2436">e</span> x DrawFou<span data-count="336">r</span>) then
+          <span data-count="672">d</span>eck_creator acc xs curr_color
         else
-          <span data-count="900">d</span>eck_creator ((UnoCardInstance.creat<span data-count="900">e</span> curr_color x) :: acc) xs curr_color
+          <span data-count="2100">d</span>eck_creator ((UnoCardInstance.creat<span data-count="2100">e</span> curr_color x) :: acc) xs curr_color
       in
     let colors = [UnoCard.Red; UnoCard.Yellow; UnoCard.Green; UnoCard.Blue; UnoCard.WildColor] in
     let numbers =
       List.concat_map
         ~f:(fun x -&gt;
-          <span data-count="90">i</span>f x &gt; 0 then <span data-count="81">[</span>UnoCard.Number x; Number x]
-          else <span data-count="9">[</span>Number x])
-        (List.ini<span data-count="9">t</span> 10 ~f:(fun x -&gt; <span data-count="90">x</span>))
+          <span data-count="210">i</span>f x &gt; 0 then <span data-count="189">[</span>UnoCard.Number x; Number x]
+          else <span data-count="21">[</span>Number x])
+        (List.ini<span data-count="21">t</span> 10 ~f:(fun x -&gt; <span data-count="210">x</span>))
     in
-    <span data-count="9">l</span>et special_values = [UnoCard.Skip; Skip; Reverse; Reverse; 
+    <span data-count="21">l</span>et special_values = [UnoCard.Skip; Skip; Reverse; Reverse; 
                           DrawTwo; DrawTwo; 
                           DrawFour; DrawFour; DrawFour; DrawFour; 
                           WildValue; WildValue; WildValue; WildValue] in
     let values = numbers @ special_values in
-    List.rev (List.fold_lef<span data-count="9">t</span> ~init:[] colors ~f:(fun acc color -&gt; <span data-count="45">d</span>eck_creator acc values color))
+    List.rev (List.fold_lef<span data-count="21">t</span> ~init:[] colors ~f:(fun acc color -&gt; <span data-count="105">d</span>eck_creator acc values color))
 
   let shuffle (deck : t) : t = 
-    <span data-count="1">L</span>ist.permute deck
+    <span data-count="13">L</span>ist.permute deck
   
   let draw_card (deck : t) : UnoCardInstance.t * t =
-    <span data-count="5">m</span>atch deck with
+    <span data-count="17">m</span>atch deck with
     | <span data-count="1">[</span>] -&gt; failwith "Cannot draw from an empty deck."
-    | <span data-count="4">t</span>op_card :: rest -&gt; (top_card, rest)
+    | <span data-count="16">t</span>op_card :: rest -&gt; (top_card, rest)
 
   let draw_cards n (deck : t) : UnoCardInstance.t list * t =
-    <span data-count="3">l</span>et rec draw acc n deck = 
-      <span data-count="78">i</span>f n = 0 then <span data-count="2">(</span>List.re<span data-count="2">v</span> acc, deck)
+    <span data-count="40">l</span>et rec draw acc n deck = 
+      <span data-count="375">i</span>f n = 0 then <span data-count="39">(</span>List.re<span data-count="39">v</span> acc, deck)
       else
-        <span data-count="76">m</span>atch deck with
+        <span data-count="336">m</span>atch deck with
         | <span data-count="1">[</span>] -&gt; failwith "Not enough cards to draw."
-        | <span data-count="75">t</span>op_card :: rest -&gt; draw (top_card :: acc) (n - 1) rest
+        | <span data-count="335">t</span>op_card :: rest -&gt; draw (top_card :: acc) (n - 1) rest
     in
     draw [] n deck
 

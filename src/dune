@@ -53,4 +53,5 @@
   (name game)
   (modules game)
   (libraries core card uno_card cpu player deck)
+  (preprocess (pps bisect_ppx))
 )

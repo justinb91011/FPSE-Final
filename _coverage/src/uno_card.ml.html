@@ -72,7 +72,7 @@
 module UnoCard = struct
   <span data-count="0">t</span>ype color = <span data-count="0">R</span>ed <span data-count="0">|</span> Yellow <span data-count="0">|</span> Green <span data-count="0">|</span> Blue <span data-count="0">|</span> WildColor [@@deriving compare, equal, sexp] [@@coverage off]
 
-  <span data-count="5694">t</span>ype value = <span data-count="1766">N</span>umber of int <span data-count="180">|</span> Skip <span data-count="180">|</span> Reverse <span data-count="180">|</span> DrawTwo <span data-count="180">|</span> DrawFour <span data-count="0">|</span> WildValue [@@deriving compare, equal, sexp]
+  <span data-count="13140">t</span>ype value = <span data-count="4049">N</span>umber of int <span data-count="420">|</span> Skip <span data-count="420">|</span> Reverse <span data-count="420">|</span> DrawTwo <span data-count="420">|</span> DrawFour <span data-count="0">|</span> WildValue [@@deriving compare, equal, sexp]
   
   let is_playable (color1 : color) (value1 : value) (color2 : color) (value2 : value) =
     <span data-count="21">m</span>atch (color1, value1), (color2, value2) with
