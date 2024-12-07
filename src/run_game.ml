@@ -258,6 +258,19 @@ let () =
 
                       let (state, draw_msg) = Game.handle_draw_two (Option.value_exn !Game.game_state) card in
                       Game.game_state := Some state;
+                      
+                      let state = 
+                        match UnoCardInstance.get_value card with
+                        | UnoCard.WildValue | UnoCard.DrawFour ->
+                          let chosen_color_opt = Dream.query request "chosen_color" in
+                          (match Game.handle_wild_card state card chosen_color_opt with
+                           | None ->
+                             Dream.html ~code:400 "You must choose a valid color for the wild card."
+                             |> ignore;
+                             state  (* Preserve state if error *)
+                           | Some new_state -> new_state)
+                        | _ -> state
+                      in
 
                       let _, player = List.hd_exn state.players in
                       if Player.has_won player then
