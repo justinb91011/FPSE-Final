@@ -57,6 +57,17 @@ let next_player_index state =
   let num_players = List.length state.players + List.length state.cpus in
   (state.current_player_index + state.direction + num_players) mod num_players
 
+(* Function to handle the skip card logic *)
+let handle_skip_card state played_card =
+  let value = UnoCardInstance.get_value played_card in
+  match value with
+  | Skip ->
+    (* Skip the next player's turn by advancing once more *)
+    { state with current_player_index = next_player_index state }
+  | _ ->
+    (* If not a skip card, do nothing *)
+    state
+
 (* Modified play_cpu_turn to return (new_state, card, cpu_index) *)
 let play_cpu_turn state =
   let cpu_index = state.current_player_index in
@@ -120,7 +131,6 @@ let () =
               let hand = Player.get_hand player in
 
               if any_playable_card hand top_discard then
-                (* The player does have a playable card *)
                 begin
                   if card_index < 0 || card_index >= List.length hand then
                     Dream.html ~code:400 "Invalid card index."
@@ -139,6 +149,13 @@ let () =
                         current_player_index = 1;
                       } in
                       game_state := Some state;
+
+                      (* Handle skip card if played *)
+                      let state = handle_skip_card (Option.value_exn !game_state) card in
+                      game_state := Some state;
+
+                      (* Check if player has won after handling skip *)
+                      let _, player = List.hd_exn state.players in
                       if Player.has_won player then
                         Dream.html "Player1 has won the game. Game over."
                       else 
@@ -175,17 +192,26 @@ let () =
                   } in
                   game_state := Some state;
 
-                  let top_discard = List.hd_exn state.discard_pile in
-                  let top_color = UnoCardInstance.get_color top_discard in
-                  let top_value = UnoCardInstance.get_value top_discard in
-                  let top_card_str =
-                    Printf.sprintf "%s %s"
-                      (Sexp.to_string (UnoCard.sexp_of_color top_color))
-                      (Sexp.to_string (UnoCard.sexp_of_value top_value))
-                  in
-                  Dream.html (Printf.sprintf
-                    "No playable card in your hand; you drew %s and played it! Top card: %s"
-                    drawn_card_str top_card_str)
+                  (* Handle skip if the drawn card played is skip *)
+                  let state = handle_skip_card (Option.value_exn !game_state) drawn_card in
+                  game_state := Some state;
+
+                  (* Check if player has won after possibly skipping *)
+                  let _, player = List.hd_exn state.players in
+                  if Player.has_won player then
+                    Dream.html "Player1 has won the game. Game over."
+                  else
+                    let top_discard = List.hd_exn state.discard_pile in
+                    let top_color = UnoCardInstance.get_color top_discard in
+                    let top_value = UnoCardInstance.get_value top_discard in
+                    let top_card_str =
+                      Printf.sprintf "%s %s"
+                        (Sexp.to_string (UnoCard.sexp_of_color top_color))
+                        (Sexp.to_string (UnoCard.sexp_of_value top_value))
+                    in
+                    Dream.html (Printf.sprintf
+                      "No playable card in your hand; you drew %s and played it! Top card: %s"
+                      drawn_card_str top_card_str)
                 else
                   (* Keep the drawn card and next turn *)
                   let state = { state with
@@ -237,11 +263,14 @@ let () =
         else
           let (new_state, chosen_card, cpu_index) = play_cpu_turn state in
           game_state := Some new_state;
-    
+
           let new_top = List.hd_exn new_state.discard_pile in
           if UnoCardInstance.equal chosen_card new_top then
             (* CPU played the chosen_card *)
-            let (_, updated_cpu) = List.nth_exn new_state.cpus (cpu_index - 1) in
+            let state = handle_skip_card (Option.value_exn !game_state) chosen_card in
+            game_state := Some state;
+    
+            let (_, updated_cpu) = List.nth_exn state.cpus (cpu_index - 1) in
             if CPU.has_won updated_cpu then
               Dream.html (Printf.sprintf "CPU%d has won the game. Game over." cpu_index)
             else 
