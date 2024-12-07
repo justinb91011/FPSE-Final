@@ -68,6 +68,33 @@ let handle_skip_card state played_card =
     (* If not a skip card, do nothing *)
     state
 
+(* Function to handle the reverse card logic *)
+let handle_reverse_card state played_card who_played =
+  let value = UnoCardInstance.get_value played_card in
+  match value with
+  | Reverse ->
+    (* Determine new direction and next turn based on who played and current direction *)
+    let new_direction, new_turn =
+      if state.direction = 1 then
+        (* Currently clockwise *)
+        match who_played with
+        | 0 (* Player1 played Reverse *) -> (-1, 2)  (* direction = -1, turn = CPU#2 (index 2) *)
+        | 1 (* CPU1 played Reverse *) -> (-1, 0)    (* direction = -1, turn = Player1 (index 0) *)
+        | 2 (* CPU2 played Reverse *) -> (-1, 1)    (* direction = -1, turn = CPU#1 (index 1) *)
+        | _ -> (state.direction, state.current_player_index)
+      else
+        (* Currently counterclockwise (direction = -1) *)
+        match who_played with
+        | 0 (* Player1 played Reverse *) -> (1, 1)  (* direction = 1, turn = CPU#1 (index 1) *)
+        | 1 (* CPU1 played Reverse *) -> (1, 2)     (* direction = 1, turn = CPU#2 (index 2) *)
+        | 2 (* CPU2 played Reverse *) -> (1, 0)     (* direction = 1, turn = Player1 (index 0) *)
+        | _ -> (state.direction, state.current_player_index)
+    in
+    { state with direction = new_direction; current_player_index = new_turn }
+  | _ ->
+    (* If not a reverse card, do nothing *)
+    state
+
 (* Modified play_cpu_turn to return (new_state, card, cpu_index) *)
 let play_cpu_turn state =
   let cpu_index = state.current_player_index in
@@ -154,7 +181,11 @@ let () =
                       let state = handle_skip_card (Option.value_exn !game_state) card in
                       game_state := Some state;
 
-                      (* Check if player has won after handling skip *)
+                      (* Player index who played is always 0 here *)
+                      let state = handle_reverse_card (Option.value_exn !game_state) card 0 in
+                      game_state := Some state;
+
+                      (* Check if player has won after handling skip and reverse *)
                       let _, player = List.hd_exn state.players in
                       if Player.has_won player then
                         Dream.html "Player1 has won the game. Game over."
@@ -196,7 +227,11 @@ let () =
                   let state = handle_skip_card (Option.value_exn !game_state) drawn_card in
                   game_state := Some state;
 
-                  (* Check if player has won after possibly skipping *)
+                  (* Player played so who_played=0 *)
+                  let state = handle_reverse_card (Option.value_exn !game_state) drawn_card 0 in
+                  game_state := Some state;
+
+                  (* Check if player has won after possibly skipping and reversing *)
                   let _, player = List.hd_exn state.players in
                   if Player.has_won player then
                     Dream.html "Player1 has won the game. Game over."
@@ -268,6 +303,10 @@ let () =
           if UnoCardInstance.equal chosen_card new_top then
             (* CPU played the chosen_card *)
             let state = handle_skip_card (Option.value_exn !game_state) chosen_card in
+            game_state := Some state;
+
+            (* CPU played, who_played = cpu_index (1 or 2) *)
+            let state = handle_reverse_card (Option.value_exn !game_state) chosen_card cpu_index in
             game_state := Some state;
     
             let (_, updated_cpu) = List.nth_exn state.cpus (cpu_index - 1) in
