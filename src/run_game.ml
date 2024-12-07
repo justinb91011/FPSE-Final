@@ -3,8 +3,9 @@ open Uno_card
 open Deck
 open Player
 open Cpu
+open Game
 
-type game_state = {
+(* type game_state = {
   deck : Deck.t;
   discard_pile : UnoCardInstance.t list;
   players : (string * Player.t) list;
@@ -201,9 +202,9 @@ let play_cpu_turn state =
     current_player_index = next_player_index state
   } in
 
-  (new_state, card, cpu_index)
+  (new_state, card, cpu_index) *)
 
-let () = initialize_game ()
+let () = Game.initialize_game ()
 
 let () =
   Dream.run
@@ -213,7 +214,7 @@ let () =
 
     (* Handle the player's turn *)
     Dream.post "/play" (fun request ->
-      match !game_state with
+      match !Game.game_state with
       | None -> Dream.html "Game not initialized."
       | Some state ->
         if state.current_player_index <> 0 then
@@ -230,7 +231,7 @@ let () =
               let top_discard = List.hd_exn state.discard_pile in
               let hand = Player.get_hand player in
 
-              if any_playable_card hand top_discard then
+              if Game.any_playable_card hand top_discard then
                 begin
                   if card_index < 0 || card_index >= List.length hand then
                     Dream.html ~code:400 "Invalid card index."
@@ -247,16 +248,16 @@ let () =
                         players = [(player_name, player)];
                         current_player_index = 1;
                       } in
-                      game_state := Some state;
+                      Game.game_state := Some state;
 
-                      let state = handle_skip_card (Option.value_exn !game_state) card in
-                      game_state := Some state;
+                      let state = Game.handle_skip_card (Option.value_exn !Game.game_state) card in
+                      Game.game_state := Some state;
 
-                      let state = handle_reverse_card (Option.value_exn !game_state) card 0 in
-                      game_state := Some state;
+                      let state = Game.handle_reverse_card (Option.value_exn !Game.game_state) card 0 in
+                      Game.game_state := Some state;
 
-                      let (state, draw_msg) = handle_draw_two (Option.value_exn !game_state) card in
-                      game_state := Some state;
+                      let (state, draw_msg) = Game.handle_draw_two (Option.value_exn !Game.game_state) card in
+                      Game.game_state := Some state;
 
                       let _, player = List.hd_exn state.players in
                       if Player.has_won player then
@@ -296,16 +297,16 @@ let () =
                     players = [(player_name, player)];
                     current_player_index = 1;
                   } in
-                  game_state := Some state;
+                  Game.game_state := Some state;
 
-                  let state = handle_skip_card (Option.value_exn !game_state) drawn_card in
-                  game_state := Some state;
+                  let state = Game.handle_skip_card (Option.value_exn !Game.game_state) drawn_card in
+                  Game.game_state := Some state;
 
-                  let state = handle_reverse_card (Option.value_exn !game_state) drawn_card 0 in
-                  game_state := Some state;
+                  let state = Game.handle_reverse_card (Option.value_exn !Game.game_state) drawn_card 0 in
+                  Game.game_state := Some state;
 
-                  let (state, draw_msg) = handle_draw_two (Option.value_exn !game_state) drawn_card in
-                  game_state := Some state;
+                  let (state, draw_msg) = Game.handle_draw_two (Option.value_exn !Game.game_state) drawn_card in
+                  Game.game_state := Some state;
 
                   let _, player = List.hd_exn state.players in
                   if Player.has_won player then
@@ -332,13 +333,13 @@ let () =
                     players = [(player_name, player)];
                     current_player_index = 1;
                   } in
-                  game_state := Some state;
+                  Game.game_state := Some state;
                   Dream.html (Printf.sprintf
                     "No playable card in your hand; you drew %s and kept it. Turn ends."
                     drawn_card_str));
 
     Dream.get "/" (fun _ ->
-      match !game_state with
+      match !Game.game_state with
       | None -> Dream.html "Game not initialized."
       | Some state ->
         let top_discard = List.hd_exn state.discard_pile in
@@ -367,25 +368,25 @@ let () =
     );
 
     Dream.post "/cpu_turn" (fun _ ->
-      match !game_state with
+      match !Game.game_state with
       | None -> Dream.html "Game not initialized."
       | Some state ->
         if state.current_player_index = 0 then
           Dream.html "It's the player's turn."
         else
-          let (new_state, chosen_card, cpu_index) = play_cpu_turn state in
-          game_state := Some new_state;
+          let (new_state, chosen_card, cpu_index) = Game.play_cpu_turn state in
+          Game.game_state := Some new_state;
 
           let new_top = List.hd_exn new_state.discard_pile in
           if UnoCardInstance.equal chosen_card new_top then
-            let state = handle_skip_card (Option.value_exn !game_state) chosen_card in
-            game_state := Some state;
+            let state = Game.handle_skip_card (Option.value_exn !Game.game_state) chosen_card in
+            Game.game_state := Some state;
 
-            let state = handle_reverse_card (Option.value_exn !game_state) chosen_card cpu_index in
-            game_state := Some state;
+            let state = Game.handle_reverse_card (Option.value_exn !Game.game_state) chosen_card cpu_index in
+            Game.game_state := Some state;
 
-            let (state, draw_msg) = handle_draw_two (Option.value_exn !game_state) chosen_card in
-            game_state := Some state;
+            let (state, draw_msg) = Game.handle_draw_two (Option.value_exn !Game.game_state) chosen_card in
+            Game.game_state := Some state;
 
             let (_, updated_cpu) = List.nth_exn state.cpus (cpu_index - 1) in
             if CPU.has_won updated_cpu then
@@ -408,7 +409,7 @@ let () =
     );
 
     Dream.get "/cpu_hands" (fun _ ->
-      match !game_state with
+      match !Game.game_state with
       | None -> Dream.html "Game not initialized."
       | Some state ->
         let cpu_hands =

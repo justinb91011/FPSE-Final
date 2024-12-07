@@ -1,54 +1,40 @@
-module type Game = sig
-  module Player : Player
-  (** [Player] represents the human player module included in the game. *)
+open Core
+open Uno_card
+open Deck
+open Player
+open Cpu
 
-  module CPU : CPU
-  (** [CPU] represents the CPU player module included in the game. *)
+module Game : sig
+    type game_state = {
+        deck : Deck.t;
+        discard_pile : UnoCardInstance.t list;
+        players : (string * Player.t) list;
+        cpus : (string * CPU.t) list;
+        current_player_index : int;
+        direction : int;  (* 1 for clockwise, -1 for counterclockwise *)
+    }
 
-  type t
-  (** [t] represents the state of the game. *)
+    val initialize_game : unit -> unit
+    (** [initialize_game ()] sets up the initial state of the game, including the player, CPUs, and the deck. *)
 
-  val init : players:int -> difficulty:CPU.difficulty list -> t
-  (** [init players difficulty] initializes the game state with the specified number of players
-      (1 human player and the rest CPU players) and a list of CPU difficulties. *)
+    val next_player_index : game_state -> int
+    (** [next_player_index state] returns the index of the next player, considering the game's direction and the number of players. *)
 
-  val current_player : t -> int
-  (** [current_player game] returns the index of the current player whose turn it is. *)
+    val handle_skip_card : game_state -> UnoCardInstance.t -> game_state
+    (** [handle_skip_card state played_card] updates the game state if a skip card is played. *)
 
-  val get_player : t -> int -> Player.t option
-  (** [get_player game player_index] returns the [Player.t] instance for the given [player_index]
-      if the player is human, or [None] if it is a CPU. *)
+    val handle_reverse_card : game_state -> UnoCardInstance.t -> int -> game_state
+    (** [handle_reverse_card state played_card who_played] updates the game state if a reverse card is played. *)
 
-  val get_cpu : t -> int -> CPU.t option
-  (** [get_cpu game player_index] returns the [CPU.t] instance for the given [player_index]
-      if the player is a CPU, or [None] if it is the human player. *)
+    val play_cpu_turn : game_state -> game_state * UnoCardInstance.t * int
+    (** [play_cpu_turn state] simulates a turn for the current CPU player and updates the game state. *)
 
-  val top_card : t -> Card.t
-  (** [top_card game] returns the top card of the discard pile, which determines valid plays. *)
-
-  val get_player_hand : t -> int -> Card.t list option
-  (** [get_player_hand game player_index] returns [Some hand] if the caller is authorized to see 
-      their own hand (e.g., the current player), otherwise returns [None]. *)
-
-  val get_opponent_card_counts : t -> int -> int list
-  (** [get_opponent_card_counts game player_index] returns a list of the number of cards held by
-      each opponent relative to [player_index]. For example, if [player_index] is 1, the result
-      excludes player 1's card count but includes counts for all other players. *)
-
-  val draw_card : t -> t
-  (** [draw_card game] updates the game state by making the current player draw a card from the deck. *)
-
-  val play_card : t -> Card.t -> t
-  (** [play_card game card] updates the game state by playing the given [card] for the current player. *)
-
-  val next_turn : t -> t
-  (** [next_turn game] updates the game state to proceed to the next player's turn. *)
-
-  val is_game_over : t -> bool
-  (** [is_game_over game] returns [true] if the game has ended (one player has no cards left), 
-      otherwise [false]. *)
-
-  val get_winner : t -> int option
-  (** [get_winner game] returns [Some player_index] of the winning player if the game is over, 
-      otherwise returns [None]. *)
+    val any_playable_card : UnoCardInstance.t list -> UnoCardInstance.t -> bool
+    (** [any_playable_card hand top_card] checks if any card in the player's hand is playable on the top card of the discard pile. *)
+        
+    val handle_draw_two : game_state -> UnoCardInstance.t -> game_state * string option
+    (** [handle_draw_two state played_card] updates the game state if a draw two card is played. *)
+    
+    val game_state : game_state option ref
+    (** The current state of the game as a mutable reference. *)
 end

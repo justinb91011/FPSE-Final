@@ -39,7 +39,8 @@
    uno_card
    deck
    cpu
-   player)
+   player
+   game)
 )
 
 ; (library
@@ -48,8 +49,8 @@
 ;   (libraries core card cpu)
 ; )
 
-; (library
-;   (name game)
-;   (modules game)
-;   (libraries core card cpu player algorithm deck)
-; )
+(library
+  (name game)
+  (modules game)
+  (libraries core card uno_card cpu player deck)
+)
