@@ -22,7 +22,6 @@ module Game = struct
         (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
     )
     
-
   let initialize_game () =
     let deck = Deck.create_deck () |> Deck.shuffle in
   
@@ -207,69 +206,68 @@ module Game = struct
       in
       resolve_draw_two state 2
     | _ -> (state, None)
-end
 
-
-                      (* let handle_wild_card state played_card chosen_color_opt =
+  let handle_wild_card state played_card chosen_color_opt =
     let value = UnoCardInstance.get_value played_card in
-    match value with
-    | WildValue ->
-      (match chosen_color_opt with
-       | None -> None
-       | Some chosen_color ->
-         let valid_color = match String.lowercase chosen_color with
-           | "red" -> UnoCard.Red
-           | "blue" -> UnoCard.Blue
-           | "green" -> UnoCard.Green
-           | "yellow" -> UnoCard.Yellow
-           | _ -> UnoCard.WildColor
-         in
-         let updated_card = UnoCardInstance.create valid_color WildValue in
-         let new_discard_pile = updated_card :: state.discard_pile in
-         let new_state = { state with
-           discard_pile = new_discard_pile;
-           current_player_index = next_player_index state
-         } in
-         Some new_state)
-    | DrawFour ->
-      (match chosen_color_opt with
-       | None -> None
-       | Some chosen_color ->
-         let valid_color = match String.lowercase chosen_color with
-           | "red" -> UnoCard.Red
-           | "blue" -> UnoCard.Blue
-           | "green" -> UnoCard.Green
-           | "yellow" -> UnoCard.Yellow
-           | _ -> UnoCard.WildColor
-         in
-         let updated_card = UnoCardInstance.create valid_color DrawFour in
-         let new_discard_pile = updated_card :: state.discard_pile in
-         let next_index = next_player_index state in
-         let (drawn_cards, new_deck) = Deck.draw_cards 4 state.deck in
+      match value with
+      | WildValue ->
+        (match chosen_color_opt with
+        | None -> None
+        | Some chosen_color ->
+          let valid_color = match String.lowercase chosen_color with
+            | "red" -> UnoCard.Red
+            | "blue" -> UnoCard.Blue
+            | "green" -> UnoCard.Green
+            | "yellow" -> UnoCard.Yellow
+            | _ -> UnoCard.WildColor
+          in
+          let updated_card = UnoCardInstance.create valid_color WildValue in
+          let new_discard_pile = updated_card :: state.discard_pile in
+          let new_state = { state with
+            discard_pile = new_discard_pile;
+            current_player_index = next_player_index state
+          } in
+          Some new_state)
+      | DrawFour ->
+        (match chosen_color_opt with
+        | None -> None
+        | Some chosen_color ->
+          let valid_color = match String.lowercase chosen_color with
+            | "red" -> UnoCard.Red
+            | "blue" -> UnoCard.Blue
+            | "green" -> UnoCard.Green
+            | "yellow" -> UnoCard.Yellow
+            | _ -> UnoCard.WildColor
+          in
+          let updated_card = UnoCardInstance.create valid_color DrawFour in
+          let new_discard_pile = updated_card :: state.discard_pile in
+          let next_index = next_player_index state in
+          let (drawn_cards, new_deck) = Deck.draw_cards 4 state.deck in
 
-         (* Update the next player's hand *)
-         let new_state =
-           if next_index = 0 then
-             let (pname, p) = List.hd_exn state.players in
-             let p = Player.add_cards p drawn_cards in
-             { state with
-               players = [(pname, p)];
-               discard_pile = new_discard_pile;
-               deck = new_deck;
-               current_player_index = next_player_index state
-             }
-           else
-             let (cname, cpu) = List.nth_exn state.cpus (next_index - 1) in
-             let cpu = CPU.add_cards cpu drawn_cards in
-             let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
-               if i = next_index - 1 then (cname, cpu) else (nm, cc)
-             ) in
-             { state with
-               cpus;
-               discard_pile = new_discard_pile;
-               deck = new_deck;
-               current_player_index = next_player_index state
-             }
-         in
-         Some new_state)
-    | _ -> Some state *)
+          (* Update the next player's hand *)
+          let new_state =
+            if next_index = 0 then
+              let (pname, p) = List.hd_exn state.players in
+              let p = Player.add_cards p drawn_cards in
+              { state with
+                players = [(pname, p)];
+                discard_pile = new_discard_pile;
+                deck = new_deck;
+                current_player_index = next_player_index state
+              }
+            else
+              let (cname, cpu) = List.nth_exn state.cpus (next_index - 1) in
+              let cpu = CPU.add_cards cpu drawn_cards in
+              let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
+                if i = next_index - 1 then (cname, cpu) else (nm, cc)
+              ) in
+              { state with
+                cpus;
+                discard_pile = new_discard_pile;
+                deck = new_deck;
+                current_player_index = next_player_index state
+              }
+          in
+          Some new_state)
+      | _ -> Some state
+  end

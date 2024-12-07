@@ -21,5 +21,4 @@ module Player : sig
 
   val has_won : t -> bool
   (** [has_won player] returns [true] if the player has no cards left, [false] otherwise. *)
-
 end

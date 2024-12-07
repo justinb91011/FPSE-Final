@@ -11,5 +11,4 @@ module type Algorithm = sig
     - [opponent_counts]: The number of cards each opponent has.
     - [depth]: The depth to search.
     - [is_maximizing]: Whether the current player is maximizing or minimizing the ranking. *)
-  
 end

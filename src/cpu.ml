@@ -66,5 +66,4 @@ module CPU = struct
 
   let has_won (cpu : t) : bool =
     List.is_empty cpu.hand
-
 end

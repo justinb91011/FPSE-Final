@@ -35,6 +35,9 @@ module Game : sig
     val handle_draw_two : game_state -> UnoCardInstance.t -> game_state * string option
     (** [handle_draw_two state played_card] updates the game state if a draw two card is played. *)
     
+    val handle_wild_card : game_state -> UnoCardInstance.t -> string option -> game_state option
+    (** [handle_wild_card state played_card chosen_color] updates the game state if a wild card is played and a new color is chosen. *)
+    
     val game_state : game_state option ref
     (** The current state of the game as a mutable reference. *)
 end

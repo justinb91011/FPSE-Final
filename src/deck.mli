@@ -21,13 +21,4 @@ module Deck : sig
 
   val remaining_cards : t -> int
   (** [remaining_cards deck] returns the number of cards left in [deck]. *)
-
-  (* val rank_hand : Card.t list -> opponents:int list -> (Card.t * int) list
-  (** [rank_hand hand ~opponents] returns a list of cards from [hand] paired with their ranks. 
-      The ranking is based on [Card.rank_card]. A higher rank indicates a better choice. *)
-
-  val sort_hand_by_rank: Card.t list -> opponents:int list -> Card.t list
-  (** [sort_hand_by_rank hand ~opponents] sorts the given [hand] by rank in descending order 
-      (highest rank is the best choice). *) *)
-
 end
