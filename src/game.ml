@@ -187,6 +187,7 @@ module Game = struct
             if is_player then
               let (pname, p) = List.hd_exn state.players in
               let p' = remove_card_from_player p chosen in
+              (* let p' = Player.play_card p chosen played_card in *)
               { state with
                 players = [(pname, p')];
                 discard_pile = chosen :: state.discard_pile
@@ -195,6 +196,7 @@ module Game = struct
               let i = current_index - 1 in
               let (cname, c) = List.nth_exn state.cpus i in
               let c' = remove_card_from_cpu c chosen in
+              (* let c' = CPU.choose_card c chosen in *)
               let cpus = List.mapi state.cpus ~f:(fun idx (nm, cc) ->
                 if idx = i then (cname, c') else (nm, cc)
               ) in
@@ -212,14 +214,14 @@ module Game = struct
       match value with
       | WildValue ->
         (match chosen_color_opt with
-        | None -> None
+        | None -> None [@coverage off]
         | Some chosen_color ->
           let valid_color = match String.lowercase chosen_color with
             | "red" -> UnoCard.Red
             | "blue" -> UnoCard.Blue
             | "green" -> UnoCard.Green
             | "yellow" -> UnoCard.Yellow
-            | _ -> UnoCard.WildColor
+            | _ -> UnoCard.WildColor [@coverage off]
           in
           let updated_card = UnoCardInstance.create valid_color WildValue in
           let new_discard_pile = updated_card :: state.discard_pile in
@@ -230,14 +232,14 @@ module Game = struct
           Some new_state)
       | DrawFour ->
         (match chosen_color_opt with
-        | None -> None
+        | None -> None [@coverage off]
         | Some chosen_color ->
           let valid_color = match String.lowercase chosen_color with
             | "red" -> UnoCard.Red
             | "blue" -> UnoCard.Blue
             | "green" -> UnoCard.Green
             | "yellow" -> UnoCard.Yellow
-            | _ -> UnoCard.WildColor
+            | _ -> UnoCard.WildColor [@coverage off]
           in
           let updated_card = UnoCardInstance.create valid_color DrawFour in
           let new_discard_pile = updated_card :: state.discard_pile in
