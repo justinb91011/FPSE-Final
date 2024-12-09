@@ -62,7 +62,9 @@ let test_handle_cpu_reverse_card _ =
     (* Assert direction reversed *)
     assert_equal (-1) new_state.Game.direction;
     (* Assert the current player index is updated correctly *)
-    assert_equal 0 new_state.Game.current_player_index;
+    assert_equal 0 new_state.current_player_index;
+    (* Assert the following player index is updated correctly as well. *)
+    assert_equal 2 (Game.next_player_index new_state);
 
     let new_updated_state = {state with current_player_index = 2} in
     let newly_state = Game.handle_reverse_card new_updated_state reverse_card 2 in
@@ -264,12 +266,9 @@ let test_play_cpu_turn _ =
   match !Game.game_state with
     | Some state ->
       let updated_state = {state with current_player_index = 1; direction = 1} in
-      let new_state, _, cpu_index = Game.play_cpu_turn updated_state in
+      let new_state, _, cpu_index, color_chosen = Game.play_cpu_turn updated_state in
+      assert_equal None color_chosen;
       assert_equal 1 cpu_index;
-      printf "new_state:%d\n" (Deck.remaining_cards new_state.deck);
-      printf "old_state:%d\n" (Deck.remaining_cards state.deck);
-      printf "new_state discard:%d\n" (Deck.remaining_cards new_state.discard_pile);
-      printf "old_state discard:%d\n" (Deck.remaining_cards state.discard_pile);
       assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
     | None -> assert_failure "Game not initialized."
 

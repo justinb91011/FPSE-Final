@@ -81,16 +81,20 @@
 <a id="L57"></a><span class="visited"> </span>
 <a id="L58"></a><span > </span>
 <a id="L59"></a><span class="visited"> </span>
-<a id="L60"></a><span > </span>
-<a id="L61"></a><span > </span>
-<a id="L62"></a><span > </span>
+<a id="L60"></a><span class="visited"> </span>
+<a id="L61"></a><span class="visited"> </span>
+<a id="L62"></a><span class="visited"> </span>
 <a id="L63"></a><span > </span>
-<a id="L64"></a><span > </span>
+<a id="L64"></a><span class="visited"> </span>
 <a id="L65"></a><span > </span>
 <a id="L66"></a><span > </span>
 <a id="L67"></a><span > </span>
-<a id="L68"></a><span class="visited"> </span>
+<a id="L68"></a><span > </span>
 <a id="L69"></a><span > </span>
+<a id="L70"></a><span > </span>
+<a id="L71"></a><span > </span>
+<a id="L72"></a><span class="visited"> </span>
+<a id="L73"></a><span > </span>
 </pre>
       </div>
       <div id="text-layer">
@@ -164,6 +168,10 @@
 <a href="#L67">67</a>
 <a href="#L68">68</a>
 <a href="#L69">69</a>
+<a href="#L70">70</a>
+<a href="#L71">71</a>
+<a href="#L72">72</a>
+<a href="#L73">73</a>
 </pre>
 <pre><code class="ocaml">open Core
 open Uno_card
@@ -178,53 +186,57 @@ module CPU = struct
   }
 
   let create (diff : difficulty) : t =
-    <span data-count="66">{</span> diff; hand = [] }
+    <span data-count="68">{</span> diff; hand = [] }
 
   let get_difficulty (cpu : t) : difficulty =
-    <span data-count="5">c</span>pu.diff
+    <span data-count="6">c</span>pu.diff
 
   let get_hand (cpu : t) : UnoCardInstance.t list = 
-    <span data-count="19">c</span>pu.hand
+    <span data-count="21">c</span>pu.hand
 
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
-    <span data-count="67">{</span> cpu with hand = cpu.hand @ cards }
+    <span data-count="68">{</span> cpu with hand = cpu.hand @ cards }
 
-  let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
-    <span data-count="10">m</span>atch cpu.diff with
-    | <span data-count="10">E</span>asy -&gt;
+  let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t * string option =
+    <span data-count="6">m</span>atch cpu.diff with
+    | <span data-count="6">E</span>asy -&gt;
       let playable_cards =
         List.filter ~f:(fun card -&gt;
-            <span data-count="32">U</span>noCard.is_playable
-              (UnoCardInstance.get_colo<span data-count="32">r</span> card) (UnoCardInstance.get_valu<span data-count="32">e</span> card)
-              (UnoCardInstance.get_colo<span data-count="32">r</span> top_card) (UnoCardInstance.get_valu<span data-count="32">e</span> top_card))
+            <span data-count="34">U</span>noCard.is_playable
+              (UnoCardInstance.get_colo<span data-count="34">r</span> card) (UnoCardInstance.get_valu<span data-count="34">e</span> card)
+              (UnoCardInstance.get_colo<span data-count="34">r</span> top_card) (UnoCardInstance.get_valu<span data-count="34">e</span> top_card))
           cpu.hand
       in
-      <span data-count="10">i</span>f List.is_empty playable_cards then
+      <span data-count="11">i</span>f List.is_empty playable_cards then
         (* No playable card in hand, draw a card from the deck *)
-        <span data-count="3">l</span>et drawn_card, updated_deck = Deck.draw_card deck in
+        <span data-count="2">l</span>et drawn_card, updated_deck = Deck.draw_card deck in
         (* Check if the drawn card is playable *)
         <span data-count="3">i</span>f UnoCard.is_playable
              (UnoCardInstance.get_colo<span data-count="3">r</span> drawn_card) (UnoCardInstance.get_valu<span data-count="3">e</span> drawn_card)
              (UnoCardInstance.get_colo<span data-count="3">r</span> top_card) (UnoCardInstance.get_valu<span data-count="3">e</span> top_card)
         then
           (* Drawn card is playable; play it immediately without adding to hand *)
-          <span data-count="1">(</span>drawn_card, updated_deck, cpu)
+          <span data-count="1">(</span>drawn_card, updated_deck, cpu, None)
         else
           (* Drawn card is not playable; add it to the CPU's hand *)
           <span data-count="2">l</span>et updated_cpu = { cpu with hand = drawn_card :: cpu.hand } in
-          (drawn_card, updated_deck, updated_cpu)
+          (drawn_card, updated_deck, updated_cpu, None)
       else
         (* There is at least one playable card in hand, choose one at random *)
-        <span data-count="7">l</span>et chosen_card = List.random_element_exn playable_cards in
-        <span data-count="7">l</span>et rec remove_first_occurrence hand =
-          <span data-count="9">m</span>atch hand with
+        <span data-count="4">l</span>et chosen_card = List.random_element_exn playable_cards in
+        <span data-count="8">l</span>et rec remove_first_occurrence hand =
+          <span data-count="14">m</span>atch hand with
           | [] -&gt; failwith "Card must be in hand. Should not be reached." [@coverage off]
-          | <span data-count="9">c</span> :: rest -&gt;
-            if UnoCardInstance.equal c chosen_card then <span data-count="7">r</span>est
-            else <span data-count="2">c</span> :: remove_first_occurrenc<span data-count="2">e</span> rest
+          | <span data-count="14">c</span> :: rest -&gt;
+            if UnoCardInstance.equal c chosen_card then <span data-count="8">r</span>est
+            else <span data-count="6">c</span> :: remove_first_occurrenc<span data-count="6">e</span> rest
         in
-        let updated_cpu = {cpu with hand = remove_first_occurrenc<span data-count="7">e</span> cpu.hand} in
-        (chosen_card, deck, updated_cpu)
+        let updated_cpu = {cpu with hand = remove_first_occurrenc<span data-count="8">e</span> cpu.hand} in
+        if UnoCard.equal_color (UnoCardInstance.get_colo<span data-count="8">r</span> chosen_card) UnoCard.WildColor then
+          <span data-count="6">l</span>et color_chosen = List.random_element ["Blue"; "Red"; "Green"; "Yellow"] in
+          <span data-count="2">(</span>chosen_card, deck, updated_cpu, color_chosen)
+        else
+          <span data-count="8">(</span>chosen_card, deck, updated_cpu, None)
 
     | Medium -&gt;
       failwith "Medium difficulty not implemented yet." [@coverage off]

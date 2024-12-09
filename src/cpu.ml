@@ -22,7 +22,7 @@ module CPU = struct
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
     { cpu with hand = cpu.hand @ cards }
 
-  let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t =
+  let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t * string option =
     match cpu.diff with
     | Easy ->
       let playable_cards =
@@ -41,11 +41,11 @@ module CPU = struct
              (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
         then
           (* Drawn card is playable; play it immediately without adding to hand *)
-          (drawn_card, updated_deck, cpu)
+          (drawn_card, updated_deck, cpu, None)
         else
           (* Drawn card is not playable; add it to the CPU's hand *)
           let updated_cpu = { cpu with hand = drawn_card :: cpu.hand } in
-          (drawn_card, updated_deck, updated_cpu)
+          (drawn_card, updated_deck, updated_cpu, None)
       else
         (* There is at least one playable card in hand, choose one at random *)
         let chosen_card = List.random_element_exn playable_cards in
@@ -57,7 +57,11 @@ module CPU = struct
             else c :: remove_first_occurrence rest
         in
         let updated_cpu = {cpu with hand = remove_first_occurrence cpu.hand} in
-        (chosen_card, deck, updated_cpu)
+        if UnoCard.equal_color (UnoCardInstance.get_color chosen_card) UnoCard.WildColor then
+          let color_chosen = List.random_element ["Blue"; "Red"; "Green"; "Yellow"] in
+          (chosen_card, deck, updated_cpu, color_chosen)
+        else
+          (chosen_card, deck, updated_cpu, None)
 
     | Medium ->
       failwith "Medium difficulty not implemented yet." [@coverage off]

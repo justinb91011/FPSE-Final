@@ -26,7 +26,7 @@ module Game : sig
     val handle_reverse_card : game_state -> UnoCardInstance.t -> int -> game_state
     (** [handle_reverse_card state played_card who_played] updates the game state if a reverse card is played. *)
 
-    val play_cpu_turn : game_state -> game_state * UnoCardInstance.t * int
+    val play_cpu_turn : game_state -> game_state * UnoCardInstance.t * int * string option
     (** [play_cpu_turn state] simulates a turn for the current CPU player and updates the game state. *)
 
     val any_playable_card : UnoCardInstance.t list -> UnoCardInstance.t -> bool

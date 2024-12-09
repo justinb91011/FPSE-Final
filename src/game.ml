@@ -98,7 +98,8 @@ module Game = struct
     let top_discard = List.hd_exn state.discard_pile in
   
     (* CPU chooses a card *)
-    let card, new_deck, updated_cpu = CPU.choose_card current_cpu top_discard state.deck in
+    let card, new_deck, updated_cpu, color_chosen = CPU.choose_card current_cpu top_discard state.deck in
+
   
     (* Determine if CPU played the card *)
     let card_played = not (List.exists (CPU.get_hand updated_cpu) ~f:(UnoCardInstance.equal card)) in
@@ -123,8 +124,12 @@ module Game = struct
       cpus = updated_cpus;
       current_player_index = next_player_index state
     } in
+
+    (match color_chosen with
+    | Some color -> Printf.printf "CPU %d chose the color: %s\n" cpu_index color
+    | None -> ());
   
-    (new_state, card, cpu_index)
+    (new_state, card, cpu_index, color_chosen)
 
   let remove_card_from_player p card =
     let hand = Player.get_hand p in

@@ -20,7 +20,7 @@ module CPU : sig
   val add_cards : t -> UnoCardInstance.t list -> t
   (** [add_cards cpu cards] adds [cards] to the CPU player's hand and returns the updated CPU. *)
 
-  val choose_card : t -> UnoCardInstance.t -> Deck.t -> UnoCardInstance.t * Deck.t * t
+  val choose_card : t -> UnoCardInstance.t -> Deck.t -> UnoCardInstance.t * Deck.t * t * string option
     (** [choose_card cpu top_card deck] allows the CPU to select a card to play based on the [top_card] 
         and [deck]. The decision depends on the [difficulty]:
         - Easy: Chooses a random playable card or draws if none are available.

@@ -60,7 +60,7 @@ let () =
                       let (state, draw_msg) = Game.handle_draw_two (Option.value_exn !Game.game_state) card in
                       Game.game_state := Some state;
                       
-                      let state = 
+                      let state, color_msg = 
                         match UnoCardInstance.get_value card with
                         | UnoCard.WildValue | UnoCard.DrawFour ->
                           let chosen_color_opt = Dream.query request "chosen_color" in
@@ -68,21 +68,27 @@ let () =
                            | None ->
                              Dream.html ~code:400 "You must choose a valid color for the wild card."
                              |> ignore;
-                             state  (* Preserve state if error *)
-                           | Some new_state -> new_state)
-                        | _ -> state
+                             (state, None)  (* Preserve state if error *)
+                           | Some new_state -> 
+                            let chosen_color = Option.value_exn chosen_color_opt in
+                            (new_state, Some(Printf.sprintf "Color changed to %s." chosen_color)))
+                        | _ -> (state, None)
                       in
-
+                      Game.game_state := Some state;
                       let _, player = List.hd_exn state.players in
                       if Player.has_won player then
                         Dream.html "Player1 has won the game. Game over."
                       else
-                        (* If draw_msg is Some, print both lines, else just "Card played successfully!" *)
-                        (match draw_msg with
-                         | Some m ->
-                           Dream.html (Printf.sprintf "Card played successfully!\n%s" m)
-                         | None ->
-                           Dream.html "Card played successfully!")
+                        (* Respond with appropriate message *)
+                        let base_msg = "Card played successfully!" in
+                        let response_msg =
+                          match draw_msg, color_msg with
+                          | Some draw, Some color -> Printf.sprintf "%s\n%s\n%s" base_msg draw color
+                          | Some draw, None -> Printf.sprintf "%s\n%s" base_msg draw
+                          | None, Some color -> Printf.sprintf "%s\n%s" base_msg color
+                          | None, None -> base_msg
+                        in
+                        Dream.html response_msg
                     else
                       Dream.html ~code:400 "Card is not playable. Please choose a different card."
                 end
@@ -188,7 +194,7 @@ let () =
         if state.current_player_index = 0 then
           Dream.html "It's the player's turn."
         else
-          let (new_state, chosen_card, cpu_index) = Game.play_cpu_turn state in
+          let (new_state, chosen_card, cpu_index, color_chosen) = Game.play_cpu_turn state in
           Game.game_state := Some new_state;
 
           let new_top = List.hd_exn new_state.discard_pile in
@@ -200,6 +206,21 @@ let () =
             Game.game_state := Some state;
 
             let (state, draw_msg) = Game.handle_draw_two (Option.value_exn !Game.game_state) chosen_card in
+            Game.game_state := Some state;
+
+            let state, _ = 
+              match UnoCardInstance.get_value chosen_card with
+              | UnoCard.WildValue | UnoCard.DrawFour ->
+                (match Game.handle_wild_card state chosen_card color_chosen with
+                  | None ->
+                    Dream.html ~code:400 "You must choose a valid color for the wild card."
+                    |> ignore;
+                    (state, None)  (* Preserve state if error *)
+                  | Some new_state -> 
+                  let chosen_color = Option.value_exn color_chosen in
+                  (new_state, Some(Printf.sprintf "Color changed to %s." chosen_color)))
+              | _ -> (state, None)
+            in
             Game.game_state := Some state;
 
             let (_, updated_cpu) = List.nth_exn state.cpus (cpu_index - 1) in
