@@ -214,67 +214,71 @@ module Game = struct
       resolve_draw_two state 2
     | _ -> (state, None)
 
-  let handle_wild_card state played_card chosen_color_opt =
-    let value = UnoCardInstance.get_value played_card in
+    let handle_wild_card state played_card chosen_color_opt =
+      let value = UnoCardInstance.get_value played_card in
       match value with
       | WildValue ->
         (match chosen_color_opt with
-        | None -> None [@coverage off]
-        | Some chosen_color ->
-          let valid_color = match String.lowercase chosen_color with
-            | "red" -> UnoCard.Red
-            | "blue" -> UnoCard.Blue
-            | "green" -> UnoCard.Green
-            | "yellow" -> UnoCard.Yellow
-            | _ -> UnoCard.WildColor [@coverage off]
-          in
-          let updated_card = UnoCardInstance.create valid_color (Number 8) in
-          let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
-          let new_state = { state with
-            discard_pile = new_discard_pile;
-            (* current_player_index = next_player_index state *)
-          } in
-          Some new_state)
+         | None -> 
+           (* Optionally, you can default to a color or return an error *)
+           None
+         | Some chosen_color ->
+           let valid_color = match String.lowercase chosen_color with
+             | "red" -> UnoCard.Red
+             | "blue" -> UnoCard.Blue
+             | "green" -> UnoCard.Green
+             | "yellow" -> UnoCard.Yellow
+             | _ -> UnoCard.WildColor  (* Handle invalid colors more gracefully if needed *)
+           in
+           let updated_card = UnoCardInstance.create valid_color (Number 8) in
+           let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
+           let new_state = { state with
+             discard_pile = new_discard_pile
+             (* Do NOT change current_player_index for WildValue *)
+           } in
+           Some new_state)
       | DrawFour ->
         (match chosen_color_opt with
-        | None -> None [@coverage off]
-        | Some chosen_color ->
-          let valid_color = match String.lowercase chosen_color with
-            | "red" -> UnoCard.Red
-            | "blue" -> UnoCard.Blue
-            | "green" -> UnoCard.Green
-            | "yellow" -> UnoCard.Yellow
-            | _ -> UnoCard.WildColor [@coverage off]
-          in
-          let updated_card = UnoCardInstance.create valid_color DrawFour in
-          let new_discard_pile = updated_card :: state.discard_pile in
-          let next_index = next_player_index state in
-          let (drawn_cards, new_deck) = Deck.draw_cards 4 state.deck in
-
-          (* Update the next player's hand *)
-          let new_state =
-            if next_index = 0 then
-              let (pname, p) = List.hd_exn state.players in
-              let p = Player.add_cards p drawn_cards in
-              { state with
-                players = [(pname, p)];
-                discard_pile = new_discard_pile;
-                deck = new_deck;
-                current_player_index = next_player_index state
-              }
-            else
-              let (cname, cpu) = List.nth_exn state.cpus (next_index - 1) in
-              let cpu = CPU.add_cards cpu drawn_cards in
-              let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
-                if i = next_index - 1 then (cname, cpu) else (nm, cc)
-              ) in
-              { state with
-                cpus;
-                discard_pile = new_discard_pile;
-                deck = new_deck;
-                current_player_index = next_player_index state
-              }
-          in
-          Some new_state)
+         | None -> 
+           (* Optionally, you can default to a color or return an error *)
+           None
+         | Some chosen_color ->
+           let valid_color = match String.lowercase chosen_color with
+             | "red" -> UnoCard.Red
+             | "blue" -> UnoCard.Blue
+             | "green" -> UnoCard.Green
+             | "yellow" -> UnoCard.Yellow
+             | _ -> UnoCard.WildColor  (* Handle invalid colors more gracefully if needed *)
+           in
+           let updated_card = UnoCardInstance.create valid_color DrawFour in
+           let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
+           let target_index = state.current_player_index in
+           let (drawn_cards, new_deck) = Deck.draw_cards 4 state.deck in
+    
+           (* Update the target player's hand *)
+           let new_state =
+             if target_index = 0 then
+               let (pname, p) = List.hd_exn state.players in
+               let p = Player.add_cards p drawn_cards in
+               { state with
+                 players = [(pname, p)];
+                 discard_pile = new_discard_pile;
+                 deck = new_deck;
+                 current_player_index = next_player_index state
+               }
+             else
+               let (_, cpu) = List.nth_exn state.cpus (target_index - 1) in
+               let cpu = CPU.add_cards cpu drawn_cards in
+               let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
+                 if i = target_index - 1 then (nm, cpu) else (nm, cc)
+               ) in
+               { state with
+                 cpus;
+                 discard_pile = new_discard_pile;
+                 deck = new_deck;
+                 current_player_index = next_player_index state
+               }
+           in
+           Some new_state)
       | _ -> Some state
   end
