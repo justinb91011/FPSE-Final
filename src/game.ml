@@ -228,11 +228,11 @@ module Game = struct
             | "yellow" -> UnoCard.Yellow
             | _ -> UnoCard.WildColor [@coverage off]
           in
-          let updated_card = UnoCardInstance.create valid_color WildValue in
-          let new_discard_pile = updated_card :: state.discard_pile in
+          let updated_card = UnoCardInstance.create valid_color (Number 8) in
+          let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
           let new_state = { state with
             discard_pile = new_discard_pile;
-            current_player_index = next_player_index state
+            (* current_player_index = next_player_index state *)
           } in
           Some new_state)
       | DrawFour ->
