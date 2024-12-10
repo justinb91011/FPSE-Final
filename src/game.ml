@@ -228,7 +228,7 @@ module Game = struct
              | "blue" -> UnoCard.Blue
              | "green" -> UnoCard.Green
              | "yellow" -> UnoCard.Yellow
-             | _ -> UnoCard.WildColor  (* Handle invalid colors more gracefully if needed *)
+             | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *)
            in
            let updated_card = UnoCardInstance.create valid_color (Number 8) in
            let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
@@ -248,37 +248,81 @@ module Game = struct
              | "blue" -> UnoCard.Blue
              | "green" -> UnoCard.Green
              | "yellow" -> UnoCard.Yellow
-             | _ -> UnoCard.WildColor  (* Handle invalid colors more gracefully if needed *)
+             | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *)
            in
            let updated_card = UnoCardInstance.create valid_color DrawFour in
            let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
-           let target_index = state.current_player_index in
-           let (drawn_cards, new_deck) = Deck.draw_cards 4 state.deck in
     
-           (* Update the target player's hand *)
-           let new_state =
-             if target_index = 0 then
-               let (pname, p) = List.hd_exn state.players in
-               let p = Player.add_cards p drawn_cards in
-               { state with
-                 players = [(pname, p)];
-                 discard_pile = new_discard_pile;
-                 deck = new_deck;
-                 current_player_index = next_player_index state
-               }
+           (* Recursive function to handle stacking of DrawFour *)
+           let rec resolve_draw_four state stack =
+             let target_index = state.current_player_index in
+             let is_player = (target_index = 0) in
+             let current_hand =
+               if is_player then
+                 Player.get_hand (snd (List.hd_exn state.players))
+               else
+                 CPU.get_hand (snd (List.nth_exn state.cpus (target_index - 1)))
+             in
+             let draw_four_cards = List.filter current_hand ~f:(fun c ->
+               match UnoCardInstance.get_value c with
+               | DrawFour -> true
+               | _ -> false
+             ) in
+    
+             if List.is_empty draw_four_cards then
+               (* No DrawFour to stack: target player draws the total stack and skips their turn *)
+               let (drawn_cards, new_deck) = Deck.draw_cards stack state.deck in
+               let new_state =
+                 if is_player then
+                   let (pname, p) = List.hd_exn state.players in
+                   let p = Player.add_cards p drawn_cards in
+                   { state with
+                     players = [(pname, p)];
+                     discard_pile = new_discard_pile;
+                     deck = new_deck;
+                     current_player_index = next_player_index state
+                   }
+                 else
+                   let (_, cpu) = List.nth_exn state.cpus (target_index - 1) in
+                   let cpu = CPU.add_cards cpu drawn_cards in
+                   let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
+                     if i = target_index - 1 then (nm, cpu) else (nm, cc)
+                   ) in
+                   { state with
+                     cpus;
+                     discard_pile = new_discard_pile;
+                     deck = new_deck;
+                     current_player_index = next_player_index state
+                   }
+               in
+               new_state
              else
-               let (_, cpu) = List.nth_exn state.cpus (target_index - 1) in
-               let cpu = CPU.add_cards cpu drawn_cards in
-               let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
-                 if i = target_index - 1 then (nm, cpu) else (nm, cc)
-               ) in
-               { state with
-                 cpus;
-                 discard_pile = new_discard_pile;
-                 deck = new_deck;
-                 current_player_index = next_player_index state
-               }
+               (* Target player can stack a DrawFour *)
+               let chosen = List.hd_exn draw_four_cards in
+               let state =
+                 if is_player then
+                   let (pname, p) = List.hd_exn state.players in
+                   let p' = remove_card_from_player p chosen in
+                   { state with
+                     players = [(pname, p')];
+                     discard_pile = chosen :: new_discard_pile
+                   }
+                 else
+                   let (_, cpu) = List.nth_exn state.cpus (target_index - 1) in
+                   let c' = remove_card_from_cpu cpu chosen in
+                   let cpus = List.mapi state.cpus ~f:(fun i (nm, cc) ->
+                     if i = target_index - 1 then (nm, c') else (nm, cc)
+                   ) in
+                   { state with cpus; discard_pile = chosen :: new_discard_pile }
+               in
+               let new_stack = stack + 4 in
+               let new_current_player_index = next_player_index state in
+               let state = { state with current_player_index = new_current_player_index } in
+               resolve_draw_four state new_stack
            in
-           Some new_state)
+    
+           (* Start resolving with initial stack of 4 *)
+           let final_state = resolve_draw_four { state with discard_pile = new_discard_pile } 4 in
+           Some final_state)
       | _ -> Some state
   end
