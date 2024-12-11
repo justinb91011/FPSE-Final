@@ -14,7 +14,8 @@
   ],
   "suffix": ".res.mjs",
   "bs-dependencies": [
-    "@rescript/react"
+    "@rescript/react",
+    "bs-fetch"
   ],
   "bsc-flags": [],
   "jsx": {

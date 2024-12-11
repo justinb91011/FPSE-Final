@@ -14,6 +14,7 @@
   "dependencies": {
     "@rescript/core": "^1.6.1",
     "@rescript/react": "^0.12.1",
+    "bs-fetch": "^0.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rescript": "^11.1.4",
