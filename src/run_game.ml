@@ -5,12 +5,21 @@ open Player
 open Cpu
 open Game
 
+let add_cors_headers next_handler request =
+  let%lwt response = next_handler request in
+  Dream.set_header response "Access-Control-Allow-Origin" "*";
+  Dream.set_header response "Access-Control-Allow-Methods" "GET, POST, OPTIONS";
+  Dream.set_header response "Access-Control-Allow-Headers" "Content-Type";
+  Lwt.return response
+
+
 let () = Game.initialize_game ()
 
 let () =
   Dream.run
     ~interface:"0.0.0.0" ~port:8080
   @@ Dream.logger
+  @@ add_cors_headers
   @@ Dream.router [
 
     (* Handle the player's turn *)
@@ -173,18 +182,21 @@ let () =
 
         let player_name, player = List.hd_exn state.players in
         let hand = Player.get_hand player in
-        let hand_str = String.concat ~sep:", " (
-          List.map hand ~f:(fun card ->
-            let color = UnoCardInstance.get_color card in
-            let value = UnoCardInstance.get_value card in
-            Printf.sprintf "%s %s"
-              (Sexp.to_string (UnoCard.sexp_of_color color))
-              (Sexp.to_string (UnoCard.sexp_of_value value))
-          )
+        let hand_list = List.map hand ~f:(fun card ->
+          let color = UnoCardInstance.get_color card in
+          let value = UnoCardInstance.get_value card in
+          Printf.sprintf "%s %s"
+            (Sexp.to_string (UnoCard.sexp_of_color color))
+            (Sexp.to_string (UnoCard.sexp_of_value value))
         ) in
-        Dream.html (Printf.sprintf
-          "Welcome to UNO, %s!<br>Your hand: %s<br>Top of Discard Pile: %s"
-          player_name hand_str top_card_str)
+        let json_response =
+          `Assoc [
+            ("player_name", `String player_name);
+            ("hand", `List (List.map hand_list ~f:(fun card -> `String card)));
+            ("top_discard", `String top_card_str);
+          ]
+        in
+        Dream.json (Yojson.Safe.to_string json_response)
     );
 
     Dream.post "/cpu_turn" (fun _ ->
