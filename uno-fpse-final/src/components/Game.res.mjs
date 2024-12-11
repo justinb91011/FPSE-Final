@@ -34,6 +34,232 @@ function Game(props) {
     width: "100vw",
     backgroundSize: "cover"
   };
+  var cardMap = Js_dict.fromArray([
+        [
+          "Blue (Number 0)",
+          "/card_images/blue-0-card.png"
+        ],
+        [
+          "Blue (Number 1)",
+          "/card_images/blue-1-card.png"
+        ],
+        [
+          "Blue (Number 2)",
+          "/card_images/blue-2-card.png"
+        ],
+        [
+          "Blue (Number 3)",
+          "/card_images/blue-3-card.png"
+        ],
+        [
+          "Blue (Number 4)",
+          "/card_images/blue-4-card.png"
+        ],
+        [
+          "Blue (Number 5)",
+          "/card_images/blue-5-card.png"
+        ],
+        [
+          "Blue (Number 6)",
+          "/card_images/blue-6-card.png"
+        ],
+        [
+          "Blue (Number 7)",
+          "/card_images/blue-7-card.png"
+        ],
+        [
+          "Blue (Number 8)",
+          "/card_images/blue-8-card.png"
+        ],
+        [
+          "Blue (Number 9)",
+          "/card_images/blue-9-card.png"
+        ],
+        [
+          "Blue Reverse",
+          "/card_images/blue-reverse-card.png"
+        ],
+        [
+          "Blue Skip",
+          "/card_images/blue-skip-card.png"
+        ],
+        [
+          "Blue DrawTwo",
+          "/card_images/blue-draw-two-card.png"
+        ],
+        [
+          "Red (Number 0)",
+          "/card_images/red-0-card.png"
+        ],
+        [
+          "Red (Number 1)",
+          "/card_images/red-1-card.png"
+        ],
+        [
+          "Red (Number 2)",
+          "/card_images/red-2-card.png"
+        ],
+        [
+          "Red (Number 3)",
+          "/card_images/red-3-card.png"
+        ],
+        [
+          "Red (Number 4)",
+          "/card_images/red-4-card.png"
+        ],
+        [
+          "Red (Number 5)",
+          "/card_images/red-5-card.png"
+        ],
+        [
+          "Red (Number 6)",
+          "/card_images/red-6-card.png"
+        ],
+        [
+          "Red (Number 7)",
+          "/card_images/red-7-card.png"
+        ],
+        [
+          "Red (Number 8)",
+          "/card_images/red-8-card.png"
+        ],
+        [
+          "Red (Number 9)",
+          "/card_images/red-9-card.png"
+        ],
+        [
+          "Red Reverse",
+          "/card_images/red-reverse-card.png"
+        ],
+        [
+          "Red Skip",
+          "/card_images/red-skip-card.png"
+        ],
+        [
+          "Red DrawTwo",
+          "/card_images/red-draw-two-card.png"
+        ],
+        [
+          "Yellow (Number 0)",
+          "/card_images/yellow-0-card.png"
+        ],
+        [
+          "Yellow (Number 1)",
+          "/card_images/yellow-1-card.png"
+        ],
+        [
+          "Yellow (Number 2)",
+          "/card_images/yellow-2-card.png"
+        ],
+        [
+          "Yellow (Number 3)",
+          "/card_images/yellow-3-card.png"
+        ],
+        [
+          "Yellow (Number 4)",
+          "/card_images/yellow-4-card.png"
+        ],
+        [
+          "Yellow (Number 5)",
+          "/card_images/yellow-5-card.png"
+        ],
+        [
+          "Yellow (Number 6)",
+          "/card_images/yellow-6-card.png"
+        ],
+        [
+          "Yellow (Number 7)",
+          "/card_images/yellow-7-card.png"
+        ],
+        [
+          "Yellow (Number 8)",
+          "/card_images/yellow-8-card.png"
+        ],
+        [
+          "Yellow (Number 9)",
+          "/card_images/yellow-9-card.png"
+        ],
+        [
+          "Yellow Reverse",
+          "/card_images/yellow-reverse-card.png"
+        ],
+        [
+          "Yellow Skip",
+          "/card_images/yellow-skip-card.png"
+        ],
+        [
+          "Yellow DrawTwo",
+          "/card_images/yellow-draw-two-card.png"
+        ],
+        [
+          "Green (Number 0)",
+          "/card_images/green-0-card.png"
+        ],
+        [
+          "Green (Number 1)",
+          "/card_images/green-1-card.png"
+        ],
+        [
+          "Green (Number 2)",
+          "/card_images/green-2-card.png"
+        ],
+        [
+          "Green (Number 3)",
+          "/card_images/green-3-card.png"
+        ],
+        [
+          "Green (Number 4)",
+          "/card_images/green-4-card.png"
+        ],
+        [
+          "Green (Number 5)",
+          "/card_images/green-5-card.png"
+        ],
+        [
+          "Green (Number 6)",
+          "/card_images/green-6-card.png"
+        ],
+        [
+          "Green (Number 7)",
+          "/card_images/green-7-card.png"
+        ],
+        [
+          "Green (Number 8)",
+          "/card_images/green-8-card.png"
+        ],
+        [
+          "Green (Number 9)",
+          "/card_images/green-9-card.png"
+        ],
+        [
+          "Green Reverse",
+          "/card_images/green-reverse-card.png"
+        ],
+        [
+          "Green Skip",
+          "/card_images/green-skip-card.png"
+        ],
+        [
+          "Green DrawTwo",
+          "/card_images/green-draw-two-card.png"
+        ],
+        [
+          "WildColor DrawFour",
+          "/card_images/wild-draw-four-card.png"
+        ],
+        [
+          "WildColor WildValue",
+          "/card_images/wild-card.png"
+        ]
+      ]);
+  var cardImageUrl = function (card) {
+    var url = Js_dict.get(cardMap, card);
+    if (url !== undefined) {
+      return url;
+    } else {
+      return "/card_images/unknown-card.png";
+    }
+  };
   React.useEffect((function () {
           var fetchGameInfo = function () {
             Js_promise.$$catch((function (param) {
@@ -68,110 +294,139 @@ function Game(props) {
           };
           fetchGameInfo();
         }), []);
-  return JsxRuntime.jsx("div", {
-              children: match[0] ? JsxRuntime.jsxs("div", {
-                      children: [
-                        JsxRuntime.jsx("h2", {
-                              children: "Are you sure you want to quit?",
-                              className: "text-2xl font-semibold mb-4"
+  var tmp;
+  if (match[0]) {
+    tmp = JsxRuntime.jsxs("div", {
+          children: [
+            JsxRuntime.jsx("h2", {
+                  children: "Are you sure you want to quit?",
+                  className: "text-2xl font-semibold mb-4"
+                }),
+            JsxRuntime.jsxs("div", {
+                  children: [
+                    JsxRuntime.jsx(Button.make, {
+                          className: "px-10 py-2 bg-red-500 text-white font-bold rounded",
+                          onClick: (function (param) {
+                              RescriptReactRouter.push("/");
                             }),
-                        JsxRuntime.jsxs("div", {
-                              children: [
-                                JsxRuntime.jsx(Button.make, {
-                                      className: "px-10 py-2 bg-red-500 text-white font-bold rounded",
-                                      onClick: (function (param) {
-                                          RescriptReactRouter.push("/");
-                                        }),
-                                      children: "Yes"
-                                    }),
-                                JsxRuntime.jsx(Button.make, {
-                                      className: "px-10 py-2 bg-green-500 text-white font-bold rounded",
-                                      onClick: (function (param) {
-                                          setShowQuitForm(function (param) {
-                                                return false;
-                                              });
-                                        }),
-                                      children: "No"
-                                    })
-                              ],
-                              className: "flex justify-between mt-6"
-                            })
-                      ],
-                      style: {
-                        backgroundColor: "white",
-                        left: "50%",
-                        padding: "20px",
-                        position: "absolute",
-                        textAlign: "center",
-                        top: "50%",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                        transform: "translate(-50%, -50%)"
-                      }
-                    }) : JsxRuntime.jsxs(JsxRuntime.Fragment, {
-                      children: [
-                        JsxRuntime.jsx(Button.make, {
-                              className: "absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded",
-                              onClick: (function (param) {
-                                  setShowQuitForm(function (param) {
-                                        return true;
-                                      });
-                                }),
-                              children: "Quit"
+                          children: "Yes"
+                        }),
+                    JsxRuntime.jsx(Button.make, {
+                          className: "px-10 py-2 bg-green-500 text-white font-bold rounded",
+                          onClick: (function (param) {
+                              setShowQuitForm(function (param) {
+                                    return false;
+                                  });
                             }),
-                        JsxRuntime.jsx("h1", {
-                              children: "Game Page for " + difficulty + " Difficulty",
-                              style: {
-                                color: "white",
-                                textAlign: "center"
-                              }
-                            }),
-                        playerInfo !== undefined ? JsxRuntime.jsxs(JsxRuntime.Fragment, {
-                                children: [
-                                  JsxRuntime.jsx("div", {
-                                        children: JsxRuntime.jsx("h3", {
-                                              children: "Top of Discard Pile: " + playerInfo[2]
-                                            }),
-                                        style: {
-                                          color: "white",
-                                          left: "50%",
-                                          position: "absolute",
-                                          textAlign: "center",
-                                          top: "50%",
-                                          transform: "translate(-50%, -50%)"
-                                        }
-                                      }),
-                                  JsxRuntime.jsxs("div", {
-                                        children: [
-                                          JsxRuntime.jsx("h3", {
-                                                children: playerInfo[0] + "'s Hand:"
-                                              }),
-                                          JsxRuntime.jsx("ul", {
-                                                children: Belt_List.toArray(List.map((function (card) {
-                                                            return JsxRuntime.jsx("li", {
-                                                                        children: card
-                                                                      }, card);
-                                                          }), playerInfo[1]))
-                                              })
-                                        ],
-                                        style: {
-                                          bottom: "20px",
-                                          color: "white",
-                                          left: "50%",
-                                          position: "absolute",
-                                          textAlign: "center",
-                                          transform: "translateX(-50%)"
-                                        }
-                                      })
-                                ]
-                              }) : JsxRuntime.jsx("p", {
-                                children: "Loading game information...",
-                                style: {
-                                  color: "white"
-                                }
-                              })
-                      ]
+                          children: "No"
+                        })
+                  ],
+                  className: "flex justify-between mt-6"
+                })
+          ],
+          style: {
+            backgroundColor: "white",
+            left: "50%",
+            padding: "20px",
+            position: "absolute",
+            textAlign: "center",
+            top: "50%",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            transform: "translate(-50%, -50%)"
+          }
+        });
+  } else {
+    var tmp$1;
+    if (playerInfo !== undefined) {
+      var top_discard = playerInfo[2];
+      tmp$1 = JsxRuntime.jsxs(JsxRuntime.Fragment, {
+            children: [
+              JsxRuntime.jsx("div", {
+                    children: JsxRuntime.jsx("img", {
+                          style: {
+                            width: "80px"
+                          },
+                          alt: top_discard,
+                          src: cardImageUrl(top_discard)
+                        }),
+                    style: {
+                      left: "50%",
+                      position: "absolute",
+                      textAlign: "center",
+                      top: "50%",
+                      transform: "translate(-50%, -50%)"
+                    }
+                  }),
+              JsxRuntime.jsxs("div", {
+                    children: [
+                      JsxRuntime.jsx("h3", {
+                            children: playerInfo[0] + "'s Hand:"
+                          }),
+                      JsxRuntime.jsx("ul", {
+                            children: Belt_List.toArray(List.map((function (card) {
+                                        return JsxRuntime.jsx("li", {
+                                                    children: JsxRuntime.jsx("img", {
+                                                          style: {
+                                                            width: "80px"
+                                                          },
+                                                          alt: card,
+                                                          src: cardImageUrl(card)
+                                                        })
+                                                  }, card);
+                                      }), playerInfo[1])),
+                            style: {
+                              display: "flex",
+                              listStyle: "none",
+                              padding: "0",
+                              justifyContent: "center",
+                              gap: "10px"
+                            }
+                          })
+                    ],
+                    style: {
+                      bottom: "20px",
+                      color: "white",
+                      left: "50%",
+                      position: "absolute",
+                      textAlign: "center",
+                      transform: "translateX(-50%)"
+                    }
+                  })
+            ]
+          });
+    } else {
+      tmp$1 = JsxRuntime.jsx("p", {
+            children: "Loading game information...",
+            style: {
+              color: "white"
+            }
+          });
+    }
+    tmp = JsxRuntime.jsxs(JsxRuntime.Fragment, {
+          children: [
+            JsxRuntime.jsx(Button.make, {
+                  className: "absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded",
+                  onClick: (function (param) {
+                      setShowQuitForm(function (param) {
+                            return true;
+                          });
                     }),
+                  children: "Quit"
+                }),
+            JsxRuntime.jsx("h1", {
+                  children: "Game Page for " + difficulty + " Difficulty",
+                  style: {
+                    color: "white",
+                    textAlign: "center"
+                  }
+                }),
+            tmp$1
+          ]
+        });
+  }
+  return JsxRuntime.jsx("div", {
+              children: tmp,
               style: backgroundStyle
             });
 }
