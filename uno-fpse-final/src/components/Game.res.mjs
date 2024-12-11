@@ -128,25 +128,23 @@ function Game(props) {
                             }),
                         playerInfo !== undefined ? JsxRuntime.jsxs(JsxRuntime.Fragment, {
                                 children: [
-                                  JsxRuntime.jsxs("div", {
-                                        children: [
-                                          JsxRuntime.jsx("h2", {
-                                                children: "Player: " + playerInfo[0]
-                                              }),
-                                          JsxRuntime.jsx("h3", {
-                                                children: "Top of Discard Pile: " + playerInfo[2]
-                                              })
-                                        ],
+                                  JsxRuntime.jsx("div", {
+                                        children: JsxRuntime.jsx("h3", {
+                                              children: "Top of Discard Pile: " + playerInfo[2]
+                                            }),
                                         style: {
                                           color: "white",
-                                          marginBottom: "50px",
-                                          textAlign: "center"
+                                          left: "50%",
+                                          position: "absolute",
+                                          textAlign: "center",
+                                          top: "50%",
+                                          transform: "translate(-50%, -50%)"
                                         }
                                       }),
                                   JsxRuntime.jsxs("div", {
                                         children: [
                                           JsxRuntime.jsx("h3", {
-                                                children: "Your Hand:"
+                                                children: playerInfo[0] + "'s Hand:"
                                               }),
                                           JsxRuntime.jsx("ul", {
                                                 children: Belt_List.toArray(List.map((function (card) {

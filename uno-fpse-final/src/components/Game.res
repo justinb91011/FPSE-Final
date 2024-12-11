@@ -114,9 +114,11 @@ let make = (~difficulty: string) => {
                 <div style=ReactDOM.Style.make(
                   ~color="white",
                   ~textAlign="center",
-                  ~marginBottom="50px",
+                  ~position="absolute",
+                  ~top="50%",
+                  ~left="50%",
+                  ~transform="translate(-50%, -50%)",
                   ())>
-                  <h2> {React.string("Player: " ++ player_name)} </h2>
                   <h3> {React.string("Top of Discard Pile: " ++ top_discard)} </h3>
                 </div>
                 <div style=ReactDOM.Style.make(
@@ -127,7 +129,7 @@ let make = (~difficulty: string) => {
                   ~color="white",
                   ~textAlign="center",
                   ())>
-                  <h3> {React.string("Your Hand:")} </h3>
+                  <h3> {React.string(player_name ++ "'s Hand:")} </h3>
                   <ul>
                     {
                       React.array(
