@@ -25,17 +25,21 @@ let () =
     (* Handle the player's turn *)
     Dream.post "/play" (fun request ->
       match !Game.game_state with
-      | None -> Dream.html "Game not initialized."
+      | None -> Dream.html "Game not initialized." (* Don't need to return a JSON here because the game will always be initialized before the player's turn *)
       | Some state ->
         if state.current_player_index <> 0 then
-          Dream.html "Not your turn to place a card"
+          let json_response = `Assoc [("error", `String "Not your turn to place a card")] in
+          Dream.json ~code:400 (Yojson.Safe.to_string json_response)
         else
           match Dream.query request "card_index" with
-          | None -> Dream.html "No card selected."
+          | None -> 
+            let json_response = `Assoc [("error", `String "No card selected")] in (* This error should never occur on the frontend only if you ever run the game specifically on the backend *)
+            Dream.json ~code:400 (Yojson.Safe.to_string json_response)
           | Some card_index_str ->
             match Int.of_string_opt card_index_str with
             | None ->
-              Dream.html ~code:400 "Invalid card index."
+              let json_response = `Assoc [("error", `String "Invalid card index")] in (* This error should never occur on the frontend only if you ever run the game specifically on the backend *)
+              Dream.json ~code:400 (Yojson.Safe.to_string json_response)
             | Some card_index ->
               let player_name, player = List.hd_exn state.players in
               let top_discard = List.hd_exn state.discard_pile in
@@ -44,7 +48,8 @@ let () =
               if Game.any_playable_card hand top_discard then
                 begin
                   if card_index < 0 || card_index >= List.length hand then
-                    Dream.html ~code:400 "Invalid card index."
+                    let json_response = `Assoc [("error", `String "Invalid card index")] in
+                    Dream.json ~code:400 (Yojson.Safe.to_string json_response)
                   else
                     let card = List.nth_exn hand card_index in
                     if UnoCard.is_playable
@@ -75,7 +80,8 @@ let () =
                           let chosen_color_opt = Dream.query request "chosen_color" in
                           (match Game.handle_wild_card state card chosen_color_opt with
                            | None ->
-                             Dream.html ~code:400 "You must choose a valid color for the wild card."
+                             let json_response = `Assoc [("error", `String "You must choose a valid color for the wild card")] in
+                             Dream.json ~code:400 (Yojson.Safe.to_string json_response)
                              |> ignore;
                              (state, None)  (* Preserve state if error *)
                            | Some new_state -> 
@@ -86,7 +92,8 @@ let () =
                       Game.game_state := Some state;
                       let _, player = List.hd_exn state.players in
                       if Player.has_won player then
-                        Dream.html "Player1 has won the game. Game over."
+                        let json_response = `Assoc [("message", `String "Player1 has won the game. Game over.")] in
+                        Dream.json (Yojson.Safe.to_string json_response);
                       else
                         (* Respond with appropriate message *)
                         let base_msg = "Card played successfully!" in
@@ -99,7 +106,9 @@ let () =
                         in
                         Dream.html response_msg
                     else
-                      Dream.html ~code:400 "Card is not playable. Please choose a different card."
+                      let json_response = `Assoc [("error", `String "Card is not playable. Please choose a different card")] in
+                      Dream.json ~code:400 (Yojson.Safe.to_string json_response);
+                      
                 end
               else
                 (* No playable cards, draw one *)
@@ -139,11 +148,13 @@ let () =
 
                   let _, player = List.hd_exn state.players in
                   if Player.has_won player then
-                    Dream.html "Player1 has won the game. Game over."
+                    let json_response = `Assoc [("message", `String "Player1 has won the game. Game over.")] in
+                    Dream.json (Yojson.Safe.to_string json_response);
                   else
                     (match draw_msg with
                      | Some m ->
                        (* Print both messages *)
+
                        Dream.html (Printf.sprintf "Card played successfully!\n%s" m)
                      | None ->
                        let top_discard = List.hd_exn state.discard_pile in
