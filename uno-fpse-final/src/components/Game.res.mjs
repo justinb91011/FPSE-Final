@@ -36,6 +36,7 @@ function Game(props) {
     backgroundImage: "url('/gamecolor.jpg')",
     backgroundPosition: "center",
     height: "100vh",
+    overflow: "hidden",
     position: "relative",
     width: "100vw",
     backgroundSize: "cover"
@@ -396,7 +397,8 @@ function Game(props) {
                                                       return JsxRuntime.jsx("li", {
                                                                   children: JsxRuntime.jsx("img", {
                                                                         style: {
-                                                                          width: "80px"
+                                                                          width: "70px",
+                                                                          transform: "rotate(90deg)"
                                                                         },
                                                                         alt: "Card Back",
                                                                         src: "/card_images/back-card.png"
@@ -407,8 +409,9 @@ function Game(props) {
                                                 display: "flex",
                                                 listStyle: "none",
                                                 padding: "0",
+                                                flexDirection: "column",
                                                 justifyContent: "center",
-                                                gap: "10px"
+                                                gap: "1px"
                                               }
                                             })
                                       ],
@@ -420,10 +423,11 @@ function Game(props) {
                         }), match$2[0]),
                   style: {
                     display: "flex",
-                    marginTop: "50px",
+                    paddingRight: "80px",
+                    paddingLeft: "80px",
+                    width: "100%",
                     alignItems: "center",
-                    justifyContent: "center",
-                    gap: "100px"
+                    justifyContent: "space-between"
                   }
                 }),
             JsxRuntime.jsx(Button.make, {
@@ -480,7 +484,7 @@ function Game(props) {
                             listStyle: "none",
                             padding: "0",
                             justifyContent: "center",
-                            gap: "10px"
+                            gap: "1px"
                           }
                         })
                   ],

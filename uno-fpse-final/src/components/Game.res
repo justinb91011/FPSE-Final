@@ -13,6 +13,7 @@ let make = (~difficulty: string) => {
     ~height="100vh",
     ~width="100vw",
     ~position="relative",
+    ~overflow="hidden",
     ()
   );
 
@@ -252,10 +253,11 @@ let make = (~difficulty: string) => {
           <>
             <div style=ReactDOM.Style.make(
               ~display="flex",
-              ~justifyContent="center",
+              ~justifyContent="space-between",
               ~alignItems="center",
-              ~gap="100px",
-              ~marginTop="50px",
+              ~width="100%", /* Ensure the container spans the full width */
+              ~paddingLeft="80px",
+              ~paddingRight="80px",
               ()
             )>
               {
@@ -271,12 +273,13 @@ let make = (~difficulty: string) => {
                          )>
                          <h2>{React.string(cpuName)}</h2>
                          <ul style=ReactDOM.Style.make(
-                           ~listStyle="none",
-                           ~padding="0",
-                           ~display="flex",
-                           ~gap="10px",
-                           ~justifyContent="center",
-                           ()
+                          ~listStyle="none",
+                          ~padding="0",
+                          ~display="flex",
+                          ~flexDirection="column",
+                          ~gap="1px",
+                          ~justifyContent="center",
+                          ()
                          )>
                         {
                           React.array(
@@ -286,7 +289,7 @@ let make = (~difficulty: string) => {
                                   <img
                                     src="/card_images/back-card.png"
                                     alt="Card Back"
-                                    style=ReactDOM.Style.make(~width="80px", ())
+                                    style=ReactDOM.Style.make(~width="70px", ~transform="rotate(90deg)", ())
                                   />
                                 </li>
                               )
@@ -335,7 +338,7 @@ let make = (~difficulty: string) => {
                 ~listStyle="none",
                 ~padding="0",
                 ~display="flex",
-                ~gap="10px",
+                ~gap="1px",
                 ~justifyContent="center",
                 ()
               )>
