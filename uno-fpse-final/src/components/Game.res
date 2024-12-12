@@ -4,6 +4,7 @@ let make = (~difficulty: string) => {
 
   let (showQuitForm, setShowQuitForm) = React.useState(() => false);
   let (playerInfo, setPlayerInfo) = React.useState(() => None);
+  let (cpuPlayers, setCpuPlayers) = React.useState(() => []); // Empty array for CPUs initially
 
   let backgroundStyle = ReactDOM.Style.make(
     ~backgroundImage="url('/gamecolor.jpg')",
@@ -15,9 +16,7 @@ let make = (~difficulty: string) => {
     ()
   );
 
-  // Dictionary mapping card strings to image paths
   let cardMap = Js.Dict.fromArray([
-    // Blue Number Cards
     ("Blue (Number 0)", "/card_images/blue-0-card.png"),
     ("Blue (Number 1)", "/card_images/blue-1-card.png"),
     ("Blue (Number 2)", "/card_images/blue-2-card.png"),
@@ -29,12 +28,10 @@ let make = (~difficulty: string) => {
     ("Blue (Number 8)", "/card_images/blue-8-card.png"),
     ("Blue (Number 9)", "/card_images/blue-9-card.png"),
 
-    // Blue Action Cards
     ("Blue Reverse", "/card_images/blue-reverse-card.png"),
     ("Blue Skip", "/card_images/blue-skip-card.png"),
     ("Blue DrawTwo", "/card_images/blue-draw-two-card.png"),
 
-    // Red Number Cards
     ("Red (Number 0)", "/card_images/red-0-card.png"),
     ("Red (Number 1)", "/card_images/red-1-card.png"),
     ("Red (Number 2)", "/card_images/red-2-card.png"),
@@ -46,12 +43,10 @@ let make = (~difficulty: string) => {
     ("Red (Number 8)", "/card_images/red-8-card.png"),
     ("Red (Number 9)", "/card_images/red-9-card.png"),
 
-    // Red Action Cards
     ("Red Reverse", "/card_images/red-reverse-card.png"),
     ("Red Skip", "/card_images/red-skip-card.png"),
     ("Red DrawTwo", "/card_images/red-draw-two-card.png"),
 
-    // Yellow Number Cards
     ("Yellow (Number 0)", "/card_images/yellow-0-card.png"),
     ("Yellow (Number 1)", "/card_images/yellow-1-card.png"),
     ("Yellow (Number 2)", "/card_images/yellow-2-card.png"),
@@ -63,12 +58,10 @@ let make = (~difficulty: string) => {
     ("Yellow (Number 8)", "/card_images/yellow-8-card.png"),
     ("Yellow (Number 9)", "/card_images/yellow-9-card.png"),
 
-    // Yellow Action Cards
     ("Yellow Reverse", "/card_images/yellow-reverse-card.png"),
     ("Yellow Skip", "/card_images/yellow-skip-card.png"),
     ("Yellow DrawTwo", "/card_images/yellow-draw-two-card.png"),
 
-    // Green Number Cards
     ("Green (Number 0)", "/card_images/green-0-card.png"),
     ("Green (Number 1)", "/card_images/green-1-card.png"),
     ("Green (Number 2)", "/card_images/green-2-card.png"),
@@ -80,12 +73,10 @@ let make = (~difficulty: string) => {
     ("Green (Number 8)", "/card_images/green-8-card.png"),
     ("Green (Number 9)", "/card_images/green-9-card.png"),
 
-    // Green Action Cards
     ("Green Reverse", "/card_images/green-reverse-card.png"),
     ("Green Skip", "/card_images/green-skip-card.png"),
     ("Green DrawTwo", "/card_images/green-draw-two-card.png"),
 
-    // Wild Cards
     ("WildColor DrawFour", "/card_images/wild-draw-four-card.png"),
     ("WildColor WildValue", "/card_images/wild-card.png"),
   ]);
@@ -96,7 +87,7 @@ let make = (~difficulty: string) => {
     | None => "/card_images/unknown-card.png"
     };
 
-  // Fetch game information
+  // Fetch player info from "/"
   React.useEffect(() => {
     let fetchGameInfo = () => {
       Fetch.fetch("http://localhost:8080/")
@@ -108,37 +99,107 @@ let make = (~difficulty: string) => {
            }
          )
       |> Js.Promise.then_(data => {
-           let json = data->Js.Json.decodeObject;
+           let json = data->Js.Json.decodeObject
            switch json {
            | Some(obj) =>
-             let player_name = obj->Js.Dict.get("player_name")->Belt.Option.getExn->Js.Json.decodeString->Belt.Option.getExn;
-             let hand = obj->Js.Dict.get("hand")->Belt.Option.getExn->Js.Json.decodeArray->Belt.Option.getExn
-               |> Array.map(item => item->Js.Json.decodeString->Belt.Option.getExn);
-             let top_discard = obj->Js.Dict.get("top_discard")->Belt.Option.getExn->Js.Json.decodeString->Belt.Option.getExn;
-             setPlayerInfo(_ => Some((player_name, Array.to_list(hand), top_discard)));
-           | None =>
-             Js.log("Invalid JSON format");
-           };
-           Js.Promise.resolve();
-         })
-      |> Js.Promise.catch(_ => {
-           Js.log("Error fetching game information");
-           Js.Promise.resolve();
-         })
-      |> ignore;
-    };
+             let player_name = obj->Js.Dict.get("player_name")
+               ->Belt.Option.getExn
+               ->Js.Json.decodeString
+               ->Belt.Option.getExn
 
-    fetchGameInfo();
-    None;
-  }, []);
+             let hand = obj->Js.Dict.get("hand")
+               ->Belt.Option.getExn
+               ->Js.Json.decodeArray
+               ->Belt.Option.getExn
+               |> Array.map(item => item->Js.Json.decodeString->Belt.Option.getExn)
+
+             let top_discard = obj->Js.Dict.get("top_discard")
+               ->Belt.Option.getExn
+               ->Js.Json.decodeString
+               ->Belt.Option.getExn
+
+             setPlayerInfo(_ => Some((player_name, Array.to_list(hand), top_discard)))
+           | None =>
+             Js.log("Invalid JSON format")
+           }
+
+           Js.Promise.resolve()
+    })
+      |> Js.Promise.catch(_ => {
+           Js.log("Error fetching game information")
+           Js.Promise.resolve()
+         })
+      |> ignore
+    }
+
+    fetchGameInfo()
+    None
+  }, [])
+
+  // Fetch CPU info from "/cpu_hands" once we have player info
+  React.useEffect(() => {
+    switch playerInfo {
+    | None => ()
+    | Some(_) =>
+      Fetch.fetch("http://localhost:8080/cpu_hands")
+      |> Js.Promise.then_(response =>
+           if (response->Fetch.Response.ok) {
+             Fetch.Response.json(response)
+           } else {
+             Js.Promise.reject(Js.Exn.raiseError("Failed to fetch CPU information"))
+           }
+         )
+      |> Js.Promise.then_(data => {
+           let json = data->Js.Json.decodeObject
+           switch json {
+           | Some(obj) =>
+             // Expecting json structure: { "cpu_hands": [ { "name": ..., "num_cards": int, ...}, ...] }
+             let cpu_hands = obj->Js.Dict.get("cpu_hands")
+               ->Belt.Option.getExn
+               ->Js.Json.decodeArray
+               ->Belt.Option.getExn
+
+             let cpus =
+               cpu_hands
+               |> Array.map(cpuJson => {
+                    let cpuObj = cpuJson->Js.Json.decodeObject->Belt.Option.getExn
+                    let cpuName = cpuObj->Js.Dict.get("name")
+                      ->Belt.Option.getExn
+                      ->Js.Json.decodeString
+                      ->Belt.Option.getExn
+                    let num_cards_float = cpuObj->Js.Dict.get("num_cards")
+                      ->Belt.Option.getExn
+                      ->Js.Json.decodeNumber
+                      ->Belt.Option.getExn
+
+                    let num_cards_str = Js.Float.toString(num_cards_float)
+                    let num_cards = int_of_string(num_cards_str)
+                    (cpuName, num_cards)
+                  })
+
+             setCpuPlayers(_ => cpus)
+           | None =>
+             Js.log("Invalid JSON for CPU hands")
+           }
+
+           Js.Promise.resolve()
+    })
+      |> Js.Promise.catch(_ => {
+           Js.log("Error fetching CPU information")
+           Js.Promise.resolve()
+         })
+      |> ignore
+    }
+    None
+  }, [playerInfo])
 
   let handleYesClick = () => {
-    RescriptReactRouter.push("/");
-  };
+    RescriptReactRouter.push("/")
+  }
 
   let handleNoClick = () => {
-    setShowQuitForm(_ => false);
-  };
+    setShowQuitForm(_ => false)
+  }
 
   <div style=backgroundStyle>
     {
@@ -173,76 +234,130 @@ let make = (~difficulty: string) => {
           </div>
         </div>
       ) : (
-        <>
-          <Button
-            onClick={_ => setShowQuitForm(_ => true)}
-            className="absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded"
-          >
-            {React.string("Quit")}
-          </Button>
-          <h1 style=ReactDOM.Style.make(~color="white", ~textAlign="center", ())>
-            {React.string("Game Page for " ++ difficulty ++ " Difficulty")}
-          </h1>
-          {
-            switch playerInfo {
-            | None =>
-              <p style=ReactDOM.Style.make(~color="white", ())>
-                {React.string("Loading game information...")}
-              </p>
-            | Some((player_name, hand, top_discard)) =>
-              <>
-                <div style=ReactDOM.Style.make(
-                  ~position="absolute",
-                  ~top="50%",
-                  ~left="50%",
-                  ~transform="translate(-50%, -50%)",
-                  ~textAlign="center",
-                  ())>
-                  // <h3>{React.string("Top of Discard Pile:")}</h3>
-                  <img
-                    src={cardImageUrl(top_discard)}
-                    alt={top_discard}
-                    style=ReactDOM.Style.make(~width="80px", ())
-                  />
-                </div>
-                <div style=ReactDOM.Style.make(
-                  ~position="absolute",
-                  ~bottom="20px",
-                  ~left="50%",
-                  ~transform="translateX(-50%)",
-                  ~color="white",
-                  ~textAlign="center",
-                  ())>
-                  <h3> {React.string(player_name ++ "'s Hand:")} </h3>
-                  <ul style=ReactDOM.Style.make(
-                    ~listStyle="none",
-                    ~padding="0",
-                    ~display="flex",
-                    ~gap="10px",
-                    ~justifyContent="center",
-                    ()
-                  )>
-                    {
-                      React.array(
-                        hand
-                        |> List.map(card =>
-                             <li key=card>
-                               <img
-                                 src={cardImageUrl(card)}
-                                 alt={card}
-                                 style=ReactDOM.Style.make(~width="80px", ())
-                               />
-                             </li>
-                           )
-                        |> Belt.List.toArray
-                      )
-                    }
-                  </ul>
-                </div>
-              </>
-            }
-          }
-        </>
+        switch playerInfo {
+        | None =>
+          <>
+            <Button
+              onClick={_ => setShowQuitForm(_ => true)}
+              className="absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded"
+            >
+              {React.string("Quit")}
+            </Button>
+            <p style=ReactDOM.Style.make(~color="white", ())>
+              {React.string("Loading game information...")}
+            </p>
+          </>
+
+        | Some((player_name, hand, top_discard)) =>
+          <>
+            <div style=ReactDOM.Style.make(
+              ~display="flex",
+              ~justifyContent="center",
+              ~alignItems="center",
+              ~gap="100px",
+              ~marginTop="50px",
+              ()
+            )>
+              {
+                React.array(
+                  cpuPlayers
+                  |> Array.map(((cpuName, cardCount)) =>
+                       <div
+                         key=cpuName
+                         style=ReactDOM.Style.make(
+                           ~color="white",
+                           ~textAlign="center",
+                           ()
+                         )>
+                         <h2>{React.string(cpuName)}</h2>
+                         <ul style=ReactDOM.Style.make(
+                           ~listStyle="none",
+                           ~padding="0",
+                           ~display="flex",
+                           ~gap="10px",
+                           ~justifyContent="center",
+                           ()
+                         )>
+                        {
+                          React.array(
+                            Belt.Array.range(0, cardCount - 1)
+                            |> Array.map(i =>
+                                <li key=string_of_int(i)>
+                                  <img
+                                    src="/card_images/back-card.png"
+                                    alt="Card Back"
+                                    style=ReactDOM.Style.make(~width="80px", ())
+                                  />
+                                </li>
+                              )
+                          )
+                        }
+
+                         </ul>
+                       </div>
+                     )
+                )
+              }
+            </div>
+
+            <Button
+              onClick={_ => setShowQuitForm(_ => true)}
+              className="absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded"
+            >
+              {React.string("Quit")}
+            </Button>
+            <h1 style=ReactDOM.Style.make(~color="white", ~textAlign="center", ())>
+              {React.string("Game Page for " ++ difficulty ++ " Difficulty")}
+            </h1>
+            <div style=ReactDOM.Style.make(
+              ~position="absolute",
+              ~top="50%",
+              ~left="50%",
+              ~transform="translate(-50%, -50%)",
+              ~textAlign="center",
+              ())>
+              <img
+                src={cardImageUrl(top_discard)}
+                alt={top_discard}
+                style=ReactDOM.Style.make(~width="80px", ())
+              />
+            </div>
+            <div style=ReactDOM.Style.make(
+              ~position="absolute",
+              ~bottom="20px",
+              ~left="50%",
+              ~transform="translateX(-50%)",
+              ~color="white",
+              ~textAlign="center",
+              ())>
+              <h3> {React.string(player_name ++ "'s Hand:")} </h3>
+              <ul style=ReactDOM.Style.make(
+                ~listStyle="none",
+                ~padding="0",
+                ~display="flex",
+                ~gap="10px",
+                ~justifyContent="center",
+                ()
+              )>
+                {
+                  React.array(
+                    hand
+                    |> List.map(card =>
+                         <li key=card>
+                           <img
+                             src={cardImageUrl(card)}
+                             alt={card}
+                             style=ReactDOM.Style.make(~width="80px", ())
+                           />
+                         </li>
+                       )
+                    |> Belt.List.toArray
+                  )
+                }
+              </ul>
+            </div>
+          </>
+        }
       )
     }
   </div>;

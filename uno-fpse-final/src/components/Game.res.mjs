@@ -9,8 +9,10 @@ import * as Js_exn from "rescript/lib/es6/js_exn.js";
 import * as Js_dict from "rescript/lib/es6/js_dict.js";
 import * as Js_json from "rescript/lib/es6/js_json.js";
 import * as Belt_List from "rescript/lib/es6/belt_List.js";
+import * as Belt_Array from "rescript/lib/es6/belt_Array.js";
 import * as Js_promise from "rescript/lib/es6/js_promise.js";
 import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
+import * as Caml_format from "rescript/lib/es6/caml_format.js";
 import * as JsxRuntime from "react/jsx-runtime";
 import * as RescriptReactRouter from "@rescript/react/src/RescriptReactRouter.res.mjs";
 
@@ -26,6 +28,10 @@ function Game(props) {
       });
   var setPlayerInfo = match$1[1];
   var playerInfo = match$1[0];
+  var match$2 = React.useState(function () {
+        return [];
+      });
+  var setCpuPlayers = match$2[1];
   var backgroundStyle = {
     backgroundImage: "url('/gamecolor.jpg')",
     backgroundPosition: "center",
@@ -294,6 +300,43 @@ function Game(props) {
           };
           fetchGameInfo();
         }), []);
+  React.useEffect((function () {
+          if (playerInfo !== undefined) {
+            Js_promise.$$catch((function (param) {
+                    console.log("Error fetching CPU information");
+                    return Promise.resolve();
+                  }), Js_promise.then_((function (data) {
+                        var json = Js_json.decodeObject(data);
+                        if (json !== undefined) {
+                          var cpu_hands = Belt_Option.getExn(Js_json.decodeArray(Belt_Option.getExn(Js_dict.get(json, "cpu_hands"))));
+                          var cpus = $$Array.map((function (cpuJson) {
+                                  var cpuObj = Belt_Option.getExn(Js_json.decodeObject(cpuJson));
+                                  var cpuName = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(cpuObj, "name"))));
+                                  var num_cards_float = Belt_Option.getExn(Js_json.decodeNumber(Belt_Option.getExn(Js_dict.get(cpuObj, "num_cards"))));
+                                  var num_cards_str = num_cards_float.toString();
+                                  var num_cards = Caml_format.int_of_string(num_cards_str);
+                                  return [
+                                          cpuName,
+                                          num_cards
+                                        ];
+                                }), cpu_hands);
+                          setCpuPlayers(function (param) {
+                                return cpus;
+                              });
+                        } else {
+                          console.log("Invalid JSON for CPU hands");
+                        }
+                        return Promise.resolve();
+                      }), Js_promise.then_((function (response) {
+                            if (response.ok) {
+                              return Fetch.$$Response.json(response);
+                            } else {
+                              return Promise.reject(Js_exn.raiseError("Failed to fetch CPU information"));
+                            }
+                          }), fetch("http://localhost:8080/cpu_hands"))));
+          }
+          
+        }), [playerInfo]);
   var tmp;
   if (match[0]) {
     tmp = JsxRuntime.jsxs("div", {
@@ -336,75 +379,53 @@ function Game(props) {
             transform: "translate(-50%, -50%)"
           }
         });
-  } else {
-    var tmp$1;
-    if (playerInfo !== undefined) {
-      var top_discard = playerInfo[2];
-      tmp$1 = JsxRuntime.jsxs(JsxRuntime.Fragment, {
-            children: [
-              JsxRuntime.jsx("div", {
-                    children: JsxRuntime.jsx("img", {
-                          style: {
-                            width: "80px"
-                          },
-                          alt: top_discard,
-                          src: cardImageUrl(top_discard)
-                        }),
-                    style: {
-                      left: "50%",
-                      position: "absolute",
-                      textAlign: "center",
-                      top: "50%",
-                      transform: "translate(-50%, -50%)"
-                    }
-                  }),
-              JsxRuntime.jsxs("div", {
-                    children: [
-                      JsxRuntime.jsx("h3", {
-                            children: playerInfo[0] + "'s Hand:"
-                          }),
-                      JsxRuntime.jsx("ul", {
-                            children: Belt_List.toArray(List.map((function (card) {
-                                        return JsxRuntime.jsx("li", {
-                                                    children: JsxRuntime.jsx("img", {
-                                                          style: {
-                                                            width: "80px"
-                                                          },
-                                                          alt: card,
-                                                          src: cardImageUrl(card)
-                                                        })
-                                                  }, card);
-                                      }), playerInfo[1])),
-                            style: {
-                              display: "flex",
-                              listStyle: "none",
-                              padding: "0",
-                              justifyContent: "center",
-                              gap: "10px"
-                            }
-                          })
-                    ],
-                    style: {
-                      bottom: "20px",
-                      color: "white",
-                      left: "50%",
-                      position: "absolute",
-                      textAlign: "center",
-                      transform: "translateX(-50%)"
-                    }
-                  })
-            ]
-          });
-    } else {
-      tmp$1 = JsxRuntime.jsx("p", {
-            children: "Loading game information...",
-            style: {
-              color: "white"
-            }
-          });
-    }
+  } else if (playerInfo !== undefined) {
+    var top_discard = playerInfo[2];
     tmp = JsxRuntime.jsxs(JsxRuntime.Fragment, {
           children: [
+            JsxRuntime.jsx("div", {
+                  children: $$Array.map((function (param) {
+                          var cpuName = param[0];
+                          return JsxRuntime.jsxs("div", {
+                                      children: [
+                                        JsxRuntime.jsx("h2", {
+                                              children: cpuName
+                                            }),
+                                        JsxRuntime.jsx("ul", {
+                                              children: $$Array.map((function (i) {
+                                                      return JsxRuntime.jsx("li", {
+                                                                  children: JsxRuntime.jsx("img", {
+                                                                        style: {
+                                                                          width: "80px"
+                                                                        },
+                                                                        alt: "Card Back",
+                                                                        src: "/card_images/back-card.png"
+                                                                      })
+                                                                }, String(i));
+                                                    }), Belt_Array.range(0, param[1] - 1 | 0)),
+                                              style: {
+                                                display: "flex",
+                                                listStyle: "none",
+                                                padding: "0",
+                                                justifyContent: "center",
+                                                gap: "10px"
+                                              }
+                                            })
+                                      ],
+                                      style: {
+                                        color: "white",
+                                        textAlign: "center"
+                                      }
+                                    }, cpuName);
+                        }), match$2[0]),
+                  style: {
+                    display: "flex",
+                    marginTop: "50px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "100px"
+                  }
+                }),
             JsxRuntime.jsx(Button.make, {
                   className: "absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded",
                   onClick: (function (param) {
@@ -421,7 +442,77 @@ function Game(props) {
                     textAlign: "center"
                   }
                 }),
-            tmp$1
+            JsxRuntime.jsx("div", {
+                  children: JsxRuntime.jsx("img", {
+                        style: {
+                          width: "80px"
+                        },
+                        alt: top_discard,
+                        src: cardImageUrl(top_discard)
+                      }),
+                  style: {
+                    left: "50%",
+                    position: "absolute",
+                    textAlign: "center",
+                    top: "50%",
+                    transform: "translate(-50%, -50%)"
+                  }
+                }),
+            JsxRuntime.jsxs("div", {
+                  children: [
+                    JsxRuntime.jsx("h3", {
+                          children: playerInfo[0] + "'s Hand:"
+                        }),
+                    JsxRuntime.jsx("ul", {
+                          children: Belt_List.toArray(List.map((function (card) {
+                                      return JsxRuntime.jsx("li", {
+                                                  children: JsxRuntime.jsx("img", {
+                                                        style: {
+                                                          width: "80px"
+                                                        },
+                                                        alt: card,
+                                                        src: cardImageUrl(card)
+                                                      })
+                                                }, card);
+                                    }), playerInfo[1])),
+                          style: {
+                            display: "flex",
+                            listStyle: "none",
+                            padding: "0",
+                            justifyContent: "center",
+                            gap: "10px"
+                          }
+                        })
+                  ],
+                  style: {
+                    bottom: "20px",
+                    color: "white",
+                    left: "50%",
+                    position: "absolute",
+                    textAlign: "center",
+                    transform: "translateX(-50%)"
+                  }
+                })
+          ]
+        });
+  } else {
+    tmp = JsxRuntime.jsxs(JsxRuntime.Fragment, {
+          children: [
+            JsxRuntime.jsx(Button.make, {
+                  className: "absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded",
+                  onClick: (function (param) {
+                      setShowQuitForm(function (param) {
+                            return true;
+                          });
+                    }),
+                  children: "Quit"
+                }),
+            JsxRuntime.jsx("p", {
+                  children: "Loading game information...",
+                  style: {
+                    color: "white"
+                  }
+                })
           ]
         });
   }
