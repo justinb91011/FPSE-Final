@@ -25,7 +25,9 @@ let () =
     (* Handle the player's turn *)
     Dream.post "/play" (fun request ->
       match !Game.game_state with
-      | None -> Dream.html "Game not initialized." (* Don't need to return a JSON here because the game will always be initialized before the player's turn *)
+      | None -> 
+        let json_response = `Assoc [("error", `String "Game not initialized.")] in
+        Dream.json ~code:500 (Yojson.Safe.to_string json_response)
       | Some state ->
         if state.current_player_index <> 0 then
           let json_response = `Assoc [("error", `String "Not your turn to place a card")] in
@@ -104,7 +106,8 @@ let () =
                           | None, Some color -> Printf.sprintf "%s\n%s" base_msg color
                           | None, None -> base_msg
                         in
-                        Dream.html response_msg
+                        let json_response = `Assoc [("message", `String response_msg)] in
+                        Dream.json (Yojson.Safe.to_string json_response);
                     else
                       let json_response = `Assoc [("error", `String "Card is not playable. Please choose a different card")] in
                       Dream.json ~code:400 (Yojson.Safe.to_string json_response);
@@ -153,9 +156,8 @@ let () =
                   else
                     (match draw_msg with
                      | Some m ->
-                       (* Print both messages *)
-
-                       Dream.html (Printf.sprintf "Card played successfully!\n%s" m)
+                       let json_response = `Assoc [("message", `String (Printf.sprintf "Card played successfully!\n%s" m))] in
+                       Dream.json (Yojson.Safe.to_string json_response);
                      | None ->
                        let top_discard = List.hd_exn state.discard_pile in
                        let top_color = UnoCardInstance.get_color top_discard in
@@ -165,22 +167,28 @@ let () =
                            (Sexp.to_string (UnoCard.sexp_of_color top_color))
                            (Sexp.to_string (UnoCard.sexp_of_value top_value))
                        in
-                       Dream.html (Printf.sprintf
-                         "No playable card in your hand; you drew %s and played it! Top card: %s"
-                         drawn_card_str top_card_str))
+                       let json_response = `Assoc [("message", `String (Printf.sprintf
+                       "No playable card in your hand; you drew %s and played it! Top card: %s"
+                       drawn_card_str top_card_str))] in
+                       Dream.json (Yojson.Safe.to_string json_response))
                 else
                   let state = { state with
                     players = [(player_name, player)];
                     current_player_index = 1;
                   } in
                   Game.game_state := Some state;
-                  Dream.html (Printf.sprintf
-                    "No playable card in your hand; you drew %s and kept it. Turn ends."
-                    drawn_card_str));
+                  let json_response = `Assoc [("message", `String (Printf.sprintf
+                  "No playable card in your hand; you drew %s and kept it. Turn ends."
+                  drawn_card_str))] in
+                  Dream.json (Yojson.Safe.to_string json_response));
+                  
 
     Dream.get "/" (fun _ ->
       match !Game.game_state with
-      | None -> Dream.html "Game not initialized."
+      | None -> 
+        let json_response = `Assoc [("error", `String "Game not initialized.")] in
+        Dream.json ~code:500 (Yojson.Safe.to_string json_response)
+        
       | Some state ->
         let top_discard = List.hd_exn state.discard_pile in
         let top_color = UnoCardInstance.get_color top_discard in
@@ -268,23 +276,31 @@ let () =
 
     Dream.get "/cpu_hands" (fun _ ->
       match !Game.game_state with
-      | None -> Dream.html "Game not initialized."
+      | None -> 
+        (* Return an error JSON if the game is not initialized *)
+        let json_response = `Assoc [("error", `String "Game not initialized.")] in
+        Dream.json ~code:500 (Yojson.Safe.to_string json_response)
       | Some state ->
-        let cpu_hands =
+        (* Construct a list of CPU hands with their names, hands, and number of cards *)
+        let cpu_hands = 
           List.map state.cpus ~f:(fun (name, cpu) ->
             let hand = CPU.get_hand cpu in
-            let hand_str = String.concat ~sep:", " (
-              List.map hand ~f:(fun card ->
-                let color = UnoCardInstance.get_color card in
-                let value = UnoCardInstance.get_value card in
-                Printf.sprintf "%s %s"
-                  (Sexp.to_string (UnoCard.sexp_of_color color))
-                  (Sexp.to_string (UnoCard.sexp_of_value value))
-              )
+            let hand_list = List.map hand ~f:(fun card ->
+              let color = UnoCardInstance.get_color card in
+              let value = UnoCardInstance.get_value card in
+              Printf.sprintf "%s %s"
+                (Sexp.to_string (UnoCard.sexp_of_color color))
+                (Sexp.to_string (UnoCard.sexp_of_value value))
             ) in
-            Printf.sprintf "%s's hand: %s" name hand_str
+            `Assoc [
+              ("name", `String name);
+              ("hand", `List (List.map hand_list ~f:(fun card_str -> `String card_str)));
+              ("num_cards", `Int (List.length hand))
+            ]
           )
         in
-        Dream.html (String.concat ~sep:"<br>" cpu_hands)
+        (* Create the final JSON response *)
+        let json_response = `Assoc [("cpu_hands", `List cpu_hands)] in
+        Dream.json (Yojson.Safe.to_string json_response)
     );
   ]
