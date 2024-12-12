@@ -43,11 +43,12 @@
    game)
 (preprocess (pps lwt_ppx bisect_ppx)))
 
-; (library
-;   (name algorithm)
-;   (modules algorithm)
-;   (libraries core card cpu)
-; )
+(library
+  (name algorithm)
+  (modules algorithm)
+  (libraries core card cpu uno_card)
+  (preprocess (pps bisect_ppx))
+)
 
 (library
   (name game)

@@ -186,16 +186,16 @@ module CPU = struct
   }
 
   let create (diff : difficulty) : t =
-    <span data-count="68">{</span> diff; hand = [] }
+    <span data-count="66">{</span> diff; hand = [] }
 
   let get_difficulty (cpu : t) : difficulty =
-    <span data-count="6">c</span>pu.diff
+    <span data-count="4">c</span>pu.diff
 
   let get_hand (cpu : t) : UnoCardInstance.t list = 
-    <span data-count="21">c</span>pu.hand
+    <span data-count="19">c</span>pu.hand
 
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
-    <span data-count="68">{</span> cpu with hand = cpu.hand @ cards }
+    <span data-count="66">{</span> cpu with hand = cpu.hand @ cards }
 
   let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t * string option =
     <span data-count="6">m</span>atch cpu.diff with
@@ -233,10 +233,10 @@ module CPU = struct
         in
         let updated_cpu = {cpu with hand = remove_first_occurrenc<span data-count="8">e</span> cpu.hand} in
         if UnoCard.equal_color (UnoCardInstance.get_colo<span data-count="8">r</span> chosen_card) UnoCard.WildColor then
-          <span data-count="6">l</span>et color_chosen = List.random_element ["Blue"; "Red"; "Green"; "Yellow"] in
-          <span data-count="2">(</span>chosen_card, deck, updated_cpu, color_chosen)
+          <span data-count="7">l</span>et color_chosen = List.random_element ["Blue"; "Red"; "Green"; "Yellow"] in
+          <span data-count="3">(</span>chosen_card, deck, updated_cpu, color_chosen)
         else
-          <span data-count="8">(</span>chosen_card, deck, updated_cpu, None)
+          <span data-count="7">(</span>chosen_card, deck, updated_cpu, None)
 
     | Medium -&gt;
       failwith "Medium difficulty not implemented yet." [@coverage off]
