@@ -481,9 +481,9 @@ function Game(props) {
                                                         src: cardImageUrl(card),
                                                         onClick: (function (param) {
                                                             var isWild = card === "WildColor DrawFour" || card === "WildColor WildValue";
+                                                            var chosenColor = isWild ? prompt("Choose a color: Blue, Red, Green, Yellow") : null;
                                                             var chosenColorParam;
                                                             if (isWild) {
-                                                              var chosenColor = prompt("Choose a color: Blue, Red, Green, Yellow");
                                                               if (chosenColor == null) {
                                                                 console.log("No color chosen, aborting play.");
                                                                 chosenColorParam = undefined;
@@ -501,6 +501,9 @@ function Game(props) {
                                                             }
                                                             if (chosenColorParam !== undefined) {
                                                               var url = "http://localhost:8080/play?card_index=" + String(index) + chosenColorParam;
+                                                              var postInit = {
+                                                                method: "POST"
+                                                              };
                                                               Js_promise.$$catch((function (param) {
                                                                       alert("Failed to play card.");
                                                                       return Promise.resolve();
@@ -524,13 +527,16 @@ function Game(props) {
                                                                           return Promise.resolve();
                                                                         }), Js_promise.then_((function (response) {
                                                                               return Fetch.$$Response.json(response);
-                                                                            }), fetch(url, Fetch.RequestInit.make("Post", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)()))));
+                                                                            }), fetch(url, postInit))));
                                                               return ;
                                                             }
                                                             if (isWild) {
                                                               return ;
                                                             }
                                                             var url$1 = "http://localhost:8080/play?card_index=" + String(index);
+                                                            var postInit$1 = {
+                                                              method: "POST"
+                                                            };
                                                             Js_promise.$$catch((function (param) {
                                                                     alert("Failed to play card.");
                                                                     return Promise.resolve();
@@ -554,7 +560,7 @@ function Game(props) {
                                                                         return Promise.resolve();
                                                                       }), Js_promise.then_((function (response) {
                                                                             return Fetch.$$Response.json(response);
-                                                                          }), fetch(url$1, Fetch.RequestInit.make("Post", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)()))));
+                                                                          }), fetch(url$1, postInit$1))));
                                                           })
                                                       })
                                                 }, card);

@@ -214,12 +214,18 @@ let make = (~difficulty: string) => {
     let isWild =
       card == "WildColor DrawFour" || card == "WildColor WildValue"
 
+    let chosenColor =
+      if isWild {
+        prompt("Choose a color: Blue, Red, Green, Yellow")
+      } else {
+        Js.Nullable.null
+      }
+
+    let chosenColorOpt = chosenColor->Js.Nullable.toOption
+
     let chosenColorParam =
       if isWild {
-        let chosenColor =
-          prompt("Choose a color: Blue, Red, Green, Yellow")
-          ->Js.Nullable.toOption
-        switch chosenColor {
+        switch chosenColorOpt {
         | None => {
             Js.log("No color chosen, aborting play.")
             None
@@ -239,82 +245,86 @@ let make = (~difficulty: string) => {
 
     switch chosenColorParam {
     | None =>
-      // No chosen color param
-      // If wild and user canceled, do nothing
-      if isWild {
-        () // user cancelled or invalid color choice, do nothing
-      } else {
-        // Non-wild card, just play it without a chosen color
-        let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index)
-        Fetch.fetchWithInit(url, Fetch.RequestInit.make(~method_=Post, ()))
-        |> Js.Promise.then_(response => Fetch.Response.json(response))
-        |> Js.Promise.then_(data => {
-             let dataObj = data->Js.Json.decodeObject
-             switch dataObj {
-             | Some(obj) =>
-               switch Js.Dict.get(obj, "error") {
-               | Some(errorVal) =>
-                 let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
-                 alert("Error: " ++ errStr)
-               | None =>
-                 /* Success */
-                 switch Js.Dict.get(obj, "message") {
-                 | Some(msgVal) =>
-                   let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
-                   alert(msgStr)
-                 | None => ()
-                 }
+  if isWild {
+    () // user cancelled or invalid color choice
+  } else {
+    let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index)
 
-                 /* Re-fetch game state after playing */
-                 fetchGameInfo()
-                 fetchCpuInfo()
-               }
+    // Create a raw JS object for init
+    let postInit = Obj.magic({
+      "method": "POST"
+    })
+
+    Fetch.fetchWithInit(url, postInit)
+    |> Js.Promise.then_(response => Fetch.Response.json(response))
+    |> Js.Promise.then_(data => {
+         let dataObj = data->Js.Json.decodeObject
+         switch dataObj {
+         | Some(obj) =>
+           switch Js.Dict.get(obj, "error") {
+           | Some(errorVal) =>
+             let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
+             alert("Error: " ++ errStr)
+           | None =>
+             switch Js.Dict.get(obj, "message") {
+             | Some(msgVal) =>
+               let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
+               alert(msgStr)
              | None => ()
              }
-             Js.Promise.resolve()
-        })
-        |> Js.Promise.catch(_ => {
-             alert("Failed to play card.")
-             Js.Promise.resolve()
-           })
-        |> ignore
-      }
+
+             // Re-fetch state
+             fetchGameInfo()
+             fetchCpuInfo()
+           }
+         | None => ()
+         }
+         Js.Promise.resolve()
+    })
+    |> Js.Promise.catch(_ => {
+         alert("Failed to play card.")
+         Js.Promise.resolve()
+       })
+    |> ignore
+  }
 
     | Some(colorParam) =>
-      // We have a chosen color param (wild card)
-      let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index) ++ colorParam
-      Fetch.fetchWithInit(url, Fetch.RequestInit.make(~method_=Post, ()))
-      |> Js.Promise.then_(response => Fetch.Response.json(response))
-      |> Js.Promise.then_(data => {
-           let dataObj = data->Js.Json.decodeObject
-           switch dataObj {
-           | Some(obj) =>
-             switch Js.Dict.get(obj, "error") {
-             | Some(errorVal) =>
-               let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
-               alert("Error: " ++ errStr)
-             | None =>
-               /* Success */
-               switch Js.Dict.get(obj, "message") {
-               | Some(msgVal) =>
-                 let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
-                 alert(msgStr)
-               | None => ()
-               }
+  let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index) ++ colorParam
+  let postInit = Obj.magic({
+    "method": "POST"
+  })
 
-               /* Re-fetch game state after playing */
-               fetchGameInfo()
-               fetchCpuInfo()
-             }
+  Fetch.fetchWithInit(url, postInit)
+  |> Js.Promise.then_(response => Fetch.Response.json(response))
+  |> Js.Promise.then_(data => {
+       let dataObj = data->Js.Json.decodeObject
+       switch dataObj {
+       | Some(obj) =>
+         switch Js.Dict.get(obj, "error") {
+         | Some(errorVal) =>
+           let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
+           alert("Error: " ++ errStr)
+         | None =>
+           switch Js.Dict.get(obj, "message") {
+           | Some(msgVal) =>
+             let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
+             alert(msgStr)
            | None => ()
            }
-           Js.Promise.resolve()
-      })
-      |> Js.Promise.catch(_ => {
-           alert("Failed to play card.")
-           Js.Promise.resolve()
-         })
-      |> ignore
+
+           // Re-fetch state
+           fetchGameInfo()
+           fetchCpuInfo()
+         }
+       | None => ()
+       }
+       Js.Promise.resolve()
+  })
+  |> Js.Promise.catch(_ => {
+       alert("Failed to play card.")
+       Js.Promise.resolve()
+     })
+  |> ignore
     }
   }
 
