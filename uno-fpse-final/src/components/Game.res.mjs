@@ -32,6 +32,12 @@ function Game(props) {
         return [];
       });
   var setCpuPlayers = match$2[1];
+  var cpuPlayers = match$2[0];
+  var match$3 = React.useState(function () {
+        return false;
+      });
+  var setIsCpuTurn = match$3[1];
+  var isCpuTurn = match$3[0];
   var backgroundStyle = {
     backgroundImage: "url('/gamecolor.jpg')",
     backgroundPosition: "center",
@@ -341,6 +347,51 @@ function Game(props) {
           }
           
         }), [playerInfo]);
+  var handleCpuTurn = function (cpuIndexOpt) {
+    var cpuIndex = cpuIndexOpt !== undefined ? cpuIndexOpt : 0;
+    console.log("CPU turn starting for CPU " + String(cpuIndex) + "...");
+    setTimeout((function () {
+            var postInit = {
+              method: "POST"
+            };
+            Js_promise.$$catch((function (err) {
+                    console.log("Error during CPU turn for CPU " + String(cpuIndex) + ":");
+                    console.log(err);
+                    setIsCpuTurn(function (param) {
+                          return false;
+                        });
+                    return Promise.resolve();
+                  }), Js_promise.then_((function (data) {
+                        console.log("CPU turn completed for CPU " + String(cpuIndex) + ":");
+                        console.log(data);
+                        fetchGameInfo();
+                        fetchCpuInfo();
+                        var nextIndex = cpuIndex + 1 | 0;
+                        if (nextIndex < cpuPlayers.length) {
+                          handleCpuTurn(nextIndex);
+                        } else {
+                          setIsCpuTurn(function (param) {
+                                return false;
+                              });
+                        }
+                        return Promise.resolve();
+                      }), Js_promise.then_((function (response) {
+                            if (response.ok) {
+                              return Fetch.$$Response.text(response);
+                            } else {
+                              return Promise.reject(Js_exn.raiseError("Failed to process CPU turn"));
+                            }
+                          }), fetch("http://localhost:8080/cpu_turn", postInit))));
+          }), 3000);
+  };
+  React.useEffect((function () {
+          if (isCpuTurn) {
+            handleCpuTurn(undefined);
+          } else {
+            fetchGameInfo();
+            fetchCpuInfo();
+          }
+        }), [isCpuTurn]);
   var tmp;
   if (match[0]) {
     tmp = JsxRuntime.jsxs("div", {
@@ -423,7 +474,7 @@ function Game(props) {
                                         textAlign: "center"
                                       }
                                     }, cpuName);
-                        }), match$2[0]),
+                        }), cpuPlayers),
                   style: {
                     display: "flex",
                     paddingRight: "80px",
@@ -522,6 +573,9 @@ function Game(props) {
                                                                               }
                                                                               fetchGameInfo();
                                                                               fetchCpuInfo();
+                                                                              setIsCpuTurn(function (param) {
+                                                                                    return true;
+                                                                                  });
                                                                             }
                                                                           }
                                                                           return Promise.resolve();
@@ -555,6 +609,9 @@ function Game(props) {
                                                                             }
                                                                             fetchGameInfo();
                                                                             fetchCpuInfo();
+                                                                            setIsCpuTurn(function (param) {
+                                                                                  return true;
+                                                                                });
                                                                           }
                                                                         }
                                                                         return Promise.resolve();

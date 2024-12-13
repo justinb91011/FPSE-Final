@@ -8,6 +8,8 @@ let make = (~difficulty: string) => {
   let (showQuitForm, setShowQuitForm) = React.useState(() => false);
   let (playerInfo, setPlayerInfo) = React.useState(() => None);
   let (cpuPlayers, setCpuPlayers) = React.useState(() => []);
+  let (isCpuTurn, setIsCpuTurn) = React.useState(() => false);
+
 
   let backgroundStyle = ReactDOM.Style.make(
     ~backgroundImage="url('/gamecolor.jpg')",
@@ -209,6 +211,60 @@ let make = (~difficulty: string) => {
     setShowQuitForm(_ => false)
   }
 
+  /* Function to handle CPU turn */
+  let rec handleCpuTurn = (~cpuIndex: int = 0) => {
+    Js.log("CPU turn starting for CPU " ++ string_of_int(cpuIndex) ++ "...");
+
+    /* Wait for 3 seconds before executing the CPU turn */
+    ignore(Js.Global.setTimeout(() => {
+      let url = "http://localhost:8080/cpu_turn";
+
+      /* Create a POST request init */
+      let postInit = Obj.magic({
+        "method": "POST"
+      });
+
+      Fetch.fetchWithInit(url, postInit)
+      |> Js.Promise.then_(response => {
+          if response->Fetch.Response.ok {
+            Fetch.Response.text(response)
+          } else {
+            Js.Promise.reject(Js.Exn.raiseError("Failed to process CPU turn"))
+          }
+        })
+      |> Js.Promise.then_(data => {
+          Js.log("CPU turn completed for CPU " ++ string_of_int(cpuIndex) ++ ":");
+          Js.log(data);
+
+          /* Re-fetch the game state and CPU info */
+          fetchGameInfo();
+          fetchCpuInfo();
+
+          /* Proceed to the next CPU's turn */
+          let nextIndex = cpuIndex + 1;
+          if nextIndex < Array.length(cpuPlayers) {
+            handleCpuTurn(~cpuIndex=nextIndex);
+          } else {
+            /* End CPU turns and return control to the player */
+            setIsCpuTurn(_ => false);
+          }
+
+          Js.Promise.resolve();
+        })
+      |> Js.Promise.catch(err => {
+          Js.log("Error during CPU turn for CPU " ++ string_of_int(cpuIndex) ++ ":");
+          Js.log(err); /* Log the error */
+          setIsCpuTurn(_ => false); /* Ensure the game state doesn't hang */
+          Js.Promise.resolve(); /* Return a resolved promise of unit */
+        })
+      |> ignore; /* Ensure the ignore is applied to the full promise chain */
+    }, 3000)); /* 3-second delay */
+
+    (); /* Explicitly return unit */
+  };
+
+
+
   /* Handle card click */
   let handleCardClick = (index: int, card: string) => {
     let isWild =
@@ -245,88 +301,107 @@ let make = (~difficulty: string) => {
 
     switch chosenColorParam {
     | None =>
-  if isWild {
-    () // user cancelled or invalid color choice
-  } else {
-    let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index)
+      if isWild {
+        () // User cancelled or invalid color choice
+      } else {
+        let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index)
 
-    // Create a raw JS object for init
-    let postInit = Obj.magic({
-      "method": "POST"
-    })
+        let postInit = Obj.magic({
+          "method": "POST"
+        })
 
-    Fetch.fetchWithInit(url, postInit)
-    |> Js.Promise.then_(response => Fetch.Response.json(response))
-    |> Js.Promise.then_(data => {
-         let dataObj = data->Js.Json.decodeObject
-         switch dataObj {
-         | Some(obj) =>
-           switch Js.Dict.get(obj, "error") {
-           | Some(errorVal) =>
-             let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
-             alert("Error: " ++ errStr)
-           | None =>
-             switch Js.Dict.get(obj, "message") {
-             | Some(msgVal) =>
-               let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
-               alert(msgStr)
+        Fetch.fetchWithInit(url, postInit)
+        |> Js.Promise.then_(response => Fetch.Response.json(response))
+        |> Js.Promise.then_(data => {
+             let dataObj = data->Js.Json.decodeObject
+             switch dataObj {
+             | Some(obj) =>
+               switch Js.Dict.get(obj, "error") {
+               | Some(errorVal) =>
+                 let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
+                 alert("Error: " ++ errStr)
+               | None =>
+                 /* Success */
+                 switch Js.Dict.get(obj, "message") {
+                 | Some(msgVal) =>
+                   let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
+                   alert(msgStr)
+                 | None => ()
+                 }
+
+                 /* Re-fetch state */
+                 fetchGameInfo();
+                 fetchCpuInfo();
+
+                 /* Switch to CPU turn */
+                 setIsCpuTurn(_ => true);
+               }
              | None => ()
              }
-
-             // Re-fetch state
-             fetchGameInfo()
-             fetchCpuInfo()
-           }
-         | None => ()
-         }
-         Js.Promise.resolve()
-    })
-    |> Js.Promise.catch(_ => {
-         alert("Failed to play card.")
-         Js.Promise.resolve()
-       })
-    |> ignore
-  }
+             Js.Promise.resolve()
+        })
+        |> Js.Promise.catch(_ => {
+             alert("Failed to play card.");
+             Js.Promise.resolve()
+           })
+        |> ignore
+      }
 
     | Some(colorParam) =>
-  let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index) ++ colorParam
-  let postInit = Obj.magic({
-    "method": "POST"
-  })
+      let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index) ++ colorParam
+      let postInit = Obj.magic({
+        "method": "POST"
+      })
 
-  Fetch.fetchWithInit(url, postInit)
-  |> Js.Promise.then_(response => Fetch.Response.json(response))
-  |> Js.Promise.then_(data => {
-       let dataObj = data->Js.Json.decodeObject
-       switch dataObj {
-       | Some(obj) =>
-         switch Js.Dict.get(obj, "error") {
-         | Some(errorVal) =>
-           let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
-           alert("Error: " ++ errStr)
-         | None =>
-           switch Js.Dict.get(obj, "message") {
-           | Some(msgVal) =>
-             let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
-             alert(msgStr)
+      Fetch.fetchWithInit(url, postInit)
+      |> Js.Promise.then_(response => Fetch.Response.json(response))
+      |> Js.Promise.then_(data => {
+           let dataObj = data->Js.Json.decodeObject
+           switch dataObj {
+           | Some(obj) =>
+             switch Js.Dict.get(obj, "error") {
+             | Some(errorVal) =>
+               let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
+               alert("Error: " ++ errStr)
+             | None =>
+               /* Success */
+               switch Js.Dict.get(obj, "message") {
+               | Some(msgVal) =>
+                 let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
+                 alert(msgStr)
+               | None => ()
+               }
+
+               /* Re-fetch state */
+               fetchGameInfo();
+               fetchCpuInfo();
+
+               /* Switch to CPU turn */
+               setIsCpuTurn(_ => true);
+             }
            | None => ()
            }
-
-           // Re-fetch state
-           fetchGameInfo()
-           fetchCpuInfo()
-         }
-       | None => ()
-       }
-       Js.Promise.resolve()
-  })
-  |> Js.Promise.catch(_ => {
-       alert("Failed to play card.")
-       Js.Promise.resolve()
-     })
-  |> ignore
+           Js.Promise.resolve()
+      })
+      |> Js.Promise.catch(_ => {
+           alert("Failed to play card.");
+           Js.Promise.resolve()
+         })
+      |> ignore
     }
   }
+
+  /* Trigger CPU turn when isCpuTurn changes */
+  React.useEffect(() => {
+    if isCpuTurn {
+        handleCpuTurn();
+      } else {
+        fetchGameInfo(); /* Ensure the player sees the updated state */
+        fetchCpuInfo();
+      };
+      None;
+    }, [isCpuTurn]);
+
 
   <div style=backgroundStyle>
     {
