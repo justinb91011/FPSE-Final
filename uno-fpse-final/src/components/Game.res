@@ -1,10 +1,13 @@
+@bs.val external prompt: string => Js.Nullable.t<string> = "prompt"
+@bs.val external alert: string => unit = "alert"
+
 @react.component
 let make = (~difficulty: string) => {
   Js.log("This will be a " ++ difficulty ++ " game");
 
   let (showQuitForm, setShowQuitForm) = React.useState(() => false);
   let (playerInfo, setPlayerInfo) = React.useState(() => None);
-  let (cpuPlayers, setCpuPlayers) = React.useState(() => []); // Empty array for CPUs initially
+  let (cpuPlayers, setCpuPlayers) = React.useState(() => []);
 
   let backgroundStyle = ReactDOM.Style.make(
     ~backgroundImage="url('/gamecolor.jpg')",
@@ -88,108 +91,112 @@ let make = (~difficulty: string) => {
     | None => "/card_images/unknown-card.png"
     };
 
-  // Fetch player info from "/"
-  React.useEffect(() => {
-    let fetchGameInfo = () => {
-      Fetch.fetch("http://localhost:8080/")
-      |> Js.Promise.then_(response =>
-           if (response->Fetch.Response.ok) {
-             Fetch.Response.json(response)
-           } else {
-             Js.Promise.reject(Js.Exn.raiseError("Failed to fetch game information"))
-           }
-         )
-      |> Js.Promise.then_(data => {
-           let json = data->Js.Json.decodeObject
-           switch json {
-           | Some(obj) =>
-             let player_name = obj->Js.Dict.get("player_name")
-               ->Belt.Option.getExn
-               ->Js.Json.decodeString
-               ->Belt.Option.getExn
+  /* Function to re-fetch the game state after a move */
+  let fetchGameInfo = () => {
+    Fetch.fetch("http://localhost:8080/")
+    |> Js.Promise.then_(response =>
+         if (response->Fetch.Response.ok) {
+           Fetch.Response.json(response)
+         } else {
+           Js.Promise.reject(Js.Exn.raiseError("Failed to fetch game information"))
+         }
+       )
+    |> Js.Promise.then_(data => {
+         let json = data->Js.Json.decodeObject
+         switch json {
+         | Some(obj) =>
+           let player_name = obj->Js.Dict.get("player_name")
+             ->Belt.Option.getExn
+             ->Js.Json.decodeString
+             ->Belt.Option.getExn
 
-             let hand = obj->Js.Dict.get("hand")
-               ->Belt.Option.getExn
-               ->Js.Json.decodeArray
-               ->Belt.Option.getExn
-               |> Array.map(item => item->Js.Json.decodeString->Belt.Option.getExn)
+           let hand = obj->Js.Dict.get("hand")
+             ->Belt.Option.getExn
+             ->Js.Json.decodeArray
+             ->Belt.Option.getExn
+             |> Array.map(item => item->Js.Json.decodeString->Belt.Option.getExn)
 
-             let top_discard = obj->Js.Dict.get("top_discard")
-               ->Belt.Option.getExn
-               ->Js.Json.decodeString
-               ->Belt.Option.getExn
+           let top_discard = obj->Js.Dict.get("top_discard")
+             ->Belt.Option.getExn
+             ->Js.Json.decodeString
+             ->Belt.Option.getExn
 
-             setPlayerInfo(_ => Some((player_name, Array.to_list(hand), top_discard)))
-           | None =>
-             Js.log("Invalid JSON format")
-           }
+           setPlayerInfo(_ => Some((player_name, Array.to_list(hand), top_discard)))
+         | None =>
+           Js.log("Invalid JSON format")
+         }
 
-           Js.Promise.resolve()
+         Js.Promise.resolve()
     })
-      |> Js.Promise.catch(_ => {
-           Js.log("Error fetching game information")
-           Js.Promise.resolve()
-         })
-      |> ignore
-    }
+    |> Js.Promise.catch(_ => {
+         Js.log("Error fetching game information")
+         Js.Promise.resolve()
+       })
+    |> ignore
+  }
 
+  /* Function to re-fetch CPU info */
+  let fetchCpuInfo = () => {
+    Fetch.fetch("http://localhost:8080/cpu_hands")
+    |> Js.Promise.then_(response =>
+         if (response->Fetch.Response.ok) {
+           Fetch.Response.json(response)
+         } else {
+           Js.Promise.reject(Js.Exn.raiseError("Failed to fetch CPU information"))
+         }
+       )
+    |> Js.Promise.then_(data => {
+         let json = data->Js.Json.decodeObject
+         switch json {
+         | Some(obj) =>
+           let cpu_hands = obj->Js.Dict.get("cpu_hands")
+             ->Belt.Option.getExn
+             ->Js.Json.decodeArray
+             ->Belt.Option.getExn
+
+           let cpus =
+             cpu_hands
+             |> Array.map(cpuJson => {
+                  let cpuObj = cpuJson->Js.Json.decodeObject->Belt.Option.getExn
+                  let cpuName = cpuObj->Js.Dict.get("name")
+                    ->Belt.Option.getExn
+                    ->Js.Json.decodeString
+                    ->Belt.Option.getExn
+                  let num_cards_float = cpuObj->Js.Dict.get("num_cards")
+                    ->Belt.Option.getExn
+                    ->Js.Json.decodeNumber
+                    ->Belt.Option.getExn
+
+                  let num_cards_str = Js.Float.toString(num_cards_float)
+                  let num_cards = int_of_string(num_cards_str)
+                  (cpuName, num_cards)
+                })
+
+           setCpuPlayers(_ => cpus)
+         | None =>
+           Js.log("Invalid JSON for CPU hands")
+         }
+
+         Js.Promise.resolve()
+    })
+    |> Js.Promise.catch(_ => {
+         Js.log("Error fetching CPU information")
+         Js.Promise.resolve()
+       })
+    |> ignore
+  }
+
+  // Initial fetch of game info
+  React.useEffect(() => {
     fetchGameInfo()
     None
   }, [])
 
-  // Fetch CPU info from "/cpu_hands" once we have player info
+  // Fetch CPU info once we have player info
   React.useEffect(() => {
     switch playerInfo {
     | None => ()
-    | Some(_) =>
-      Fetch.fetch("http://localhost:8080/cpu_hands")
-      |> Js.Promise.then_(response =>
-           if (response->Fetch.Response.ok) {
-             Fetch.Response.json(response)
-           } else {
-             Js.Promise.reject(Js.Exn.raiseError("Failed to fetch CPU information"))
-           }
-         )
-      |> Js.Promise.then_(data => {
-           let json = data->Js.Json.decodeObject
-           switch json {
-           | Some(obj) =>
-             // Expecting json structure: { "cpu_hands": [ { "name": ..., "num_cards": int, ...}, ...] }
-             let cpu_hands = obj->Js.Dict.get("cpu_hands")
-               ->Belt.Option.getExn
-               ->Js.Json.decodeArray
-               ->Belt.Option.getExn
-
-             let cpus =
-               cpu_hands
-               |> Array.map(cpuJson => {
-                    let cpuObj = cpuJson->Js.Json.decodeObject->Belt.Option.getExn
-                    let cpuName = cpuObj->Js.Dict.get("name")
-                      ->Belt.Option.getExn
-                      ->Js.Json.decodeString
-                      ->Belt.Option.getExn
-                    let num_cards_float = cpuObj->Js.Dict.get("num_cards")
-                      ->Belt.Option.getExn
-                      ->Js.Json.decodeNumber
-                      ->Belt.Option.getExn
-
-                    let num_cards_str = Js.Float.toString(num_cards_float)
-                    let num_cards = int_of_string(num_cards_str)
-                    (cpuName, num_cards)
-                  })
-
-             setCpuPlayers(_ => cpus)
-           | None =>
-             Js.log("Invalid JSON for CPU hands")
-           }
-
-           Js.Promise.resolve()
-    })
-      |> Js.Promise.catch(_ => {
-           Js.log("Error fetching CPU information")
-           Js.Promise.resolve()
-         })
-      |> ignore
+    | Some(_) => fetchCpuInfo()
     }
     None
   }, [playerInfo])
@@ -200,6 +207,115 @@ let make = (~difficulty: string) => {
 
   let handleNoClick = () => {
     setShowQuitForm(_ => false)
+  }
+
+  /* Handle card click */
+  let handleCardClick = (index: int, card: string) => {
+    let isWild =
+      card == "WildColor DrawFour" || card == "WildColor WildValue"
+
+    let chosenColorParam =
+      if isWild {
+        let chosenColor =
+          prompt("Choose a color: Blue, Red, Green, Yellow")
+          ->Js.Nullable.toOption
+        switch chosenColor {
+        | None => {
+            Js.log("No color chosen, aborting play.")
+            None
+          }
+        | Some(color) =>
+          let trimmedColor = Js.String.trim(color)
+          if trimmedColor == "Blue" || trimmedColor == "Red" || trimmedColor == "Green" || trimmedColor == "Yellow" {
+            Some("&chosen_color=" ++ trimmedColor)
+          } else {
+            alert("Invalid color chosen. Must be Blue, Red, Green, or Yellow.")
+            None
+          }
+        }
+      } else {
+        None
+      }
+
+    switch chosenColorParam {
+    | None =>
+      // No chosen color param
+      // If wild and user canceled, do nothing
+      if isWild {
+        () // user cancelled or invalid color choice, do nothing
+      } else {
+        // Non-wild card, just play it without a chosen color
+        let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index)
+        Fetch.fetchWithInit(url, Fetch.RequestInit.make(~method_=Post, ()))
+        |> Js.Promise.then_(response => Fetch.Response.json(response))
+        |> Js.Promise.then_(data => {
+             let dataObj = data->Js.Json.decodeObject
+             switch dataObj {
+             | Some(obj) =>
+               switch Js.Dict.get(obj, "error") {
+               | Some(errorVal) =>
+                 let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
+                 alert("Error: " ++ errStr)
+               | None =>
+                 /* Success */
+                 switch Js.Dict.get(obj, "message") {
+                 | Some(msgVal) =>
+                   let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
+                   alert(msgStr)
+                 | None => ()
+                 }
+
+                 /* Re-fetch game state after playing */
+                 fetchGameInfo()
+                 fetchCpuInfo()
+               }
+             | None => ()
+             }
+             Js.Promise.resolve()
+        })
+        |> Js.Promise.catch(_ => {
+             alert("Failed to play card.")
+             Js.Promise.resolve()
+           })
+        |> ignore
+      }
+
+    | Some(colorParam) =>
+      // We have a chosen color param (wild card)
+      let url = "http://localhost:8080/play?card_index=" ++ string_of_int(index) ++ colorParam
+      Fetch.fetchWithInit(url, Fetch.RequestInit.make(~method_=Post, ()))
+      |> Js.Promise.then_(response => Fetch.Response.json(response))
+      |> Js.Promise.then_(data => {
+           let dataObj = data->Js.Json.decodeObject
+           switch dataObj {
+           | Some(obj) =>
+             switch Js.Dict.get(obj, "error") {
+             | Some(errorVal) =>
+               let errStr = errorVal->Js.Json.decodeString->Belt.Option.getExn
+               alert("Error: " ++ errStr)
+             | None =>
+               /* Success */
+               switch Js.Dict.get(obj, "message") {
+               | Some(msgVal) =>
+                 let msgStr = msgVal->Js.Json.decodeString->Belt.Option.getExn
+                 alert(msgStr)
+               | None => ()
+               }
+
+               /* Re-fetch game state after playing */
+               fetchGameInfo()
+               fetchCpuInfo()
+             }
+           | None => ()
+           }
+           Js.Promise.resolve()
+      })
+      |> Js.Promise.catch(_ => {
+           alert("Failed to play card.")
+           Js.Promise.resolve()
+         })
+      |> ignore
+    }
   }
 
   <div style=backgroundStyle>
@@ -255,7 +371,7 @@ let make = (~difficulty: string) => {
               ~display="flex",
               ~justifyContent="space-between",
               ~alignItems="center",
-              ~width="100%", /* Ensure the container spans the full width */
+              ~width="100%",
               ~paddingLeft="80px",
               ~paddingRight="80px",
               ()
@@ -345,12 +461,13 @@ let make = (~difficulty: string) => {
                 {
                   React.array(
                     hand
-                    |> List.map(card =>
+                    |> List.mapi((index, card) =>
                          <li key=card>
                            <img
                              src={cardImageUrl(card)}
                              alt={card}
                              style=ReactDOM.Style.make(~width="80px", ())
+                             onClick={_ => handleCardClick(index, card)}
                            />
                          </li>
                        )

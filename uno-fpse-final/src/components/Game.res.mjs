@@ -267,74 +267,77 @@ function Game(props) {
       return "/card_images/unknown-card.png";
     }
   };
+  var fetchGameInfo = function () {
+    Js_promise.$$catch((function (param) {
+            console.log("Error fetching game information");
+            return Promise.resolve();
+          }), Js_promise.then_((function (data) {
+                var json = Js_json.decodeObject(data);
+                if (json !== undefined) {
+                  var player_name = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(json, "player_name"))));
+                  var hand = $$Array.map((function (item) {
+                          return Belt_Option.getExn(Js_json.decodeString(item));
+                        }), Belt_Option.getExn(Js_json.decodeArray(Belt_Option.getExn(Js_dict.get(json, "hand")))));
+                  var top_discard = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(json, "top_discard"))));
+                  setPlayerInfo(function (param) {
+                        return [
+                                player_name,
+                                $$Array.to_list(hand),
+                                top_discard
+                              ];
+                      });
+                } else {
+                  console.log("Invalid JSON format");
+                }
+                return Promise.resolve();
+              }), Js_promise.then_((function (response) {
+                    if (response.ok) {
+                      return Fetch.$$Response.json(response);
+                    } else {
+                      return Promise.reject(Js_exn.raiseError("Failed to fetch game information"));
+                    }
+                  }), fetch("http://localhost:8080/"))));
+  };
+  var fetchCpuInfo = function () {
+    Js_promise.$$catch((function (param) {
+            console.log("Error fetching CPU information");
+            return Promise.resolve();
+          }), Js_promise.then_((function (data) {
+                var json = Js_json.decodeObject(data);
+                if (json !== undefined) {
+                  var cpu_hands = Belt_Option.getExn(Js_json.decodeArray(Belt_Option.getExn(Js_dict.get(json, "cpu_hands"))));
+                  var cpus = $$Array.map((function (cpuJson) {
+                          var cpuObj = Belt_Option.getExn(Js_json.decodeObject(cpuJson));
+                          var cpuName = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(cpuObj, "name"))));
+                          var num_cards_float = Belt_Option.getExn(Js_json.decodeNumber(Belt_Option.getExn(Js_dict.get(cpuObj, "num_cards"))));
+                          var num_cards_str = num_cards_float.toString();
+                          var num_cards = Caml_format.int_of_string(num_cards_str);
+                          return [
+                                  cpuName,
+                                  num_cards
+                                ];
+                        }), cpu_hands);
+                  setCpuPlayers(function (param) {
+                        return cpus;
+                      });
+                } else {
+                  console.log("Invalid JSON for CPU hands");
+                }
+                return Promise.resolve();
+              }), Js_promise.then_((function (response) {
+                    if (response.ok) {
+                      return Fetch.$$Response.json(response);
+                    } else {
+                      return Promise.reject(Js_exn.raiseError("Failed to fetch CPU information"));
+                    }
+                  }), fetch("http://localhost:8080/cpu_hands"))));
+  };
   React.useEffect((function () {
-          var fetchGameInfo = function () {
-            Js_promise.$$catch((function (param) {
-                    console.log("Error fetching game information");
-                    return Promise.resolve();
-                  }), Js_promise.then_((function (data) {
-                        var json = Js_json.decodeObject(data);
-                        if (json !== undefined) {
-                          var player_name = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(json, "player_name"))));
-                          var hand = $$Array.map((function (item) {
-                                  return Belt_Option.getExn(Js_json.decodeString(item));
-                                }), Belt_Option.getExn(Js_json.decodeArray(Belt_Option.getExn(Js_dict.get(json, "hand")))));
-                          var top_discard = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(json, "top_discard"))));
-                          setPlayerInfo(function (param) {
-                                return [
-                                        player_name,
-                                        $$Array.to_list(hand),
-                                        top_discard
-                                      ];
-                              });
-                        } else {
-                          console.log("Invalid JSON format");
-                        }
-                        return Promise.resolve();
-                      }), Js_promise.then_((function (response) {
-                            if (response.ok) {
-                              return Fetch.$$Response.json(response);
-                            } else {
-                              return Promise.reject(Js_exn.raiseError("Failed to fetch game information"));
-                            }
-                          }), fetch("http://localhost:8080/"))));
-          };
           fetchGameInfo();
         }), []);
   React.useEffect((function () {
           if (playerInfo !== undefined) {
-            Js_promise.$$catch((function (param) {
-                    console.log("Error fetching CPU information");
-                    return Promise.resolve();
-                  }), Js_promise.then_((function (data) {
-                        var json = Js_json.decodeObject(data);
-                        if (json !== undefined) {
-                          var cpu_hands = Belt_Option.getExn(Js_json.decodeArray(Belt_Option.getExn(Js_dict.get(json, "cpu_hands"))));
-                          var cpus = $$Array.map((function (cpuJson) {
-                                  var cpuObj = Belt_Option.getExn(Js_json.decodeObject(cpuJson));
-                                  var cpuName = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(cpuObj, "name"))));
-                                  var num_cards_float = Belt_Option.getExn(Js_json.decodeNumber(Belt_Option.getExn(Js_dict.get(cpuObj, "num_cards"))));
-                                  var num_cards_str = num_cards_float.toString();
-                                  var num_cards = Caml_format.int_of_string(num_cards_str);
-                                  return [
-                                          cpuName,
-                                          num_cards
-                                        ];
-                                }), cpu_hands);
-                          setCpuPlayers(function (param) {
-                                return cpus;
-                              });
-                        } else {
-                          console.log("Invalid JSON for CPU hands");
-                        }
-                        return Promise.resolve();
-                      }), Js_promise.then_((function (response) {
-                            if (response.ok) {
-                              return Fetch.$$Response.json(response);
-                            } else {
-                              return Promise.reject(Js_exn.raiseError("Failed to fetch CPU information"));
-                            }
-                          }), fetch("http://localhost:8080/cpu_hands"))));
+            fetchCpuInfo();
           }
           
         }), [playerInfo]);
@@ -468,14 +471,91 @@ function Game(props) {
                           children: playerInfo[0] + "'s Hand:"
                         }),
                     JsxRuntime.jsx("ul", {
-                          children: Belt_List.toArray(List.map((function (card) {
+                          children: Belt_List.toArray(List.mapi((function (index, card) {
                                       return JsxRuntime.jsx("li", {
                                                   children: JsxRuntime.jsx("img", {
                                                         style: {
                                                           width: "80px"
                                                         },
                                                         alt: card,
-                                                        src: cardImageUrl(card)
+                                                        src: cardImageUrl(card),
+                                                        onClick: (function (param) {
+                                                            var isWild = card === "WildColor DrawFour" || card === "WildColor WildValue";
+                                                            var chosenColorParam;
+                                                            if (isWild) {
+                                                              var chosenColor = prompt("Choose a color: Blue, Red, Green, Yellow");
+                                                              if (chosenColor == null) {
+                                                                console.log("No color chosen, aborting play.");
+                                                                chosenColorParam = undefined;
+                                                              } else {
+                                                                var trimmedColor = chosenColor.trim();
+                                                                if (trimmedColor === "Blue" || trimmedColor === "Red" || trimmedColor === "Green" || trimmedColor === "Yellow") {
+                                                                  chosenColorParam = "&chosen_color=" + trimmedColor;
+                                                                } else {
+                                                                  alert("Invalid color chosen. Must be Blue, Red, Green, or Yellow.");
+                                                                  chosenColorParam = undefined;
+                                                                }
+                                                              }
+                                                            } else {
+                                                              chosenColorParam = undefined;
+                                                            }
+                                                            if (chosenColorParam !== undefined) {
+                                                              var url = "http://localhost:8080/play?card_index=" + String(index) + chosenColorParam;
+                                                              Js_promise.$$catch((function (param) {
+                                                                      alert("Failed to play card.");
+                                                                      return Promise.resolve();
+                                                                    }), Js_promise.then_((function (data) {
+                                                                          var dataObj = Js_json.decodeObject(data);
+                                                                          if (dataObj !== undefined) {
+                                                                            var errorVal = Js_dict.get(dataObj, "error");
+                                                                            if (errorVal !== undefined) {
+                                                                              var errStr = Belt_Option.getExn(Js_json.decodeString(errorVal));
+                                                                              alert("Error: " + errStr);
+                                                                            } else {
+                                                                              var msgVal = Js_dict.get(dataObj, "message");
+                                                                              if (msgVal !== undefined) {
+                                                                                var msgStr = Belt_Option.getExn(Js_json.decodeString(msgVal));
+                                                                                alert(msgStr);
+                                                                              }
+                                                                              fetchGameInfo();
+                                                                              fetchCpuInfo();
+                                                                            }
+                                                                          }
+                                                                          return Promise.resolve();
+                                                                        }), Js_promise.then_((function (response) {
+                                                                              return Fetch.$$Response.json(response);
+                                                                            }), fetch(url, Fetch.RequestInit.make("Post", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)()))));
+                                                              return ;
+                                                            }
+                                                            if (isWild) {
+                                                              return ;
+                                                            }
+                                                            var url$1 = "http://localhost:8080/play?card_index=" + String(index);
+                                                            Js_promise.$$catch((function (param) {
+                                                                    alert("Failed to play card.");
+                                                                    return Promise.resolve();
+                                                                  }), Js_promise.then_((function (data) {
+                                                                        var dataObj = Js_json.decodeObject(data);
+                                                                        if (dataObj !== undefined) {
+                                                                          var errorVal = Js_dict.get(dataObj, "error");
+                                                                          if (errorVal !== undefined) {
+                                                                            var errStr = Belt_Option.getExn(Js_json.decodeString(errorVal));
+                                                                            alert("Error: " + errStr);
+                                                                          } else {
+                                                                            var msgVal = Js_dict.get(dataObj, "message");
+                                                                            if (msgVal !== undefined) {
+                                                                              var msgStr = Belt_Option.getExn(Js_json.decodeString(msgVal));
+                                                                              alert(msgStr);
+                                                                            }
+                                                                            fetchGameInfo();
+                                                                            fetchCpuInfo();
+                                                                          }
+                                                                        }
+                                                                        return Promise.resolve();
+                                                                      }), Js_promise.then_((function (response) {
+                                                                            return Fetch.$$Response.json(response);
+                                                                          }), fetch(url$1, Fetch.RequestInit.make("Post", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)()))));
+                                                          })
                                                       })
                                                 }, card);
                                     }), playerInfo[1])),
