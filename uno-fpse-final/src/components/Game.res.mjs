@@ -32,12 +32,15 @@ function Game(props) {
         return [];
       });
   var setCpuPlayers = match$2[1];
-  var cpuPlayers = match$2[0];
   var match$3 = React.useState(function () {
         return false;
       });
   var setIsCpuTurn = match$3[1];
-  var isCpuTurn = match$3[0];
+  var match$4 = React.useState(function () {
+        return "Loading turn...";
+      });
+  var setCurrentTurn = match$4[1];
+  var currentTurn = match$4[0];
   var backgroundStyle = {
     backgroundImage: "url('/gamecolor.jpg')",
     backgroundPosition: "center",
@@ -285,6 +288,14 @@ function Game(props) {
                           return Belt_Option.getExn(Js_json.decodeString(item));
                         }), Belt_Option.getExn(Js_json.decodeArray(Belt_Option.getExn(Js_dict.get(json, "hand")))));
                   var top_discard = Belt_Option.getExn(Js_json.decodeString(Belt_Option.getExn(Js_dict.get(json, "top_discard"))));
+                  var currentTurnOpt = Belt_Option.flatMap(Js_dict.get(json, "current_turn"), Js_json.decodeString);
+                  if (currentTurnOpt !== undefined) {
+                    setCurrentTurn(function (param) {
+                          return currentTurnOpt;
+                        });
+                  } else {
+                    console.log("Error: Missing current_turn in JSON response");
+                  }
                   setPlayerInfo(function (param) {
                         return [
                                 player_name,
@@ -347,33 +358,24 @@ function Game(props) {
           }
           
         }), [playerInfo]);
-  var handleCpuTurn = function (cpuIndexOpt) {
-    var cpuIndex = cpuIndexOpt !== undefined ? cpuIndexOpt : 0;
-    console.log("CPU turn starting for CPU " + String(cpuIndex) + "...");
+  var handleCpuTurn = function (cpuName) {
+    console.log(cpuName + " turn starting...");
     setTimeout((function () {
             var postInit = {
               method: "POST"
             };
             Js_promise.$$catch((function (err) {
-                    console.log("Error during CPU turn for CPU " + String(cpuIndex) + ":");
+                    console.log("Error during " + cpuName + "'s turn:");
                     console.log(err);
                     setIsCpuTurn(function (param) {
                           return false;
                         });
                     return Promise.resolve();
                   }), Js_promise.then_((function (data) {
-                        console.log("CPU turn completed for CPU " + String(cpuIndex) + ":");
+                        console.log(cpuName + " turn completed:");
                         console.log(data);
                         fetchGameInfo();
                         fetchCpuInfo();
-                        var nextIndex = cpuIndex + 1 | 0;
-                        if (nextIndex < cpuPlayers.length) {
-                          handleCpuTurn(nextIndex);
-                        } else {
-                          setIsCpuTurn(function (param) {
-                                return false;
-                              });
-                        }
                         return Promise.resolve();
                       }), Js_promise.then_((function (response) {
                             if (response.ok) {
@@ -385,13 +387,28 @@ function Game(props) {
           }), 3000);
   };
   React.useEffect((function () {
-          if (isCpuTurn) {
-            handleCpuTurn(undefined);
-          } else {
-            fetchGameInfo();
-            fetchCpuInfo();
+          switch (currentTurn) {
+            case "CPU1" :
+                console.log("Handling CPU1 turn...");
+                setIsCpuTurn(function (param) {
+                      return true;
+                    });
+                handleCpuTurn("CPU1");
+                break;
+            case "CPU2" :
+                console.log("Handling CPU2 turn...");
+                setIsCpuTurn(function (param) {
+                      return true;
+                    });
+                handleCpuTurn("CPU2");
+                break;
+            default:
+              console.log("It's not a CPU's turn: " + currentTurn);
+              setIsCpuTurn(function (param) {
+                    return false;
+                  });
           }
-        }), [isCpuTurn]);
+        }), [currentTurn]);
   var tmp;
   if (match[0]) {
     tmp = JsxRuntime.jsxs("div", {
@@ -439,6 +456,21 @@ function Game(props) {
     tmp = JsxRuntime.jsxs(JsxRuntime.Fragment, {
           children: [
             JsxRuntime.jsx("div", {
+                  children: JsxRuntime.jsx("h2", {
+                        children: currentTurn + "'s Turn"
+                      }),
+                  style: {
+                    color: "white",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    left: "50%",
+                    position: "absolute",
+                    textAlign: "center",
+                    top: "10px",
+                    transform: "translateX(-50%)"
+                  }
+                }),
+            JsxRuntime.jsx("div", {
                   children: $$Array.map((function (param) {
                           var cpuName = param[0];
                           return JsxRuntime.jsxs("div", {
@@ -474,7 +506,7 @@ function Game(props) {
                                         textAlign: "center"
                                       }
                                     }, cpuName);
-                        }), cpuPlayers),
+                        }), match$2[0]),
                   style: {
                     display: "flex",
                     paddingRight: "80px",

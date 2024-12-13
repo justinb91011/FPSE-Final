@@ -9,6 +9,7 @@ let make = (~difficulty: string) => {
   let (playerInfo, setPlayerInfo) = React.useState(() => None);
   let (cpuPlayers, setCpuPlayers) = React.useState(() => []);
   let (isCpuTurn, setIsCpuTurn) = React.useState(() => false);
+  let (currentTurn, setCurrentTurn) = React.useState(() => "Loading turn...");
 
 
   let backgroundStyle = ReactDOM.Style.make(
@@ -97,45 +98,57 @@ let make = (~difficulty: string) => {
   let fetchGameInfo = () => {
     Fetch.fetch("http://localhost:8080/")
     |> Js.Promise.then_(response =>
-         if (response->Fetch.Response.ok) {
-           Fetch.Response.json(response)
-         } else {
-           Js.Promise.reject(Js.Exn.raiseError("Failed to fetch game information"))
-         }
-       )
+        if (response->Fetch.Response.ok) {
+          Fetch.Response.json(response)
+        } else {
+          Js.Promise.reject(Js.Exn.raiseError("Failed to fetch game information"))
+        }
+      )
     |> Js.Promise.then_(data => {
-         let json = data->Js.Json.decodeObject
-         switch json {
-         | Some(obj) =>
-           let player_name = obj->Js.Dict.get("player_name")
-             ->Belt.Option.getExn
-             ->Js.Json.decodeString
-             ->Belt.Option.getExn
+        let json = data->Js.Json.decodeObject
+        switch json {
+        | Some(obj) =>
+          let player_name = obj->Js.Dict.get("player_name")
+            ->Belt.Option.getExn
+            ->Js.Json.decodeString
+            ->Belt.Option.getExn
 
-           let hand = obj->Js.Dict.get("hand")
-             ->Belt.Option.getExn
-             ->Js.Json.decodeArray
-             ->Belt.Option.getExn
-             |> Array.map(item => item->Js.Json.decodeString->Belt.Option.getExn)
+          let hand = obj->Js.Dict.get("hand")
+            ->Belt.Option.getExn
+            ->Js.Json.decodeArray
+            ->Belt.Option.getExn
+            |> Array.map(item => item->Js.Json.decodeString->Belt.Option.getExn)
 
-           let top_discard = obj->Js.Dict.get("top_discard")
-             ->Belt.Option.getExn
-             ->Js.Json.decodeString
-             ->Belt.Option.getExn
+          let top_discard = obj->Js.Dict.get("top_discard")
+            ->Belt.Option.getExn
+            ->Js.Json.decodeString
+            ->Belt.Option.getExn
 
-           setPlayerInfo(_ => Some((player_name, Array.to_list(hand), top_discard)))
-         | None =>
-           Js.log("Invalid JSON format")
-         }
+          /* Update current turn */
+          let currentTurnOpt = obj->Js.Dict.get("current_turn")
+            ->Belt.Option.flatMap(item => item->Js.Json.decodeString)
 
-         Js.Promise.resolve()
+          switch currentTurnOpt {
+          | Some(turn) =>
+            setCurrentTurn(_ => turn) /* Update turn state */
+          | None =>
+            Js.log("Error: Missing current_turn in JSON response")
+          }
+
+          setPlayerInfo(_ => Some((player_name, Array.to_list(hand), top_discard)))
+        | None =>
+          Js.log("Invalid JSON format")
+        }
+
+        Js.Promise.resolve()
     })
     |> Js.Promise.catch(_ => {
-         Js.log("Error fetching game information")
-         Js.Promise.resolve()
-       })
+        Js.log("Error fetching game information")
+        Js.Promise.resolve()
+      })
     |> ignore
   }
+
 
   /* Function to re-fetch CPU info */
   let fetchCpuInfo = () => {
@@ -212,56 +225,48 @@ let make = (~difficulty: string) => {
   }
 
   /* Function to handle CPU turn */
-  let rec handleCpuTurn = (~cpuIndex: int = 0) => {
-    Js.log("CPU turn starting for CPU " ++ string_of_int(cpuIndex) ++ "...");
+  let handleCpuTurn = (~cpuName: string) => {
+    Js.log(cpuName ++ " turn starting...");
 
-    /* Wait for 3 seconds before executing the CPU turn */
+    /* Add a 3-second delay before executing the turn */
     ignore(Js.Global.setTimeout(() => {
       let url = "http://localhost:8080/cpu_turn";
 
       /* Create a POST request init */
       let postInit = Obj.magic({
-        "method": "POST"
+        "method": "POST",
       });
 
       Fetch.fetchWithInit(url, postInit)
-      |> Js.Promise.then_(response => {
+      |> Js.Promise.then_(response =>
           if response->Fetch.Response.ok {
             Fetch.Response.text(response)
           } else {
             Js.Promise.reject(Js.Exn.raiseError("Failed to process CPU turn"))
           }
-        })
+        )
       |> Js.Promise.then_(data => {
-          Js.log("CPU turn completed for CPU " ++ string_of_int(cpuIndex) ++ ":");
+          Js.log(cpuName ++ " turn completed:");
           Js.log(data);
 
-          /* Re-fetch the game state and CPU info */
+          /* Re-fetch game state to determine the next turn */
           fetchGameInfo();
           fetchCpuInfo();
-
-          /* Proceed to the next CPU's turn */
-          let nextIndex = cpuIndex + 1;
-          if nextIndex < Array.length(cpuPlayers) {
-            handleCpuTurn(~cpuIndex=nextIndex);
-          } else {
-            /* End CPU turns and return control to the player */
-            setIsCpuTurn(_ => false);
-          }
 
           Js.Promise.resolve();
         })
       |> Js.Promise.catch(err => {
-          Js.log("Error during CPU turn for CPU " ++ string_of_int(cpuIndex) ++ ":");
+          Js.log("Error during " ++ cpuName ++ "'s turn:");
           Js.log(err); /* Log the error */
           setIsCpuTurn(_ => false); /* Ensure the game state doesn't hang */
           Js.Promise.resolve(); /* Return a resolved promise of unit */
         })
       |> ignore; /* Ensure the ignore is applied to the full promise chain */
     }, 3000)); /* 3-second delay */
-
-    (); /* Explicitly return unit */
+    ();
   };
+
+
 
 
 
@@ -393,14 +398,24 @@ let make = (~difficulty: string) => {
 
   /* Trigger CPU turn when isCpuTurn changes */
   React.useEffect(() => {
-    if isCpuTurn {
-        handleCpuTurn();
-      } else {
-        fetchGameInfo(); /* Ensure the player sees the updated state */
-        fetchCpuInfo();
-      };
-      None;
-    }, [isCpuTurn]);
+    switch currentTurn {
+    | "CPU1" => {
+        Js.log("Handling CPU1 turn...");
+        setIsCpuTurn(_ => true);
+        handleCpuTurn(~cpuName="CPU1");
+      }
+    | "CPU2" => {
+        Js.log("Handling CPU2 turn...");
+        setIsCpuTurn(_ => true);
+        handleCpuTurn(~cpuName="CPU2");
+      }
+    | _ => {
+        Js.log("It's not a CPU's turn: " ++ currentTurn);
+        setIsCpuTurn(_ => false);
+      }
+    };
+    None;
+  }, [currentTurn]);
 
 
   <div style=backgroundStyle>
@@ -453,6 +468,20 @@ let make = (~difficulty: string) => {
         | Some((player_name, hand, top_discard)) =>
           <>
             <div style=ReactDOM.Style.make(
+              ~position="absolute",
+              ~top="10px",
+              ~left="50%",
+              ~transform="translateX(-50%)",
+              ~color="white",
+              ~textAlign="center",
+              ~fontSize="20px",
+              ~fontWeight="bold",
+              ()
+            )>
+              <h2>{React.string(currentTurn ++ "'s Turn")}</h2>
+            </div>
+
+            <div style=ReactDOM.Style.make(
               ~display="flex",
               ~justifyContent="space-between",
               ~alignItems="center",
@@ -465,15 +494,15 @@ let make = (~difficulty: string) => {
                 React.array(
                   cpuPlayers
                   |> Array.map(((cpuName, cardCount)) =>
-                       <div
-                         key=cpuName
-                         style=ReactDOM.Style.make(
-                           ~color="white",
-                           ~textAlign="center",
-                           ()
-                         )>
-                         <h2>{React.string(cpuName)}</h2>
-                         <ul style=ReactDOM.Style.make(
+                      <div
+                        key=cpuName
+                        style=ReactDOM.Style.make(
+                          ~color="white",
+                          ~textAlign="center",
+                          ()
+                        )>
+                        <h2>{React.string(cpuName)}</h2>
+                        <ul style=ReactDOM.Style.make(
                           ~listStyle="none",
                           ~padding="0",
                           ~display="flex",
@@ -481,7 +510,7 @@ let make = (~difficulty: string) => {
                           ~gap="1px",
                           ~justifyContent="center",
                           ()
-                         )>
+                        )>
                         {
                           React.array(
                             Belt.Array.range(0, cardCount - 1)
@@ -497,9 +526,9 @@ let make = (~difficulty: string) => {
                           )
                         }
 
-                         </ul>
-                       </div>
-                     )
+                        </ul>
+                      </div>
+                    )
                 )
               }
             </div>
@@ -510,9 +539,11 @@ let make = (~difficulty: string) => {
             >
               {React.string("Quit")}
             </Button>
+
             <h1 style=ReactDOM.Style.make(~color="white", ~textAlign="center", ())>
               {React.string("Game Page for " ++ difficulty ++ " Difficulty")}
             </h1>
+
             <div style=ReactDOM.Style.make(
               ~position="absolute",
               ~top="50%",
@@ -526,6 +557,7 @@ let make = (~difficulty: string) => {
                 style=ReactDOM.Style.make(~width="80px", ())
               />
             </div>
+
             <div style=ReactDOM.Style.make(
               ~position="absolute",
               ~bottom="20px",
@@ -547,15 +579,15 @@ let make = (~difficulty: string) => {
                   React.array(
                     hand
                     |> List.mapi((index, card) =>
-                         <li key=card>
-                           <img
-                             src={cardImageUrl(card)}
-                             alt={card}
-                             style=ReactDOM.Style.make(~width="80px", ())
-                             onClick={_ => handleCardClick(index, card)}
-                           />
-                         </li>
-                       )
+                        <li key=card>
+                          <img
+                            src={cardImageUrl(card)}
+                            alt={card}
+                            style=ReactDOM.Style.make(~width="80px", ())
+                            onClick={_ => handleCardClick(index, card)}
+                          />
+                        </li>
+                      )
                     |> Belt.List.toArray
                   )
                 }

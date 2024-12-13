@@ -208,15 +208,27 @@ let () =
             (Sexp.to_string (UnoCard.sexp_of_color color))
             (Sexp.to_string (UnoCard.sexp_of_value value))
         ) in
+
+        (* Determine current turn information *)
+        let current_turn =
+          if state.current_player_index = 0 then
+            `String player_name
+          else
+            let cpu_name, _ = List.nth_exn state.cpus (state.current_player_index - 1) in
+            `String cpu_name
+        in
+
         let json_response =
           `Assoc [
             ("player_name", `String player_name);
             ("hand", `List (List.map hand_list ~f:(fun card -> `String card)));
             ("top_discard", `String top_card_str);
+            ("current_turn", current_turn);
           ]
         in
         Dream.json (Yojson.Safe.to_string json_response)
     );
+
 
     Dream.post "/cpu_turn" (fun _ ->
       match !Game.game_state with
@@ -277,11 +289,9 @@ let () =
     Dream.get "/cpu_hands" (fun _ ->
       match !Game.game_state with
       | None -> 
-        (* Return an error JSON if the game is not initialized *)
         let json_response = `Assoc [("error", `String "Game not initialized.")] in
         Dream.json ~code:500 (Yojson.Safe.to_string json_response)
       | Some state ->
-        (* Construct a list of CPU hands with their names, hands, and number of cards *)
         let cpu_hands = 
           List.map state.cpus ~f:(fun (name, cpu) ->
             let hand = CPU.get_hand cpu in
@@ -299,8 +309,21 @@ let () =
             ]
           )
         in
-        (* Create the final JSON response *)
-        let json_response = `Assoc [("cpu_hands", `List cpu_hands)] in
+    
+        (* Determine current turn information *)
+        let current_turn =
+          if state.current_player_index = 0 then
+            let player_name, _ = List.hd_exn state.players in
+            `String player_name
+          else
+            let cpu_name, _ = List.nth_exn state.cpus (state.current_player_index - 1) in
+            `String cpu_name
+        in
+    
+        let json_response = `Assoc [
+          ("cpu_hands", `List cpu_hands);
+          ("current_turn", current_turn);
+        ] in
         Dream.json (Yojson.Safe.to_string json_response)
-    );
+    );    
   ]

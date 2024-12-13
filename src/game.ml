@@ -250,7 +250,7 @@ module Game = struct
              | "yellow" -> UnoCard.Yellow
              | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *)
            in
-           let updated_card = UnoCardInstance.create valid_color (Number 8) in
+           let updated_card = UnoCardInstance.create valid_color DrawFour in
            let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
     
            (* Recursive function to handle stacking of DrawFour *)
