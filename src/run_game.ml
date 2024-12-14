@@ -69,7 +69,7 @@ let () =
                       let state = { state with
                         discard_pile;
                         players = [(player_name, player)];
-                        current_player_index = 1;
+                        current_player_index = Game.next_player_index state;
                       } in
                       Game.game_state := Some state;
 
@@ -142,7 +142,7 @@ let () =
                   let state = { state with
                     discard_pile;
                     players = [(player_name, player)];
-                    current_player_index = 1;
+                    current_player_index = Game.next_player_index state;
                   } in
                   Game.game_state := Some state;
 
@@ -180,7 +180,7 @@ let () =
                 else
                   let state = { state with
                     players = [(player_name, player)];
-                    current_player_index = 1;
+                    current_player_index = Game.next_player_index state;
                   } in
                   Game.game_state := Some state;
                   let json_response = `Assoc [("message", `String (Printf.sprintf
