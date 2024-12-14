@@ -86,6 +86,10 @@ let make = (~difficulty: string) => {
 
     ("WildColor DrawFour", "/card_images/wild-draw-four-card.png"),
     ("WildColor WildValue", "/card_images/wild-card.png"),
+    ("Green DrawFour", "/card_images/green-draw-four-card.png"),
+    ("Red DrawFour", "/card_images/red-draw-four-card.png"),
+    ("Blue DrawFour", "/card_images/blue-draw-four-card.png"),
+    ("Yellow DrawFour", "/card_images/yellow-draw-four-card.png"),
   ]);
 
   let cardImageUrl = (card: string) =>
