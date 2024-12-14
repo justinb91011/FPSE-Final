@@ -15,8 +15,14 @@ module Game : sig
     }
 
     val get_players : game_state -> (string * Player.t) list
-    val get_cpus : game_state -> (string * CPU.t) list
+    (** [get_players state] returns the list of players in the game. *)
 
+    val get_cpus : game_state -> (string * CPU.t) list
+    (** [get_cpus state] returns the list of CPU players in the game. *)
+
+    val is_valid_initial_card : UnoCardInstance.t -> bool
+    (** [is_valid_initial_card card] checks if the given card is a valid initial top card (not a DrawTwo, DrawFour, or WildValue). *)
+    
     val initialize_game : unit -> unit
     (** [initialize_game ()] sets up the initial state of the game, including the player, CPUs, and the deck. *)
 

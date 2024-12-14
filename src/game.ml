@@ -19,6 +19,11 @@ module Game = struct
   let get_players state = state.players
   let get_cpus state = state.cpus
 
+  let is_valid_initial_card card =
+    match UnoCardInstance.get_value card with
+    | DrawTwo | DrawFour | WildValue -> false
+    | _ -> true
+
   let any_playable_card hand top_card =
     List.exists hand ~f:(fun c ->
       UnoCard.is_playable
@@ -28,23 +33,37 @@ module Game = struct
     
   let initialize_game () =
     let deck = Deck.create_deck () |> Deck.shuffle in
-  
+    
     let player = Player.create "Player1" in
     let cpu1 = CPU.create CPU.Easy in
     let cpu2 = CPU.create CPU.Easy in
-  
+    
     let player_cards, deck = Deck.draw_cards 7 deck in
     let player = Player.add_cards player player_cards in
-  
+    
     let cpu1_cards, deck = Deck.draw_cards 7 deck in
     let cpu1 = CPU.add_cards cpu1 cpu1_cards in
-  
+    
     let cpu2_cards, deck = Deck.draw_cards 7 deck in
     let cpu2 = CPU.add_cards cpu2 cpu2_cards in
-  
-    let top_card, deck = Deck.draw_card deck in
+    
+    (* Function to draw a valid initial top card *)
+    let rec draw_valid_top_card current_deck attempts =
+      if attempts > 100 then
+        failwith "Unable to draw a valid initial top card after 100 attempts." (* Will probably never happen *)
+      else
+        let top_card, remaining_deck = Deck.draw_card current_deck in
+        if is_valid_initial_card top_card then
+          (top_card, remaining_deck)
+        else
+          (* Place the invalid card back into the deck and reshuffle *)
+          let reshuffled_deck = Deck.add_card top_card remaining_deck |> Deck.shuffle in
+          draw_valid_top_card reshuffled_deck (attempts + 1)
+    in
+    
+    let top_card, deck = draw_valid_top_card deck 0 in
     let discard_pile = [top_card] in
-  
+    
     let initial_state = {
       deck;
       discard_pile;
@@ -53,7 +72,7 @@ module Game = struct
       current_player_index = 0;
       direction = 1;
     } in
-  
+    
     game_state := Some initial_state
 
   let next_player_index state =
