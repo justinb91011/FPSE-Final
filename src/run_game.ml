@@ -12,6 +12,9 @@ let add_cors_headers next_handler request =
   Dream.set_header response "Access-Control-Allow-Headers" "Content-Type";
   Lwt.return response
 
+  let has_anyone_won state =
+    List.exists (Game.get_players state) ~f:(fun (_, player) -> Player.has_won player)
+    || List.exists (Game.get_cpus state) ~f:(fun (_, cpu) -> CPU.has_won cpu)
 
 let () = Game.initialize_game ()
 
@@ -29,7 +32,10 @@ let () =
         let json_response = `Assoc [("error", `String "Game not initialized.")] in
         Dream.json ~code:500 (Yojson.Safe.to_string json_response)
       | Some state ->
-        if state.current_player_index <> 0 then
+        if has_anyone_won state then begin
+          let json_response = `Assoc [("error", `String "Game over.")] in
+          Dream.json ~code:400 (Yojson.Safe.to_string json_response)
+        end else if state.current_player_index <> 0 then
           let json_response = `Assoc [("error", `String "Not your turn to place a card")] in
           Dream.json ~code:400 (Yojson.Safe.to_string json_response)
         else
@@ -234,7 +240,10 @@ let () =
       match !Game.game_state with
       | None -> Dream.html "Game not initialized."
       | Some state ->
-        if state.current_player_index = 0 then
+        if has_anyone_won state then begin 
+          let json_response = `Assoc [("error", `String "Game over.")] in
+          Dream.json ~code:400 (Yojson.Safe.to_string json_response)
+        end else if state.current_player_index = 0 then
           Dream.html "It's the player's turn."
         else
           let (new_state, chosen_card, cpu_index, color_chosen) = Game.play_cpu_turn state in

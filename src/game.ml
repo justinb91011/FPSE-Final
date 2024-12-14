@@ -15,6 +15,10 @@ module Game = struct
   }
   let game_state = ref None
 
+  (* Getter functions to access players and cpus *)
+  let get_players state = state.players
+  let get_cpus state = state.cpus
+
   let any_playable_card hand top_card =
     List.exists hand ~f:(fun c ->
       UnoCard.is_playable

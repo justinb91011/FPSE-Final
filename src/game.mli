@@ -14,6 +14,9 @@ module Game : sig
         direction : int;  (* 1 for clockwise, -1 for counterclockwise *)
     }
 
+    val get_players : game_state -> (string * Player.t) list
+    val get_cpus : game_state -> (string * CPU.t) list
+
     val initialize_game : unit -> unit
     (** [initialize_game ()] sets up the initial state of the game, including the player, CPUs, and the deck. *)
 
