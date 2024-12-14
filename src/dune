@@ -28,6 +28,18 @@
   (libraries core card uno_card)
   (preprocess (pps bisect_ppx)))
 
+(library
+  (name algorithm)
+  (modules algorithm)
+  (libraries core card cpu uno_card)
+  (preprocess (pps bisect_ppx)))
+
+(library
+  (name game)
+  (modules game)
+  (libraries core card uno_card cpu player deck)
+  (preprocess (pps bisect_ppx)))
+
 (executable
  (name run_game)
  (modules run_game)
@@ -42,17 +54,3 @@
    player
    game)
 (preprocess (pps lwt_ppx bisect_ppx)))
-
-(library
-  (name algorithm)
-  (modules algorithm)
-  (libraries core card cpu uno_card)
-  (preprocess (pps bisect_ppx))
-)
-
-(library
-  (name game)
-  (modules game)
-  (libraries core card uno_card cpu player deck)
-  (preprocess (pps bisect_ppx))
-)

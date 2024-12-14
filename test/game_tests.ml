@@ -49,7 +49,14 @@ let test_handle_reverse_card _ =
   | Some state ->
     let reverse_card = UnoCardInstance.create UnoCard.Red Reverse in
     let new_state = Game.handle_reverse_card state reverse_card 0 in
-    assert_equal (-1) new_state.direction
+    (* Sanity check to make sure we're on the player. *)
+    assert_equal (0) (state.current_player_index);
+    (* Confirm that we reversed directions. *)
+    assert_equal (-1) (new_state.direction);
+    (* Confirm that the next player is the CPU2. *)
+    assert_equal (2) (new_state.current_player_index);
+    (* Confirm that the following player would be CPU1. *)
+    assert_equal (1) (Game.next_player_index new_state)
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_cpu_reverse_card _ =
@@ -59,19 +66,24 @@ let test_handle_cpu_reverse_card _ =
     let updated_state = {state with current_player_index = 1} in
     let reverse_card = UnoCardInstance.create UnoCard.Red Reverse in
     let new_state = Game.handle_reverse_card updated_state reverse_card 1 in
+    (* Sanity check to make sure we are on CPU1. *)
+    assert_equal (1) (updated_state.current_player_index);
     (* Assert direction reversed *)
     assert_equal (-1) new_state.Game.direction;
     (* Assert the current player index is updated correctly *)
     assert_equal 0 new_state.current_player_index;
     (* Assert the following player index is updated correctly as well. *)
     assert_equal 2 (Game.next_player_index new_state);
-
+    (* Case where we the CPU2 player plays the Reverse card. *)
     let new_updated_state = {state with current_player_index = 2} in
     let newly_state = Game.handle_reverse_card new_updated_state reverse_card 2 in
+    (* Sanity check to make sure we are on CPU2. *)
+    assert_equal (2) (new_updated_state.current_player_index);
     (* Assert direction reversed *)
     assert_equal (-1) newly_state.Game.direction;
     (* Assert the current player index is updated correctly *)
-    assert_equal 1 newly_state.Game.current_player_index;
+    assert_equal (1) newly_state.Game.current_player_index;
+    assert_equal (0) (Game.next_player_index newly_state)
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_reverse_card_with_random_card _ =
@@ -90,7 +102,14 @@ let test_handle_reverse_card_counterclockwise _ =
       let updated_state = {state with direction = -1} in
       let reverse_card = UnoCardInstance.create UnoCard.Red Reverse in
       let new_state = Game.handle_reverse_card updated_state reverse_card 0 in
-      assert_equal (1) new_state.direction
+      (* Sanity check to make sure we are on player. *)
+      assert_equal (0) (state.current_player_index);
+      (* Confirm the direction has be reversed. *)
+      assert_equal (1) (new_state.direction);
+      (* Confirm that the next player is CPU1. *)
+      assert_equal (1) (new_state.current_player_index);
+      (* Confirm that the following player is CPU2. *)
+      assert_equal (2) (Game.next_player_index new_state)
     | None -> assert_failure "Game state not initialized"
 
 let test_handle_cpu_reverse_card_counterclockwise _ =
@@ -100,17 +119,26 @@ let test_handle_cpu_reverse_card_counterclockwise _ =
       let updated_state = {state with current_player_index = 1; direction = -1} in
       let reverse_card = UnoCardInstance.create UnoCard.Red Reverse in
       let new_state = Game.handle_reverse_card updated_state reverse_card 1 in
-      (* Assert direction reversed *)
-      assert_equal (1) new_state.Game.direction;
+      (* Santiy check to make sure we are on CPU1. *)
+      assert_equal (1) (updated_state.current_player_index);
+      (* Assert direction reversed. *)
+      assert_equal (1) (new_state.Game.direction);
       (* Assert the current player index is updated correctly *)
-      assert_equal 2 new_state.Game.current_player_index;
+      assert_equal (2) (new_state.Game.current_player_index);
+      (* Assert the next player is updated correctly. *)
+      assert_equal (0) (Game.next_player_index new_state);
 
       let new_updated_state = {state with current_player_index = 2; direction = -1} in
       let newly_state = Game.handle_reverse_card new_updated_state reverse_card 2 in
-      (* Assert direction reversed *)
+      (* Sanity check to make sure we are on CPU2. *)
+      assert_equal (2) (new_updated_state.current_player_index);
+      (* Assert direction reversed. *)
       assert_equal (1) newly_state.Game.direction;
-      (* Assert the current player index is updated correctly *)
-      assert_equal 0 newly_state.Game.current_player_index;
+      (* Assert the current player index is updated correctly. *)
+      assert_equal (0) (newly_state.Game.current_player_index);
+      (* Assert the next player is updated correctly.*)
+      assert_equal (1) (Game.next_player_index newly_state)
+      
     | None -> assert_failure "Game state not initialized"
 
 let test_handle_draw_two _ =
@@ -260,7 +288,7 @@ let test_handle_draw_four_random_card _ =
     | None -> assert_failure "Wild card handling failed."
     | Some new_state ->
       assert_equal state new_state
-
+(* Might be failing if a card being played is a wild_card and they are choosing colors. *)
 let test_play_cpu_turn _ =
   Game.initialize_game();
   match !Game.game_state with

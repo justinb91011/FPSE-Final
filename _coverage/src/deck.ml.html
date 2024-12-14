@@ -193,11 +193,11 @@ module Deck = struct
 
   let draw_cards n (deck : t) : UnoCardInstance.t list * t =
     <span data-count="91">l</span>et rec draw acc n deck = 
-      <span data-count="759">i</span>f n = 0 then <span data-count="90">(</span>List.re<span data-count="90">v</span> acc, deck)
+      <span data-count="777">i</span>f n = 0 then <span data-count="90">(</span>List.re<span data-count="90">v</span> acc, deck)
       else
-        <span data-count="669">m</span>atch deck with
+        <span data-count="687">m</span>atch deck with
         | <span data-count="1">[</span>] -&gt; failwith "Not enough cards to draw."
-        | <span data-count="668">t</span>op_card :: rest -&gt; draw (top_card :: acc) (n - 1) rest
+        | <span data-count="686">t</span>op_card :: rest -&gt; draw (top_card :: acc) (n - 1) rest
     in
     draw [] n deck
 
@@ -205,7 +205,7 @@ module Deck = struct
     <span data-count="1">d</span>eck @ [card]
 
   let remaining_cards (deck : t) : int =
-    <span data-count="10">L</span>ist.length deck
+    <span data-count="12">L</span>ist.length deck
 end
 </code></pre>
       </div>

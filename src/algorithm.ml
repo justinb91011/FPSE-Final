@@ -1,5 +1,5 @@
-open Uno_card
 open Core
+open Uno_card
 
 module Algorithm = struct
   (* Helper function to count cards of a specific color in a given hand. *)
