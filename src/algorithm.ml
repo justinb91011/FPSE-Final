@@ -3,8 +3,9 @@ open Uno_card
 
 module Algorithm = struct
   (* Helper function to count cards of a specific color in a given hand. *)
-  let count_color hand color =
-    List.fold_left hand ~f:(fun acc card -> if UnoCard.equal_color color (UnoCardInstance.get_color card) then acc + 1 else acc) ~init:0
+  (* let count_color hand color =
+    List.fold_left hand ~f:(fun acc card -> 
+      if UnoCard.equal_color color (UnoCardInstance.get_color card) then acc + 1 else acc) ~init:0 *)
   
   (* Helper function to determine the color with the most cards in a given hand. *)
   (* let dominant_color hand =
@@ -16,13 +17,10 @@ module Algorithm = struct
   |> fst *)
 
   let rank_card card ~hand ~opponents ~top_card =
-  if UnoCard.equal_color (UnoCardInstance.get_color top_card) (UnoCardInstance.get_color card) || UnoCard.equal_value (UnoCardInstance.get_value top_card) (UnoCardInstance.get_value card) then
+  if UnoCard.equal_color (UnoCardInstance.get_color top_card) (UnoCardInstance.get_color card) || 
+     UnoCard.equal_value (UnoCardInstance.get_value top_card) (UnoCardInstance.get_value card) then
     match UnoCardInstance.get_value card with
-    | Number _ -> 
-      let count = count_color hand (UnoCardInstance.get_color card) in
-      if count > 1 then 1 + count
-      else if count = 1 then 1
-      else 0
+    | Number _ -> 1
 
     | Reverse ->
       let front = List.hd_exn opponents in
@@ -34,9 +32,8 @@ module Algorithm = struct
     | Skip ->
       let front = List.hd_exn opponents in
       let second_front = List.nth_exn opponents 1 in
-      if front <= 3 && second_front > 3 then 2
-      else if front <= 3 then 4
-      else if second_front <= 3 then 3
+      if front <= 3 then 4
+      else if front >= 3 && second_front <= 3 then 2
       else 3
 
     | DrawTwo ->

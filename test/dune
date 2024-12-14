@@ -33,7 +33,7 @@
 (library
  (name algorithm_tests)
  (modules algorithm_tests)
- (libraries core ounit2 algorithm uno_card cpu))
+ (libraries core ounit2 algorithm uno_card cpu player))
 
 (test 
  (name tests)
