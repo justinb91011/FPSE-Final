@@ -53,11 +53,11 @@ module Algorithm = struct
   else
     0
 
-  let minimax hand top_card opponent_counts depth is_maximizing = 
-    if depth = 0 || List.length hand = 0 then
-      match hand with
-      | [] -> failwith "No cards left to play. Won the game."
-      | card :: _ -> card
+    (* We may want to use the is_minimizing parameter if we find that we cannot get to a sound
+       medium difficulty through altering between easy and hard difficulties. *)
+  let minimax hand top_card opponent_counts = 
+    if List.is_empty hand then
+      failwith "No cards left to play. Won the game."
     else
       let scored_cards =
         List.map ~f:
@@ -67,7 +67,8 @@ module Algorithm = struct
         hand
       in
       let sorted = 
-        List.sort ~compare:(fun (_, rank1) (_, rank2) -> if is_maximizing then rank2 - rank1 else rank1 - rank2) scored_cards
+        (* Was List.sort ~compare:(fun (_, rank1) (_, rank2) -> if is_maximizing then rank2 - rank1 else rank1 - rank2) scored_cards. *)
+        List.sort ~compare:(fun (_, rank1) (_, rank2) -> rank2 - rank1) scored_cards
       in
       fst (List.hd_exn sorted)
 end

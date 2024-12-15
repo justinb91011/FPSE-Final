@@ -157,6 +157,35 @@ let test_rank_card_numbered_card _ =
     let cpu = CPU.add_cards (CPU.create Medium) [cpu_card1; cpu_card2; cpu_card3] in
     assert_equal (4) (Algorithm.rank_card cpu_card1 ~hand:(CPU.get_hand cpu) ~opponents:[2; 6] ~top_card)
 
+  let test_minimax_empty_hand _ =
+    let top_card = UnoCardInstance.create UnoCard.Green (Number 5) in
+    assert_raises (Failure "No cards left to play. Won the game.") 
+                  (fun () -> Algorithm.minimax [] top_card [4;5])
+
+  let test_minimax_single_card _ =
+    (* Sanity check, to make sure the algorithm plays the one and only card in the hand. *)
+    let top_card = UnoCardInstance.create (UnoCard.Blue) (Number 7) in
+    let single_card = UnoCardInstance.create (UnoCard.Blue) (Number 0) in
+    let result = Algorithm.minimax [single_card] top_card [5;6] in
+    assert_equal single_card result
+
+  let test_minimax_simple_stack_opportunity _ =
+    let top_card = UnoCardInstance.create UnoCard.WildColor (DrawFour) in
+    let card1 = UnoCardInstance.create UnoCard.WildColor (DrawFour) in
+    let card2 = UnoCardInstance.create UnoCard.Blue (Number 9) in
+    let card3 = UnoCardInstance.create UnoCard.Green (Number 0) in
+    assert_equal card1 (Algorithm.minimax [card1; card2; card3] top_card [3;4])
+
+  let test_minimax_complex_skip_wildcard _ =
+    (* In a lot of cases, skip is valued higher than reverse, but under certain circumstances, 
+       the reverse card is preferred. *)
+    let top_card = UnoCardInstance.create UnoCard.Red (Number 6) in
+    let card1 = UnoCardInstance.create UnoCard.Red (Skip) in
+    let card2 = UnoCardInstance.create UnoCard.WildColor (WildValue) in
+    let card3 = UnoCardInstance.create UnoCard.Green (Number 0) in
+    assert_equal card1 (Algorithm.minimax [card1; card2; card3] top_card [3;3])
+
+    
 
 
 let series =
@@ -177,4 +206,8 @@ let series =
    "Algorithm Rank Card Test - DrawFour Card default value" >:: test_rank_card_drawfour_card_else_case;
    "Algorithm Rank Card Test - Wild Card current hand > 3" >:: test_rank_card_wildcard_card_base_case;
    "Algorithm Rank Card Test - Wild Card current hand < 3" >:: test_rank_card_wildcard_card_second_case;
-   "Algorithm Rank Card Test - Wild Card current hand = 3" >:: test_rank_card_wildcard_card_else_case;]
+   "Algorithm Rank Card Test - Wild Card current hand = 3" >:: test_rank_card_wildcard_card_else_case;
+   "Algorithm Minimax - Empty Hand Case" >:: test_minimax_empty_hand;
+   "Algorithm Minimax - Single Card in Hand Case" >:: test_minimax_single_card;
+   "Algorithm Minimax - Stack DrawFour Case" >:: test_minimax_simple_stack_opportunity;
+   "Algorithm Minimax - Complex Reverse-Skip Case" >:: test_minimax_complex_skip_wildcard;]

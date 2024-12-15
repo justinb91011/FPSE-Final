@@ -72,15 +72,15 @@
 module UnoCard = struct
   <span data-count="0">t</span>ype color = <span data-count="0">R</span>ed <span data-count="0">|</span> Yellow <span data-count="0">|</span> Green <span data-count="2">|</span> Blue <span data-count="0">|</span> WildColor [@@deriving compare, equal, sexp] [@@coverage off]
 
-  <span data-count="24994">t</span>ype value = <span data-count="7686">N</span>umber of int <span data-count="802">|</span> Skip <span data-count="801">|</span> Reverse <span data-count="802">|</span> DrawTwo <span data-count="800">|</span> DrawFour <span data-count="0">|</span> WildValue [@@deriving compare, equal, sexp]
+  <span data-count="24994">t</span>ype value = <span data-count="7684">N</span>umber of int <span data-count="802">|</span> Skip <span data-count="801">|</span> Reverse <span data-count="802">|</span> DrawTwo <span data-count="801">|</span> DrawFour <span data-count="0">|</span> WildValue [@@deriving compare, equal, sexp]
   
   let is_playable (color1 : color) (value1 : value) (color2 : color) (value2 : value) =
-    <span data-count="75">m</span>atch (color1, value1), (color2, value2) with
+    <span data-count="81">m</span>atch (color1, value1), (color2, value2) with
     | <span data-count="8">(</span>_, WildValue), _ -&gt; true
-    | <span data-count="6">(</span>WildColor, _), _ -&gt; true
-    | <span data-count="61">(</span>c1, _), (c2, _) when equal_colo<span data-count="61">r</span> c1 c2 -&gt; <span data-count="20">t</span>rue
-    | <span data-count="41">(</span>_, v1), (_, v2) when equal_valu<span data-count="41">e</span> v1 v2 -&gt; <span data-count="7">t</span>rue
-    | <span data-count="34">_</span> -&gt; false
+    | <span data-count="7">(</span>WildColor, _), _ -&gt; true
+    | <span data-count="66">(</span>c1, _), (c2, _) when equal_colo<span data-count="66">r</span> c1 c2 -&gt; <span data-count="23">t</span>rue
+    | <span data-count="43">(</span>_, v1), (_, v2) when equal_valu<span data-count="43">e</span> v1 v2 -&gt; <span data-count="7">t</span>rue
+    | <span data-count="36">_</span> -&gt; false
 end
 
 module UnoCardInstance = Card.Make(UnoCard)
