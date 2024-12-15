@@ -123,10 +123,10 @@ module Player = struct
     <span data-count="3">p</span>layer.name
 
   let get_hand (player : t) : UnoCardInstance.t list =
-    <span data-count="17">p</span>layer.hand
+    <span data-count="18">p</span>layer.hand
 
   let add_cards (player : t) (cards : UnoCardInstance.t list) : t =
-    <span data-count="39">{</span>player with hand = player.hand @ cards}
+    <span data-count="40">{</span>player with hand = player.hand @ cards}
 
   let play_card (player : t) (card : UnoCardInstance.t) (top_card : UnoCardInstance.t) : t =
     <span data-count="5">i</span>f UnoCard.is_playable 

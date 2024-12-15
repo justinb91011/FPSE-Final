@@ -17,8 +17,8 @@ module Algorithm = struct
   |> fst *)
 
   let rank_card card ~hand ~opponents ~top_card =
-  if UnoCard.equal_color (UnoCardInstance.get_color top_card) (UnoCardInstance.get_color card) || 
-     UnoCard.equal_value (UnoCardInstance.get_value top_card) (UnoCardInstance.get_value card) then
+  if UnoCard.is_playable (UnoCardInstance.get_color card) (UnoCardInstance.get_value card)
+    (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card) then
     match UnoCardInstance.get_value card with
     | Number _ -> 1
 
@@ -43,7 +43,7 @@ module Algorithm = struct
     | DrawFour ->
       let front = List.hd_exn opponents in
       if (List.length hand > 3 || front > 3) then 5
-      else if List.exists ~f:(fun c -> UnoCard.equal_value (UnoCardInstance.get_value c) UnoCard.DrawFour) hand then 7
+      else if UnoCard.equal_value DrawFour (UnoCardInstance.get_value top_card) then 7 
       else 6
 
     | WildValue ->
