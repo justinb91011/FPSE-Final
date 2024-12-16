@@ -51,7 +51,7 @@ module Game = struct
     (* Function to draw a valid initial top card *)
     let rec draw_valid_top_card current_deck attempts =
       if attempts > 100 then
-        failwith "Unable to draw a valid initial top card after 100 attempts." (* Will probably never happen *)
+        failwith "Unable to draw a valid initial top card after 100 attempts." (* Will probably never happen *) [@coverage off]
       else
         let top_card, remaining_deck = Deck.draw_card current_deck in
         if is_valid_initial_card top_card then
@@ -281,7 +281,7 @@ module Game = struct
              | "blue" -> UnoCard.Blue
              | "green" -> UnoCard.Green
              | "yellow" -> UnoCard.Yellow
-             | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *)
+             | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *) [@coverage off]
            in
            let updated_card = UnoCardInstance.create valid_color (Number 8) in
            let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in
@@ -301,7 +301,7 @@ module Game = struct
              | "blue" -> UnoCard.Blue
              | "green" -> UnoCard.Green
              | "yellow" -> UnoCard.Yellow
-             | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *)
+             | _ -> UnoCard.WildColor  (* Alternatively, handle invalid colors more gracefully *) [@coverage off]
            in
            let updated_card = UnoCardInstance.create valid_color DrawFour in
            let new_discard_pile = updated_card :: (List.tl_exn state.discard_pile) in

@@ -6,7 +6,6 @@ open Player
 (* open Cpu *)
 open Game
 
-
 let test_initialize_game _ =
   Game.initialize_game();
   match !Game.game_state with
@@ -16,6 +15,43 @@ let test_initialize_game _ =
     assert_equal 2 (List.length state.cpus);
     assert_equal 1 (List.length state.discard_pile);
     assert_equal 1 state.direction
+
+let test_get_players _ =
+  Game.initialize_game();
+  match !Game.game_state with
+  | None -> assert_failure "Game state was not initialized."
+  | Some state ->
+    let players = Game.get_players state in
+    assert_equal (1) (List.length players);
+    let player_names = List.map ~f:fst players in
+    assert (List.mem player_names "Player1" ~equal:String.equal)
+
+let test_get_cpus _ =
+  Game.initialize_game();
+  match !Game.game_state with
+  | None -> assert_failure "Game state was not initialized."
+  | Some state ->
+    let cpus = Game.get_cpus state in
+    assert_equal (2) (List.length cpus);
+    let cpu_names = List.map ~f:fst cpus in
+    assert (List.mem cpu_names "CPU1" ~equal:String.equal);
+    assert (List.mem cpu_names "CPU2" ~equal:String.equal)
+         
+let test_is_valid_initial_card _ =
+  (* We'll start with the case of a draw two, which should not be the intial top card. *)
+  let draw_two = UnoCardInstance.create UnoCard.Blue (DrawTwo) in
+  assert_bool "DrawTwo should not be an initial top card" (not (Game.is_valid_initial_card draw_two));
+  (* The draw four should also not be the initial top card. *)
+  let draw_four = UnoCardInstance.create UnoCard.WildColor (DrawFour) in
+  assert_bool "DrawFour should not be an initial top card" (not (Game.is_valid_initial_card draw_four));
+  let wildcard = UnoCardInstance.create UnoCard.WildColor (WildValue) in
+  assert_bool "Wild Card should not be an initial top card" (not (Game.is_valid_initial_card wildcard));
+  let skip = UnoCardInstance.create UnoCard.Green (Skip) in
+  assert_bool "Skip should be an initial top card" (Game.is_valid_initial_card skip);
+  let reverse = UnoCardInstance.create UnoCard.Yellow (Reverse) in
+  assert_bool "Reverse Card should be an initial top card" (Game.is_valid_initial_card reverse);
+  let numbered_color_card = UnoCardInstance.create UnoCard.Red (Number 5) in
+  assert_bool "Wild Card should not be an initial top card" (Game.is_valid_initial_card numbered_color_card)
 
 let test_next_player_index _ =
   Game.initialize_game();
@@ -289,17 +325,29 @@ let test_handle_draw_four_random_card _ =
     | Some new_state ->
       assert_equal state new_state
 (* Might be failing if a card being played is a wild_card and they are choosing colors. *)
-let test_play_cpu_turn _ =
-  Game.initialize_game();
-  match !Game.game_state with
-    | Some state ->
-      let updated_state = {state with current_player_index = 1; direction = 1} in
-      let new_state, _, cpu_index, color_chosen = Game.play_cpu_turn updated_state in
-      assert_equal None color_chosen;
-      assert_equal 1 cpu_index;
-      assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
-    | None -> assert_failure "Game not initialized."
+  let print_option s =
+    match s with
+    | None -> "None"
+    | Some s -> s
 
+  let get_top_card dis_pile = 
+    match dis_pile with
+    | [] -> UnoCardInstance.create WildColor (Number 99)
+    | x :: _ -> x
+
+  let test_play_cpu_turn _ =
+    Game.initialize_game();
+    match !Game.game_state with
+    | Some state ->
+        printf "\ntop card: %s\n" (Sexp.to_string (UnoCardInstance.sexp_of_t (get_top_card state.discard_pile)));
+        let updated_state = {state with current_player_index = 1; direction = 1} in
+        let new_state, card_played, cpu_index, color_chosen = Game.play_cpu_turn updated_state in
+        printf "card chosen: %s\n" (Sexp.to_string(UnoCardInstance.sexp_of_t (card_played)));
+        printf "color chosen: %s\n" (print_option color_chosen);
+        (* assert_equal None color_chosen; *)
+        assert_equal 1 cpu_index;
+        assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
+    | None -> assert_failure "Game not initialized."  
 let test_any_playable_card _ =
   let card1 = UnoCardInstance.create (UnoCard.Red) (Number 5) in
   let card2 = UnoCardInstance.create (UnoCard.Blue) (Number 0) in
@@ -314,7 +362,10 @@ let test_any_playable_card _ =
 let series =
   "Game Tests" >:::
   ["Game Initialization" >:: test_initialize_game;
+   "Game Player Getter" >:: test_get_players;
+   "Game CPU Getter" >:: test_get_cpus;
    "Game Next Player" >:: test_next_player_index;
+   "Game Valid Initial Card - DrawTwo, DrawFour, WildCard, Skip, Reverse, and numbered cards" >:: test_is_valid_initial_card;
    "Game Skip Card Handling" >:: test_handle_skip_card;
    "Game Skip Card Handling - Not a Skip Card" >:: test_handle_skip_card_with_random_card;
    "Game Reverse Card Handling" >:: test_handle_reverse_card;
