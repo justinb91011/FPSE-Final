@@ -35,8 +35,8 @@ module Game = struct
     let deck = Deck.create_deck () |> Deck.shuffle in
     
     let player = Player.create "Player1" in
-    let cpu1 = CPU.create CPU.Easy in
-    let cpu2 = CPU.create CPU.Easy in
+    let cpu1 = CPU.create CPU.Hard in
+    let cpu2 = CPU.create CPU.Hard in
     
     let player_cards, deck = Deck.draw_cards 7 deck in
     let player = Player.add_cards player player_cards in
@@ -115,13 +115,34 @@ module Game = struct
       (* If not a reverse card, do nothing *)
       state
 
+  let get_opponents_card_counts state cpu_index =
+    let current_cpu_pos = cpu_index - 1 in
+    let other_cpus = List.filteri state.cpus ~f:(fun i _ -> i <> current_cpu_pos) in
+    let cpu_card_counts = List.map other_cpus ~f:(fun (_, cpu) -> List.length (CPU.get_hand cpu)) in
+    let player_card_counts = List.map state.players ~f:(fun (_, player) -> List.length (Player.get_hand player)) in
+    cpu_card_counts @ player_card_counts
+
   let play_cpu_turn state =
     let cpu_index = state.current_player_index in
     let (_, current_cpu) = List.nth_exn state.cpus (cpu_index - 1) in
     let top_discard = List.hd_exn state.discard_pile in
   
-    (* CPU chooses a card *)
-    let card, new_deck, updated_cpu, color_chosen = CPU.choose_card current_cpu top_discard state.deck in
+    let difficulty = CPU.get_difficulty current_cpu in
+    let card_selection_result =
+      match difficulty with
+      | CPU.Easy ->
+        (* CPU chooses a card using the existing Easy difficulty function *)
+        CPU.choose_card current_cpu top_discard state.deck
+      | CPU.Hard ->
+        (* Gather opponents' card counts *)
+        let opponents_card_counts = get_opponents_card_counts state cpu_index in
+        (* CPU chooses a card using the Hard difficulty function *)
+        CPU.choose_card_hard current_cpu top_discard state.deck opponents_card_counts
+      | CPU.Medium ->
+        failwith "Medium difficulty not implemented yet." [@coverage off]
+    in
+    
+    let card, new_deck, updated_cpu, color_chosen = card_selection_result in
 
   
     (* Determine if CPU played the card *)

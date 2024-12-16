@@ -19,7 +19,7 @@
 (library
  (name cpu)
  (modules cpu)
- (libraries core card uno_card deck)
+ (libraries core card uno_card deck algorithm)
  (preprocess (pps bisect_ppx)))
 
 (library
@@ -31,7 +31,7 @@
 (library
   (name algorithm)
   (modules algorithm)
-  (libraries core card cpu uno_card)
+  (libraries core card uno_card)
   (preprocess (pps bisect_ppx)))
 
 (library
