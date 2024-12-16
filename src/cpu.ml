@@ -58,8 +58,6 @@ module CPU = struct
 
   (* Existing choose_card function for Easy difficulty *)
   let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t * string option =
-    match cpu.diff with
-    | Easy ->
       let playable_cards =
         List.filter ~f:(fun card ->
             UnoCard.is_playable
@@ -92,13 +90,7 @@ module CPU = struct
         else
           (chosen_card, deck, updated_cpu, None)
 
-    | Medium ->
-      failwith "Medium difficulty not implemented yet." [@coverage off]
-
-    | Hard ->
-      failwith "Hard difficulty not implemented yet." [@coverage off]
-
-  (* New function for Hard difficulty *)
+  
   (* New function for Hard difficulty *)
   let choose_card_hard (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) (opponents : int list) : UnoCardInstance.t * Deck.t * t * string option =
     (* Implementing Hard CPU logic *)

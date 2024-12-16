@@ -32,11 +32,12 @@ module Game = struct
     )
     
   let initialize_game () =
+    Random.self_init ();
     let deck = Deck.create_deck () |> Deck.shuffle in
     
     let player = Player.create "Player1" in
-    let cpu1 = CPU.create CPU.Hard in
-    let cpu2 = CPU.create CPU.Hard in
+    let cpu1 = CPU.create CPU.Medium in
+    let cpu2 = CPU.create CPU.Medium in
     
     let player_cards, deck = Deck.draw_cards 7 deck in
     let player = Player.add_cards player player_cards in
@@ -139,7 +140,15 @@ module Game = struct
         (* CPU chooses a card using the Hard difficulty function *)
         CPU.choose_card_hard current_cpu top_discard state.deck opponents_card_counts
       | CPU.Medium ->
-        failwith "Medium difficulty not implemented yet." [@coverage off]
+        let rand = Random.float 1.0 in
+        if Float.(rand < 0.75) then
+          (* 80% probability to act as Easy *)
+          CPU.choose_card current_cpu top_discard state.deck
+        else
+          (* 20% probability to act as Hard *)
+          let opponents_card_counts = get_opponents_card_counts state cpu_index in
+          CPU.choose_card_hard current_cpu top_discard state.deck opponents_card_counts
+        
     in
     
     let card, new_deck, updated_cpu, color_chosen = card_selection_result in
