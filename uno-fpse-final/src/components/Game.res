@@ -478,10 +478,11 @@ let make = (~_difficulty: string) => {
               <h2>{React.string(currentTurn ++ "'s Turn")}</h2>
             </div>
 
+
             <div style=ReactDOM.Style.make(
               ~display="flex",
               ~justifyContent="space-between",
-              ~alignItems="center",
+              ~alignItems="flex-start",
               ~width="100%",
               ~paddingLeft="80px",
               ~paddingRight="80px",
@@ -491,44 +492,68 @@ let make = (~_difficulty: string) => {
                 React.array(
                   cpuPlayers
                   |> Array.map(((cpuName, cardCount)) =>
-                      <div
-                        key=cpuName
-                        style=ReactDOM.Style.make(
-                          ~color="white",
-                          ~textAlign="center",
-                          ()
-                        )>
-                        <h2>{React.string(cpuName)}</h2>
-                        <ul style=ReactDOM.Style.make(
-                          ~listStyle="none",
-                          ~padding="0",
-                          ~display="flex",
-                          ~flexDirection="column",
-                          ~gap="1px",
-                          ~justifyContent="center",
-                          ()
-                        )>
+                    <div
+                      key=cpuName
+                      style=ReactDOM.Style.make(
+                        ~color="white",
+                        ~textAlign="center",
+                        ~flexShrink="0",
+                        ~flexBasis="100px", /* Prevent container from shrinking */
+                        ()
+                      )>
+                      <h2 style=ReactDOM.Style.make(
+                        ~margin="0",
+                        ~paddingBottom="10px",
+                        ()
+                      )>
+                        {React.string(cpuName)}
+                      </h2>
+                      <ul style=ReactDOM.Style.make(
+                        ~listStyle="none",
+                        ~padding="0",
+                        ~display="flex",
+                        ~flexDirection="column",
+                        ~gap="2px",
+                        ~justifyContent="center",
+                        ~alignItems="center",
+                        ()
+                      )>
                         {
                           React.array(
                             Belt.Array.range(0, cardCount - 1)
-                            |> Array.map(i =>
-                                <li key=string_of_int(i)>
-                                  <img
-                                    src="/card_images/back-card.png"
-                                    alt="Card Back"
-                                    style=ReactDOM.Style.make(~width="70px", ~transform="rotate(90deg)", ())
-                                  />
-                                </li>
-                              )
+                            |> Array.map(i => {
+                              /* Default card width */
+                              let baseWidth = 70.0;
+                              
+                              /* Shrink by 20% when cardCount > 7 */
+                              let width =
+                                if cardCount > 7 {
+                                  baseWidth *. 0.7 /* Reduce width by 40% */
+                                } else {
+                                  baseWidth
+                                };
+
+                              <li key=string_of_int(i)>
+                                <img
+                                  src="/card_images/back-card.png"
+                                  alt="Card Back"
+                                  style=ReactDOM.Style.make(
+                                    ~width=Js.Float.toString(width) ++ "px", /* Apply calculated width */
+                                    ~transform="rotate(90deg)",
+                                    ()
+                                  )
+                                />
+                              </li>
+                            })
                           )
                         }
-
-                        </ul>
-                      </div>
-                    )
+                      </ul>
+                    </div>
+                  )
                 )
               }
             </div>
+
 
             <Button
               onClick={_ => setShowQuitForm(_ => true)}
