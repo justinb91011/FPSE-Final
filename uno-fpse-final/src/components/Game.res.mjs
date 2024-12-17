@@ -17,6 +17,7 @@ import * as JsxRuntime from "react/jsx-runtime";
 import * as RescriptReactRouter from "@rescript/react/src/RescriptReactRouter.res.mjs";
 
 function Game(props) {
+  var _difficulty = props._difficulty;
   var match = React.useState(function () {
         return false;
       });
@@ -290,6 +291,27 @@ function Game(props) {
       return "/card_images/unknown-card.png";
     }
   };
+  var initializeGame = function () {
+    var url = "http://localhost:8080/init_game?difficulty=" + _difficulty;
+    var postInit = {
+      method: "POST"
+    };
+    Js_promise.$$catch((function (param) {
+            console.log("Error initializing game");
+            return Promise.resolve();
+          }), Js_promise.then_((function () {
+                return Promise.resolve();
+              }), Js_promise.then_((function (response) {
+                    if (response.ok) {
+                      return Promise.resolve();
+                    } else {
+                      return Promise.reject(Js_exn.raiseError("Failed to initialize game"));
+                    }
+                  }), fetch(url, postInit))));
+  };
+  React.useEffect((function () {
+          initializeGame();
+        }), []);
   var fetchGameInfo = function () {
     Js_promise.$$catch((function (param) {
             console.log("Error fetching game information");
@@ -480,38 +502,47 @@ function Game(props) {
                 }),
             JsxRuntime.jsx("div", {
                   children: $$Array.map((function (param) {
+                          var cardCount = param[1];
                           var cpuName = param[0];
                           return JsxRuntime.jsxs("div", {
                                       children: [
                                         JsxRuntime.jsx("h2", {
-                                              children: cpuName
+                                              children: cpuName,
+                                              style: {
+                                                margin: "0",
+                                                paddingBottom: "10px"
+                                              }
                                             }),
                                         JsxRuntime.jsx("ul", {
                                               children: $$Array.map((function (i) {
+                                                      var width = cardCount > 7 ? 70.0 * 0.7 : 70.0;
                                                       return JsxRuntime.jsx("li", {
                                                                   children: JsxRuntime.jsx("img", {
                                                                         style: {
-                                                                          width: "70px",
+                                                                          width: width.toString() + "px",
                                                                           transform: "rotate(90deg)"
                                                                         },
                                                                         alt: "Card Back",
                                                                         src: "/card_images/back-card.png"
                                                                       })
                                                                 }, String(i));
-                                                    }), Belt_Array.range(0, param[1] - 1 | 0)),
+                                                    }), Belt_Array.range(0, cardCount - 1 | 0)),
                                               style: {
                                                 display: "flex",
                                                 listStyle: "none",
                                                 padding: "0",
+                                                alignItems: "center",
                                                 flexDirection: "column",
                                                 justifyContent: "center",
-                                                gap: "1px"
+                                                gap: "2px"
                                               }
                                             })
                                       ],
                                       style: {
                                         color: "white",
-                                        textAlign: "center"
+                                        textAlign: "center",
+                                        flexBasis: "100px",
+                                        flexShrink: "0"
                                       }
                                     }, cpuName);
                         }), match$2[0]),
@@ -520,7 +551,7 @@ function Game(props) {
                     paddingRight: "80px",
                     paddingLeft: "80px",
                     width: "100%",
-                    alignItems: "center",
+                    alignItems: "flex-start",
                     justifyContent: "space-between"
                   }
                 }),

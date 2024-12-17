@@ -98,6 +98,38 @@ let make = (~_difficulty: string) => {
     | None => "/card_images/unknown-card.png"
     };
 
+
+  let initializeGame = () => {
+    let url = "http://localhost:8080/init_game?difficulty=" ++ _difficulty
+
+    let postInit = Obj.magic({
+        "method": "POST",
+    });
+
+    Fetch.fetchWithInit(url, postInit)
+    |> Js.Promise.then_(response =>
+        if (response->Fetch.Response.ok) {
+          Js.Promise.resolve()
+        } else {
+          Js.Promise.reject(Js.Exn.raiseError("Failed to initialize game"))
+        }
+      )
+    |> Js.Promise.then_(_ => {
+        /* Re-fetch game info after initialization */
+  
+        Js.Promise.resolve()
+      })
+    |> Js.Promise.catch(_ => {
+        Js.log("Error initializing game")
+        Js.Promise.resolve()
+      })
+    |> ignore
+  }
+
+    React.useEffect(() => {
+      initializeGame()
+      None
+    }, [])
   /* Function to re-fetch the game state after a move */
   let fetchGameInfo = () => {
     Fetch.fetch("http://localhost:8080/")

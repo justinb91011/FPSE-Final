@@ -7,7 +7,7 @@ open Player
 open Game
 
 let test_initialize_game _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state was not initialized."
   | Some state ->
@@ -17,7 +17,7 @@ let test_initialize_game _ =
     assert_equal 1 state.direction
 
 let test_get_players _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state was not initialized."
   | Some state ->
@@ -27,7 +27,7 @@ let test_get_players _ =
     assert (List.mem player_names "Player1" ~equal:String.equal)
 
 let test_get_cpus _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state was not initialized."
   | Some state ->
@@ -54,7 +54,7 @@ let test_is_valid_initial_card _ =
   assert_bool "Wild Card should not be an initial top card" (Game.is_valid_initial_card numbered_color_card)
 
 let test_next_player_index _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let new_index = Game.next_player_index state in
@@ -62,7 +62,7 @@ let test_next_player_index _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_skip_card _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let skip_card = UnoCardInstance.create UnoCard.Red Skip in
@@ -71,7 +71,7 @@ let test_handle_skip_card _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_skip_card_with_random_card _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let not_skip_card = UnoCardInstance.create UnoCard.Red (Number 0) in
@@ -80,7 +80,7 @@ let test_handle_skip_card_with_random_card _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_reverse_card _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let reverse_card = UnoCardInstance.create UnoCard.Red Reverse in
@@ -96,7 +96,7 @@ let test_handle_reverse_card _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_cpu_reverse_card _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let updated_state = {state with current_player_index = 1} in
@@ -123,7 +123,7 @@ let test_handle_cpu_reverse_card _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_reverse_card_with_random_card _ =
-    Game.initialize_game();
+    Game.initialize_game(Easy);
     match !Game.game_state with
     | Some state ->
       let not_reverse_card = UnoCardInstance.create UnoCard.Red (Number 5) in
@@ -132,7 +132,7 @@ let test_handle_reverse_card_with_random_card _ =
     | None -> assert_failure "Game state not initialized"
 
 let test_handle_reverse_card_counterclockwise _ =
-    Game.initialize_game();
+    Game.initialize_game(Easy);
     match !Game.game_state with
     | Some state ->
       let updated_state = {state with direction = -1} in
@@ -149,7 +149,7 @@ let test_handle_reverse_card_counterclockwise _ =
     | None -> assert_failure "Game state not initialized"
 
 let test_handle_cpu_reverse_card_counterclockwise _ =
-    Game.initialize_game();
+    Game.initialize_game(Easy);
     match !Game.game_state with
     | Some state ->
       let updated_state = {state with current_player_index = 1; direction = -1} in
@@ -178,7 +178,7 @@ let test_handle_cpu_reverse_card_counterclockwise _ =
     | None -> assert_failure "Game state not initialized"
 
 let test_handle_draw_two _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let draw_two_card = UnoCardInstance.create UnoCard.Red DrawTwo in
@@ -187,7 +187,7 @@ let test_handle_draw_two _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_draw_two_cpu_1 _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let cpu_state = {state with current_player_index = 1} in
@@ -197,7 +197,7 @@ let test_handle_draw_two_cpu_1 _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_draw_two_cpu_2 _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let cpu_state = {state with current_player_index = 2} in
@@ -207,7 +207,7 @@ let test_handle_draw_two_cpu_2 _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_draw_two_random_card _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | Some state ->
     let not_draw_two_card = UnoCardInstance.create UnoCard.Red (Number 5) in
@@ -217,7 +217,7 @@ let test_handle_draw_two_random_card _ =
   | None -> assert_failure "Game state not initialized"
 
 let test_handle_wild_card_blue _ =
-      Game.initialize_game();
+      Game.initialize_game(Easy);
       match !Game.game_state with
       | None -> assert_failure "Game state not initialized"
       | Some state ->
@@ -229,7 +229,7 @@ let test_handle_wild_card_blue _ =
           assert_equal (UnoCard.Blue) (UnoCardInstance.get_color top_discard)
 
 let test_handle_wild_card_red _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -241,7 +241,7 @@ let test_handle_wild_card_red _ =
       assert_equal (UnoCard.Red) (UnoCardInstance.get_color top_discard)
 
 let test_handle_wild_card_green _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -253,7 +253,7 @@ let test_handle_wild_card_green _ =
       assert_equal (UnoCard.Green) (UnoCardInstance.get_color top_discard)
 
 let test_handle_wild_card_yellow _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -265,7 +265,7 @@ let test_handle_wild_card_yellow _ =
       assert_equal (UnoCard.Yellow) (UnoCardInstance.get_color top_discard)
 
 let test_handle_draw_four_blue _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -277,7 +277,7 @@ let test_handle_draw_four_blue _ =
       assert_equal (UnoCard.Blue) (UnoCardInstance.get_color top_discard)
 
 let test_handle_draw_four_red _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -289,7 +289,7 @@ let test_handle_draw_four_red _ =
       assert_equal (UnoCard.Red) (UnoCardInstance.get_color top_discard)
       
 let test_handle_draw_four_green_cpu_pov _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -302,7 +302,7 @@ let test_handle_draw_four_green_cpu_pov _ =
       assert_equal (UnoCard.Green) (UnoCardInstance.get_color top_discard)
 
 let test_handle_draw_four_yellow_cpu_pov _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -315,7 +315,7 @@ let test_handle_draw_four_yellow_cpu_pov _ =
       assert_equal (UnoCard.Yellow) (UnoCardInstance.get_color top_discard)
 
 let test_handle_draw_four_random_card _ =
-  Game.initialize_game();
+  Game.initialize_game(Easy);
   match !Game.game_state with
   | None -> assert_failure "Game state not initialized"
   | Some state ->
@@ -336,7 +336,7 @@ let test_handle_draw_four_random_card _ =
     | x :: _ -> x
 
   let test_play_cpu_turn _ =
-    Game.initialize_game();
+    Game.initialize_game(Easy);
     match !Game.game_state with
     | Some state ->
         printf "\ntop card: %s\n" (Sexp.to_string (UnoCardInstance.sexp_of_t (get_top_card state.discard_pile)));

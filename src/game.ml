@@ -31,13 +31,13 @@ module Game = struct
         (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
     )
     
-  let initialize_game () =
+  let initialize_game difficulty =
     Random.self_init ();
     let deck = Deck.create_deck () |> Deck.shuffle in
     
     let player = Player.create "Player1" in
-    let cpu1 = CPU.create CPU.Medium in
-    let cpu2 = CPU.create CPU.Medium in
+    let cpu1 = CPU.create difficulty in
+    let cpu2 = CPU.create difficulty in
     
     let player_cards, deck = Deck.draw_cards 7 deck in
     let player = Player.add_cards player player_cards in

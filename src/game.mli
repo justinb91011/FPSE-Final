@@ -23,8 +23,8 @@ module Game : sig
     val is_valid_initial_card : UnoCardInstance.t -> bool
     (** [is_valid_initial_card card] checks if the given card is a valid initial top card (not a DrawTwo, DrawFour, or WildValue). *)
     
-    val initialize_game : unit -> unit
-    (** [initialize_game ()] sets up the initial state of the game, including the player, CPUs, and the deck. *)
+    val initialize_game : CPU.difficulty -> unit
+    (** [initialize_game difficulty] sets up the initial state of the game with CPUs set to the specified difficulty. *)
 
     val next_player_index : game_state -> int
     (** [next_player_index state] returns the index of the next player, considering the game's direction and the number of players. *)

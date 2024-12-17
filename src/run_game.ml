@@ -16,14 +16,35 @@ let add_cors_headers next_handler request =
     List.exists (Game.get_players state) ~f:(fun (_, player) -> Player.has_won player)
     || List.exists (Game.get_cpus state) ~f:(fun (_, cpu) -> CPU.has_won cpu)
 
-let () = Game.initialize_game ()
 
+    
 let () =
   Dream.run
     ~interface:"0.0.0.0" ~port:8080
   @@ Dream.logger
   @@ add_cors_headers
   @@ Dream.router [
+
+
+  Dream.post "/init_game" (fun request ->
+    (* Extract the 'difficulty' parameter from the query string *)
+    match Dream.query request "difficulty" with
+    | Some("Easy") ->
+        Game.initialize_game CPU.Easy;
+        let json_response = `Assoc [("message", `String "Game initialized with Easy difficulty")] in
+        Dream.json (Yojson.Safe.to_string json_response)
+    | Some("Medium") ->
+        Game.initialize_game CPU.Medium;
+        let json_response = `Assoc [("message", `String "Game initialized with Medium difficulty")] in
+        Dream.json (Yojson.Safe.to_string json_response)
+    | Some("Hard") ->
+        Game.initialize_game CPU.Hard;
+        let json_response = `Assoc [("message", `String "Game initialized with Hard difficulty")] in
+        Dream.json (Yojson.Safe.to_string json_response)
+    | Some(_) | None ->
+        let json_response = `Assoc [("error", `String "Invalid difficulty.")] in
+        Dream.json ~code:400 (Yojson.Safe.to_string json_response)
+  );
 
     (* Handle the player's turn *)
     Dream.post "/play" (fun request ->
