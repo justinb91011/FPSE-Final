@@ -15,7 +15,7 @@ function App(props) {
     var match$1 = match.tl;
     if (match$1 && !match$1.tl) {
       return JsxRuntime.jsx(Game.make, {
-                  difficulty: match$1.hd
+                  _difficulty: match$1.hd
                 });
     }
     

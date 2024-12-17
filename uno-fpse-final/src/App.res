@@ -4,7 +4,7 @@ let make = () => {
 
   switch url.path {
   | list{} => <StartBackground />
-  | list{"game", difficulty} => <Game difficulty />
+  | list{"game", _difficulty} => <Game _difficulty />
   | _ => <div>{React.string("Page Not Found")}</div>
   }
 }

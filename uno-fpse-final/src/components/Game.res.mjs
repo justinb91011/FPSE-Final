@@ -17,8 +17,6 @@ import * as JsxRuntime from "react/jsx-runtime";
 import * as RescriptReactRouter from "@rescript/react/src/RescriptReactRouter.res.mjs";
 
 function Game(props) {
-  var difficulty = props.difficulty;
-  console.log("This will be a " + difficulty + " game");
   var match = React.useState(function () {
         return false;
       });
@@ -266,6 +264,22 @@ function Game(props) {
         [
           "WildColor WildValue",
           "/card_images/wild-card.png"
+        ],
+        [
+          "Green DrawFour",
+          "/card_images/green-draw-four-card.png"
+        ],
+        [
+          "Red DrawFour",
+          "/card_images/red-draw-four-card.png"
+        ],
+        [
+          "Blue DrawFour",
+          "/card_images/blue-draw-four-card.png"
+        ],
+        [
+          "Yellow DrawFour",
+          "/card_images/yellow-draw-four-card.png"
         ]
       ]);
   var cardImageUrl = function (card) {
@@ -359,7 +373,6 @@ function Game(props) {
           
         }), [playerInfo]);
   var handleCpuTurn = function (cpuName) {
-    console.log(cpuName + " turn starting...");
     setTimeout((function () {
             var postInit = {
               method: "POST"
@@ -371,9 +384,7 @@ function Game(props) {
                           return false;
                         });
                     return Promise.resolve();
-                  }), Js_promise.then_((function (data) {
-                        console.log(cpuName + " turn completed:");
-                        console.log(data);
+                  }), Js_promise.then_((function (param) {
                         fetchGameInfo();
                         fetchCpuInfo();
                         return Promise.resolve();
@@ -389,21 +400,18 @@ function Game(props) {
   React.useEffect((function () {
           switch (currentTurn) {
             case "CPU1" :
-                console.log("Handling CPU1 turn...");
                 setIsCpuTurn(function (param) {
                       return true;
                     });
                 handleCpuTurn("CPU1");
                 break;
             case "CPU2" :
-                console.log("Handling CPU2 turn...");
                 setIsCpuTurn(function (param) {
                       return true;
                     });
                 handleCpuTurn("CPU2");
                 break;
             default:
-              console.log("It's not a CPU's turn: " + currentTurn);
               setIsCpuTurn(function (param) {
                     return false;
                   });
@@ -524,13 +532,6 @@ function Game(props) {
                           });
                     }),
                   children: "Quit"
-                }),
-            JsxRuntime.jsx("h1", {
-                  children: "Game Page for " + difficulty + " Difficulty",
-                  style: {
-                    color: "white",
-                    textAlign: "center"
-                  }
                 }),
             JsxRuntime.jsx("div", {
                   children: JsxRuntime.jsx("img", {

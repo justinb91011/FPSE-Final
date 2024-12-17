@@ -2,13 +2,13 @@
 @bs.val external alert: string => unit = "alert"
 
 @react.component
-let make = (~difficulty: string) => {
-  Js.log("This will be a " ++ difficulty ++ " game");
+let make = (~_difficulty: string) => {
+  
 
   let (showQuitForm, setShowQuitForm) = React.useState(() => false);
   let (playerInfo, setPlayerInfo) = React.useState(() => None);
   let (cpuPlayers, setCpuPlayers) = React.useState(() => []);
-  let (isCpuTurn, setIsCpuTurn) = React.useState(() => false);
+  let (_, setIsCpuTurn) = React.useState(() => false);
   let (currentTurn, setCurrentTurn) = React.useState(() => "Loading turn...");
 
 
@@ -230,7 +230,6 @@ let make = (~difficulty: string) => {
 
   /* Function to handle CPU turn */
   let handleCpuTurn = (~cpuName: string) => {
-    Js.log(cpuName ++ " turn starting...");
 
     /* Add a 3-second delay before executing the turn */
     ignore(Js.Global.setTimeout(() => {
@@ -249,10 +248,7 @@ let make = (~difficulty: string) => {
             Js.Promise.reject(Js.Exn.raiseError("Failed to process CPU turn"))
           }
         )
-      |> Js.Promise.then_(data => {
-          Js.log(cpuName ++ " turn completed:");
-          Js.log(data);
-
+      |> Js.Promise.then_(_ => {
           /* Re-fetch game state to determine the next turn */
           fetchGameInfo();
           fetchCpuInfo();
@@ -404,17 +400,14 @@ let make = (~difficulty: string) => {
   React.useEffect(() => {
     switch currentTurn {
     | "CPU1" => {
-        Js.log("Handling CPU1 turn...");
         setIsCpuTurn(_ => true);
         handleCpuTurn(~cpuName="CPU1");
       }
     | "CPU2" => {
-        Js.log("Handling CPU2 turn...");
         setIsCpuTurn(_ => true);
         handleCpuTurn(~cpuName="CPU2");
       }
     | _ => {
-        Js.log("It's not a CPU's turn: " ++ currentTurn);
         setIsCpuTurn(_ => false);
       }
     };
@@ -544,9 +537,7 @@ let make = (~difficulty: string) => {
               {React.string("Quit")}
             </Button>
 
-            <h1 style=ReactDOM.Style.make(~color="white", ~textAlign="center", ())>
-              {React.string("Game Page for " ++ difficulty ++ " Difficulty")}
-            </h1>
+            
 
             <div style=ReactDOM.Style.make(
               ~position="absolute",
