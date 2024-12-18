@@ -1,1 +1,18 @@
 (lang dune 3.16)
+(generate_opam_files true)
+(authors "Justin Bravo, Robert Velez, Griffin Montalvo")
+(maintainers "jbravo3@jh.edu, rvelez4@jh.edu, gmontal3@jh.edu")
+(package
+ (name uno_game)
+ (allow_empty)
+ (synopsis "A comprehensive Uno game implementation in OCaml.")
+ (description "Uno Game is an OCaml project that implements the popular card game Uno. It includes functionalities for game logic, CPU players with varying difficulties, and a frontend interface built with ReScript.")
+ (depends
+  (core (>= 0.17.1))
+  (dream (>= 1.0.0))
+  (lwt (>= 5.7.0))
+  (ppx_jane (>= 0.17.0))
+  (bisect_ppx (>= 2.8.3))
+  (lwt_ppx (>= 2.1.0))
+  (ounit2 (>= 2.2.7))
+ ))
