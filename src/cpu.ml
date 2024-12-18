@@ -74,7 +74,7 @@ module CPU = struct
              (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
         then
           (* Drawn card is playable *)
-          if UnoCard.equal_color (UnoCardInstance.get_color drawn_card) UnoCard.WildColor ||
+          if UnoCard.equal_value (UnoCardInstance.get_value drawn_card) UnoCard.WildValue ||
               UnoCard.equal_value (UnoCardInstance.get_value drawn_card) UnoCard.DrawFour
           then 
             let color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in

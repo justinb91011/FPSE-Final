@@ -194,10 +194,10 @@ module Algorithm = struct
   |&gt; fst *)
 
   let rank_card card ~hand ~opponents ~top_card =
-  <span data-count="25">i</span>f UnoCard.is_playable (UnoCardInstance.get_colo<span data-count="25">r</span> card) (UnoCardInstance.get_valu<span data-count="25">e</span> card)
-    (UnoCardInstance.get_colo<span data-count="25">r</span> top_card) (UnoCardInstance.get_valu<span data-count="25">e</span> top_card) then
-    <span data-count="21">m</span>atch UnoCardInstance.get_value card with
-    | <span data-count="3">N</span>umber _ -&gt; 1
+  <span data-count="26">i</span>f UnoCard.is_playable (UnoCardInstance.get_colo<span data-count="26">r</span> card) (UnoCardInstance.get_valu<span data-count="26">e</span> card)
+    (UnoCardInstance.get_colo<span data-count="26">r</span> top_card) (UnoCardInstance.get_valu<span data-count="26">e</span> top_card) then
+    <span data-count="22">m</span>atch UnoCardInstance.get_value card with
+    | <span data-count="4">N</span>umber _ -&gt; 1
 
     | <span data-count="3">R</span>everse -&gt;
       let front = List.hd_exn opponents in
