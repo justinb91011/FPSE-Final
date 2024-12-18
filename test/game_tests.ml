@@ -339,12 +339,8 @@ let test_handle_draw_four_random_card _ =
     Game.initialize_game(Easy);
     match !Game.game_state with
     | Some state ->
-        printf "\ntop card: %s\n" (Sexp.to_string (UnoCardInstance.sexp_of_t (get_top_card state.discard_pile)));
         let updated_state = {state with current_player_index = 1; direction = 1} in
-        let new_state, card_played, cpu_index, color_chosen = Game.play_cpu_turn updated_state in
-        printf "card chosen: %s\n" (Sexp.to_string(UnoCardInstance.sexp_of_t (card_played)));
-        printf "color chosen: %s\n" (print_option color_chosen);
-        (* assert_equal None color_chosen; *)
+        let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
         assert_equal 1 cpu_index;
         assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
     | None -> assert_failure "Game not initialized."  
@@ -359,6 +355,27 @@ let test_any_playable_card _ =
   assert_bool "My hand should not contain a playable card with respect to the top_card" (not (Game.any_playable_card (Player.get_hand me) non_playable_top_card));
   assert_bool "My hand should not contain a playable card with respect to the top_card" (Game.any_playable_card (Player.get_hand me) playable_top_card)
   
+
+let test_initialize_hard_game _ =
+  Game.initialize_game(Hard);
+  match !Game.game_state with
+  | Some state ->
+    assert_equal 1 (List.length state.players);
+    assert_equal 2 (List.length state.cpus);
+    assert_equal 1 (List.length state.discard_pile);
+    assert_equal 1 state.direction
+  | None -> assert_failure "Hard game not initialized."
+
+let test_play_cpu_turn_hard _ =
+  Game.initialize_game(Hard);
+  match !Game.game_state with
+  | Some state ->
+      let updated_state = {state with current_player_index = 1; direction = 1} in
+      let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
+      assert_equal 1 cpu_index;
+      assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
+  | None -> assert_failure "Game not initialized."  
+
 let series =
   "Game Tests" >:::
   ["Game Initialization" >:: test_initialize_game;
@@ -387,4 +404,6 @@ let series =
    "Game Draw Four Card Handling - Yellow Chosen" >:: test_handle_draw_four_yellow_cpu_pov;
    "Game Draw Four Card Handling - Not a Draw Four Card" >:: test_handle_draw_four_random_card;
    "Game CPU Turn Handling" >:: test_play_cpu_turn;
-   "Game Hand Playability with Top Card" >:: test_any_playable_card]
+   "Game Hand Playability with Top Card" >:: test_any_playable_card;
+   "Game Initialization - Hard" >:: test_initialize_hard_game;
+   "Game CPU Turn Handling - Hard" >:: test_play_cpu_turn_hard;]

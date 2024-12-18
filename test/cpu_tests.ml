@@ -205,8 +205,8 @@ let test_choose_card_hard_no_playable_card _ =
 
   (* Another test case, this time where the CPU draws a card but it is not playable, thus the card is added to their hand and their turn is over. *)
   let new_top_card = UnoCardInstance.create Green (Number 7) in
-  let new_cpu = CPU.add_cards (CPU.create Easy) [card1; card2] in
-  let newly_drawn_card, new_deck, newly_updated_cpu, color_chosen = CPU.choose_card new_cpu new_top_card initial_deck in
+  let new_cpu = CPU.add_cards (CPU.create Hard) [card1; card2] in
+  let newly_drawn_card, new_deck, newly_updated_cpu, color_chosen = CPU.choose_card_hard new_cpu new_top_card initial_deck [2;3] in
   (* Since the card that was drawn by the CPU was not instanly playable, we must check that the CPU hand now contains three cards,
     including the newly drawn one, and that the new deck now has one less card. *)
   assert_equal 3 (Deck.remaining_cards (CPU.get_hand newly_updated_cpu));
@@ -215,7 +215,85 @@ let test_choose_card_hard_no_playable_card _ =
     (List.exists (CPU.get_hand newly_updated_cpu) ~f:(UnoCardInstance.equal newly_drawn_card));
   assert_equal 107 (Deck.remaining_cards new_deck)
 
+let test_choose_card_hard_wild_card_drawn _ =
+  let drawn_card = UnoCardInstance.create WildColor (WildValue) in
+  let card1 = UnoCardInstance.create Blue (Number 0) in
+  let card2 = UnoCardInstance.create Red (Number 9) in
+  let top_card = UnoCardInstance.create Yellow (Number 2) in
+  let cpu = CPU.add_cards (CPU.create Hard) [card2; card1] in
+  let chosen_card, remaining_deck, updated_cpu, color_chosen_opt = CPU.choose_card_hard cpu top_card [drawn_card] [3;4] in
+  assert_bool "The CPU should have chosen a playable card."
+    (UnoCard.is_playable
+      (UnoCardInstance.get_color chosen_card) (UnoCardInstance.get_value chosen_card)
+      (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card));
+  let valid_colors = ["Blue"; "Red"; "Green"; "Yellow"] in
+  let color_chosen = Option.value_exn color_chosen_opt in
+  assert_bool "Chosen color should be one of Blue, Red, Green, or Yellow." (List.exists valid_colors ~f:(String.equal color_chosen));
+  (* The CPU did draw, thus the deck should be empty. *)
+  assert_equal 0 (Deck.remaining_cards remaining_deck);
+  (* The CPU's hand should still contain two cards as they played the one they drew. *)
+  assert_equal 2 (List.length (CPU.get_hand updated_cpu))
   
+let test_choose_card_hard_drawfour_drawn _ =
+  let drawn_card = UnoCardInstance.create WildColor (DrawFour) in
+  let card1 = UnoCardInstance.create Blue (Number 0) in
+  let card2 = UnoCardInstance.create Red (Number 9) in
+  let top_card = UnoCardInstance.create Yellow (Number 2) in
+  let cpu = CPU.add_cards (CPU.create Hard) [card2; card1] in
+  let chosen_card, remaining_deck, updated_cpu, color_chosen_opt = CPU.choose_card_hard cpu top_card [drawn_card] [3;4] in
+  assert_bool "The CPU should have chosen a playable card."
+    (UnoCard.is_playable
+      (UnoCardInstance.get_color chosen_card) (UnoCardInstance.get_value chosen_card)
+      (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card));
+  let valid_colors = ["Blue"; "Red"; "Green"; "Yellow"] in
+  let color_chosen = Option.value_exn color_chosen_opt in
+  assert_bool "Chosen color should be one of Blue, Red, Green, or Yellow." (List.exists valid_colors ~f:(String.equal color_chosen));
+  (* The CPU did draw, thus the deck should be empty. *)
+  assert_equal 0 (Deck.remaining_cards remaining_deck);
+  (* The CPU's hand should still contain two cards as they played the one they drew. *)
+  assert_equal 2 (List.length (CPU.get_hand updated_cpu))
+
+let test_choose_card_hard_playable_numbered_cards _ =
+  let top_card = UnoCardInstance.create Red (Number 2) in
+  let card1 = UnoCardInstance.create Blue (Number 2) in
+  let card2 = UnoCardInstance.create Blue (Number 9) in
+  let card3 = UnoCardInstance.create Red (Number 0) in
+  let card4 = UnoCardInstance.create Green (Number 2) in
+  let cpu = CPU.add_cards (CPU.create Hard) [card4; card3; card2; card1] in
+  let full_deck = Deck.create_deck() in
+  let chosen_card, remaining_deck, updated_cpu, color_chosen_opt = CPU.choose_card_hard cpu top_card full_deck [4;5] in
+  (* First, check the CPU chose a playable card. *)
+  assert_bool "The CPU should have chosen a playable card."
+  (UnoCard.is_playable
+  (UnoCardInstance.get_color chosen_card) (UnoCardInstance.get_value chosen_card)
+  (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card));
+  (* Since we are not playing a wildcard nor draw four, no color should be chosen. *)
+  assert_equal None color_chosen_opt;
+  (* Deck should also remain the same since no drawing took place. *)
+  assert_equal (Deck.remaining_cards full_deck) (Deck.remaining_cards remaining_deck);
+  (* CPUs hand should decrease by one card since one was played. *)
+  assert_equal (3) (List.length (CPU.get_hand updated_cpu))
+
+let test_choose_card_hard_playable_wildcards _ =
+  let top_card = UnoCardInstance.create Red (Number 2) in
+  let card1 = UnoCardInstance.create WildColor (WildValue) in
+  let card2 = UnoCardInstance.create WildColor (DrawFour) in
+  let cpu = CPU.add_cards (CPU.create Hard) [card2; card1] in
+  let full_deck = Deck.create_deck() in
+  let chosen_card, remaining_deck, updated_cpu, color_chosen_opt = CPU.choose_card_hard cpu top_card full_deck [4;5] in
+  (* First, check the CPU chose a playable card. *)
+  assert_bool "The CPU should have chosen a playable card."
+  (UnoCard.is_playable
+  (UnoCardInstance.get_color chosen_card) (UnoCardInstance.get_value chosen_card)
+  (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card));
+  (* Since we are playing a wildcard or draw four, a color should be chosen. *)
+  let valid_colors = ["Blue"; "Red"; "Green"; "Yellow"] in
+  let color_chosen = Option.value_exn color_chosen_opt in
+  assert_bool "Chosen color should be one of Blue, Red, Green, or Yellow." (List.exists valid_colors ~f:(String.equal color_chosen));
+  (* Deck should also remain the same since no drawing took place. *)
+  assert_equal (Deck.remaining_cards full_deck) (Deck.remaining_cards remaining_deck);
+  (* CPUs hand should decrease by one card since one was played. *)
+  assert_equal (1) (List.length (CPU.get_hand updated_cpu))
 let series =
   "Cpu Tests" >:::
   ["Cpu Creation" >:: test_create;
@@ -227,4 +305,8 @@ let series =
    "Cpu Card Choice - Easy - Wildcard" >:: test_choose_card_easy_wildcard;
    "Cpu Card Choice - Hard" >:: test_choose_card_hard;
    "Cpu Card Choice - Hard - Draw" >:: test_choose_card_hard_no_playable_card;
+   "Cpu Card Choice - Hard - Drawn Wildcard" >:: test_choose_card_hard_wild_card_drawn;
+   "Cpu Card Choice - Hard - Drawn Draw Four" >:: test_choose_card_hard_drawfour_drawn;
+   "Cpu Card Choice - Hard - Numbered Cards" >:: test_choose_card_hard_playable_numbered_cards;
+   "Cpu Card Choice - Hard - Wildcards & DrawFours" >:: test_choose_card_hard_playable_wildcards;
    "Cpu Win Check - Easy" >:: test_has_won]

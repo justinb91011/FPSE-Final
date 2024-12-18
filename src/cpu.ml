@@ -116,7 +116,7 @@ module CPU = struct
         (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
       then
       (* Drawn card is playable; play it immediately without adding to hand *)
-        if UnoCard.equal_color (UnoCardInstance.get_color drawn_card) UnoCard.WildColor ||
+        if UnoCard.equal_value (UnoCardInstance.get_value drawn_card) UnoCard.WildValue ||
             UnoCard.equal_value (UnoCardInstance.get_value drawn_card) UnoCard.DrawFour
         then
           let color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in
@@ -151,7 +151,7 @@ module CPU = struct
       (* Separate Wild cards from other top-ranked cards *)
       let wild_cards, non_wild_cards =
       List.partition_tf top_ranked_cards ~f:(fun card ->
-          UnoCard.equal_color (UnoCardInstance.get_color card) UnoCard.WildColor ||
+          UnoCard.equal_value (UnoCardInstance.get_value card) UnoCard.WildValue ||
           UnoCard.equal_value (UnoCardInstance.get_value card) DrawFour
       )
       in

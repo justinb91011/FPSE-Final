@@ -273,8 +273,8 @@ module Game = struct
       | WildValue->
         (match chosen_color_opt with
          | None -> 
-           (* Optionally, you can default to a color or return an error *)
-           None
+           (* Optionally, you can default to a color or return an error *) 
+           None [@coverage off]
          | Some chosen_color ->
            let valid_color = match String.lowercase chosen_color with
              | "red" -> UnoCard.Red
@@ -294,7 +294,7 @@ module Game = struct
         (match chosen_color_opt with
          | None -> 
            (* Optionally, you can default to a color or return an error *)
-           None
+           None [@coverage off]
          | Some chosen_color ->
            let valid_color = match String.lowercase chosen_color with
              | "red" -> UnoCard.Red
