@@ -73,7 +73,13 @@ module CPU = struct
              (UnoCardInstance.get_color drawn_card) (UnoCardInstance.get_value drawn_card)
              (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
         then
-          (* Drawn card is playable; play it immediately without adding to hand *)
+          (* Drawn card is playable *)
+          if UnoCard.equal_color (UnoCardInstance.get_color drawn_card) UnoCard.WildColor ||
+              UnoCard.equal_value (UnoCardInstance.get_value drawn_card) UnoCard.DrawFour
+          then 
+            let color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in
+            (drawn_card, updated_deck, cpu, Some color_chosen)
+          else 
           (drawn_card, updated_deck, cpu, None)
         else
           (* Drawn card is not playable; add it to the CPU's hand *)
@@ -110,6 +116,12 @@ module CPU = struct
         (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card)
       then
       (* Drawn card is playable; play it immediately without adding to hand *)
+        if UnoCard.equal_color (UnoCardInstance.get_color drawn_card) UnoCard.WildColor ||
+            UnoCard.equal_value (UnoCardInstance.get_value drawn_card) UnoCard.DrawFour
+        then
+          let color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in
+          (drawn_card, updated_deck, cpu, Some color_chosen)
+        else
         (drawn_card, updated_deck, cpu, None)
       else
         (* Drawn card is not playable; add it to the CPU's hand *)
