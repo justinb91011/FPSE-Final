@@ -2,19 +2,7 @@ open Core
 open Uno_card
 
 module Algorithm = struct
-  (* Helper function to count cards of a specific color in a given hand. *)
-  (* let count_color hand color =
-    List.fold_left hand ~f:(fun acc card -> 
-      if UnoCard.equal_color color (UnoCardInstance.get_color card) then acc + 1 else acc) ~init:0 *)
   
-  (* Helper function to determine the color with the most cards in a given hand. *)
-  (* let dominant_color hand =
-    let colors = [UnoCard.Red; Blue; Green; Yellow] in
-    List.fold_left colors ~f:(fun (max_color, max_count) color ->
-      let count = count_color hand color in
-      if count > max_count then (color, count) else (max_color, max_count))
-      ~init:(UnoCard.Red, 0)
-  |> fst *)
 
   let rank_card card ~hand ~opponents ~top_card =
   if UnoCard.is_playable (UnoCardInstance.get_color card) (UnoCardInstance.get_value card)
