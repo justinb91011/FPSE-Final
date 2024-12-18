@@ -1,6 +1,22 @@
-# Progress for Code Checkpoint
+/* 
+# Uno Card Game
 
-With respect to what is working/complete on the backend, we have implemented all the modules (with the exception of algorithm, as we're still finalizing our approach, more on this later) that we will need. We have also tested our modules for 100% coverage (card.ml & uno_card.ml have types that aren't tested but for some reason the [@@coverage off] macro isn't working as expected) and we will be looking to implement even more extensive tests later. We created a generic library, card.ml, that can be extrapolated and used on any card game. We have our specialized UNO functor in the uno_card.ml. We tested our libraries a lot, however we did not write tests for our game.ml file because we use this in run_game.ml which is the backend. These are just the functions we use for the backend and these were heavility tested on Postman. We did this kind of last minute of putting all the functions in game.ml to make our run_game.ml file look cleaner so we didn't have time to write tests for game.ml. We will have them done for the final submission.
+For the Functional Programming project, our group decided to make an Uno card game from scratch. This project has a frontend and backend implementation that are seamlessly integrated with eachother. The game features three difficulties, easy, medium, and hard that the player can choose from. Once the player chooses a difficulty, they can click start game and begin to play against two cpu players. For the backend we used Ocaml and dream, and for the frontend, we used react and rescript. 
+
+# How to Run the Project
+To begin, you must have two terminals open, one for the frontend and one for the backend. Starting with the backend, once you are in the projcect folder, run a dune build, and then navigate to the src folder. Once you are there run the command "dune exec ./run_game.exe". That will initialize the backend, and you can now switch to your other terminal and navigate to the uno-fpse-final and run the command "npm install". This will install all the neccessary packages and dependencies. Then run the command "npx rescript build", which compiles the code. Finally, run 
+"npm run dev". When this finishes running, a link will appear, and this is the link to the game page. At this point, the frontend and backend should be fully working, and the game can be played. If you want to reset the game, you must restart the backend and the frontend. It is crucial that the backend is ran before the frontend.
+
+Frontend Information:
+
+Our implementation of the frontend uses rescript. We use react to manage the states in the game, and this ranges from handling whose turn it is, to managing the home screen. We made a card map that maps every string that codes for a card to a png of the appropriate card. Our cardImageUrl function then actually makes the image appear on screen.
+
+With the initializeGame function it sends a post request back to the backend to start the game. We use a promise to check that the request was sent ok and if it was, it will proceed, if it didn't, then it will break the chain and give out an error message. there is then a useEffect to initialize the game once and only once.
+
+The fetchGameInfo function is very important because it helps keep track of the state of the game at all times. It fetches the state of the game from the basic '/' GET request path in the backend, which returns the player, the player's hand, top of the discard pile, and the current turn. We have a promise to ge the data and if its ok then it goes through, and if its not it stops. It then parses through the JSON and grabs all the important info and stores it into variables to be used later in the code.
+
+FetchCpuInfo operates similarly to fetchGameInfo except it requests and fetches the data from the /cpu_hands endpoint in the code. This fetches the number of cards in the cpu_hands and the turn of the cpu's.
+
 
 More on the backend. :
 
@@ -15,17 +31,6 @@ On Postman you can do a get request to http://localhost:8080. The response back 
 "/cpu_hands" GET request: This is a fairly simple get request that gets the hand of both cpu players, and the main point of it is for testing. We want to see what the before and after of the hand is to make sure that the cpu is playing cards correctly. If the game hasnt started yet, then it will output "Game has not been initialized.", which makes sense because there are no hands to look at before the game starts. We use the List.map for the cpu hands so that we can easily get the color of the card and value of the card, then add it to the list for hand representation. If it is successful, it will output something like this:
  CPU1's hand: WildColor WildValue, Blue Reverse, Green (Number 3), Blue Reverse, Green Reverse, Red (Number 9), Yellow (Number 9)`<br>`CPU2's hand: Blue (Number 9), Yellow (Number 5), Red Skip, Blue (Number 8), WildColor WildValue, Yellow DrawTwo, Yellow (Number 3)
 
-
-
-We ran into an error in the last minute of implementing the WildCards that is the normal WildCard that changes the color and also the Draw Four. Like everything works except the top of the discard pile isn't being changed to the color that was chosen. We will soon figure out what this error is. However everything else surrounding the game and the game logic should work. So we can almost fully run a game on the backend.
-
-
-
-More on the frontend:
-
-So for right now the backend and the frontend are not connected to each other. However we have done work on our frontend as well. In order to start the frontend you need to travel to the uno-fpse-final folder. Once you are here download all the dependencies you will need by doing npm install. Sometimes the dependencies won't be downloaded correctly so before you can run the frontend you should do: npx rescript clean and then npx rescript build. In order to run the frontend you will need to npm run dev. Open the localhost link you get from this and open it on any browser(Recommend Firefox Developer Edition). This will take you to the homepage of the frontend of our application. There is a start Game on the homepage that you can click on and it will open up a form that will ask the user to select their difficulty level. Once you have chosen to the Difficulty Level click on Start. This will you take to the /game/{Difficulty Level}. For right now we don't have the backend and frontend connected so we can't run the game visually. We have added a Quit Button to the bottom left of the Screen. When this is clicked it will ask the User again if its sure it wants to quit. If no is clicked the game will continue, if yes is clicked the user will be brought back to the initial frontend homepage.
-
-Moving on to what's not working/complete on the backend, we are still needing to finalize our algorithm. Currently, we have the easy implementation of the algorithm finished and can be found in cpu.ml lines 28 - 52. However, in order to implement the Medium difficulty, we need the Hard difficulty first as the Medium level will make use of both the Hard and Easy levels with certain and intricate probabilities.
 
 # Overview
 

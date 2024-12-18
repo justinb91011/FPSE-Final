@@ -116,7 +116,6 @@ let make = (~_difficulty: string) => {
       )
     |> Js.Promise.then_(_ => {
         /* Re-fetch game info after initialization */
-  
         Js.Promise.resolve()
       })
     |> Js.Promise.catch(_ => {
@@ -126,10 +125,12 @@ let make = (~_difficulty: string) => {
     |> ignore
   }
 
-    React.useEffect(() => {
-      initializeGame()
-      None
-    }, [])
+  React.useEffect(() => {
+    initializeGame()
+    None
+  }, [])
+
+
   /* Function to re-fetch the game state after a move */
   let fetchGameInfo = () => {
     Fetch.fetch("http://localhost:8080/")
@@ -263,7 +264,7 @@ let make = (~_difficulty: string) => {
   /* Function to handle CPU turn */
   let handleCpuTurn = (~cpuName: string) => {
 
-    /* Add a 3-second delay before executing the turn */
+    /* Add a 3-second delay before playing the turn */
     ignore(Js.Global.setTimeout(() => {
       let url = "http://localhost:8080/cpu_turn";
 
@@ -449,6 +450,7 @@ let make = (~_difficulty: string) => {
 
   <div style=backgroundStyle>
     {
+      //quit screen
       showQuitForm ? (
         <div style=ReactDOM.Style.make(
           ~position="absolute",
@@ -496,6 +498,7 @@ let make = (~_difficulty: string) => {
 
         | Some((player_name, hand, top_discard)) =>
           <>
+          //Turn display at the top of screen
             <div style=ReactDOM.Style.make(
               ~position="absolute",
               ~top="10px",
@@ -510,7 +513,7 @@ let make = (~_difficulty: string) => {
               <h2>{React.string(currentTurn ++ "'s Turn")}</h2>
             </div>
 
-
+            //Cpu player display
             <div style=ReactDOM.Style.make(
               ~display="flex",
               ~justifyContent="space-between",
@@ -530,9 +533,10 @@ let make = (~_difficulty: string) => {
                         ~color="white",
                         ~textAlign="center",
                         ~flexShrink="0",
-                        ~flexBasis="100px", /* Prevent container from shrinking */
+                        ~flexBasis="100px",
                         ()
                       )>
+                      //name
                       <h2 style=ReactDOM.Style.make(
                         ~margin="0",
                         ~paddingBottom="10px",
@@ -554,13 +558,12 @@ let make = (~_difficulty: string) => {
                           React.array(
                             Belt.Array.range(0, cardCount - 1)
                             |> Array.map(i => {
-                              /* Default card width */
                               let baseWidth = 70.0;
                               
-                              /* Shrink by 20% when cardCount > 7 */
+                              /* Shrink by 30% when cardCount > 7 */
                               let width =
                                 if cardCount > 7 {
-                                  baseWidth *. 0.7 /* Reduce width by 40% */
+                                  baseWidth *. 0.7 /* Reduce width by 30% */
                                 } else {
                                   baseWidth
                                 };
@@ -570,7 +573,7 @@ let make = (~_difficulty: string) => {
                                   src="/card_images/back-card.png"
                                   alt="Card Back"
                                   style=ReactDOM.Style.make(
-                                    ~width=Js.Float.toString(width) ++ "px", /* Apply calculated width */
+                                    ~width=Js.Float.toString(width) ++ "px", 
                                     ~transform="rotate(90deg)",
                                     ()
                                   )
@@ -586,7 +589,7 @@ let make = (~_difficulty: string) => {
               }
             </div>
 
-
+            //quit button
             <Button
               onClick={_ => setShowQuitForm(_ => true)}
               className="absolute bottom-4 left-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded"
@@ -595,7 +598,7 @@ let make = (~_difficulty: string) => {
             </Button>
 
             
-
+            // displays the top of the discard pile
             <div style=ReactDOM.Style.make(
               ~position="absolute",
               ~top="50%",
@@ -610,6 +613,7 @@ let make = (~_difficulty: string) => {
               />
             </div>
 
+            //show "player1s hand"
             <div style=ReactDOM.Style.make(
               ~position="absolute",
               ~bottom="20px",
@@ -619,6 +623,7 @@ let make = (~_difficulty: string) => {
               ~textAlign="center",
               ())>
               <h3> {React.string(player_name ++ "'s Hand:")} </h3>
+              //Display the hand of the player
               <ul style=ReactDOM.Style.make(
                 ~listStyle="none",
                 ~padding="0",
