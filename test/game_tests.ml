@@ -3,7 +3,7 @@ open OUnit2
 open Uno_card
 open Deck
 open Player
-(* open Cpu *)
+open Cpu
 open Game
 
 let test_initialize_game _ =
@@ -206,6 +206,37 @@ let test_handle_draw_two_cpu_2 _ =
     assert_bool "Message should be present" (Option.is_some message)
   | None -> assert_failure "Game state not initialized"
 
+(* We manipulate CPU2 to have a hand where it's only move is to stack the plus two. *)
+let test_handle_draw_two_stacked_cpu _ =
+  Game.initialize_game(Easy);
+  match !Game.game_state with
+  | Some state ->
+    let draw_two_card = UnoCardInstance.create UnoCard.Red DrawTwo in
+
+    let manipulated_hand = [
+      UnoCardInstance.create UnoCard.Blue (Number 7);
+      UnoCardInstance.create UnoCard.Red DrawTwo
+      ] in
+    
+    let updated_cpus = 
+      List.mapi state.cpus ~f:(fun i (name, player) ->
+        if i = 1 then
+          let new_cpu =
+            CPU.add_cards (CPU.create CPU.Easy) manipulated_hand in
+            (name, new_cpu)
+        else 
+         (name,player))
+      in
+      
+    let cpu_state = {state with cpus = updated_cpus; current_player_index = 2} in 
+
+    let post_draw_two_state, message = Game.handle_draw_two cpu_state draw_two_card in
+    let name, new_cpu2 = List.nth_exn post_draw_two_state.cpus 1 in
+    assert_equal (1) (List.length (CPU.get_hand new_cpu2));
+    assert_equal "CPU2" name;
+    assert_bool "Message should be present" (Option.is_some message)
+  | None -> assert_failure "Game state not initialized"
+
 let test_handle_draw_two_random_card _ =
   Game.initialize_game(Easy);
   match !Game.game_state with
@@ -376,6 +407,37 @@ let test_play_cpu_turn_hard _ =
       assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
   | None -> assert_failure "Game not initialized."  
 
+
+let test_initialize_medium_game _ =
+  Game.initialize_game(Medium);
+  match !Game.game_state with
+  | Some state ->
+    assert_equal 1 (List.length state.players);
+    assert_equal 2 (List.length state.cpus);
+    assert_equal 1 (List.length state.discard_pile);
+    assert_equal 1 state.direction
+  | None -> assert_failure "Medium game not initialized."
+
+  (* Ensure that the medium difficulty does deploy hard. Can be seen on the coverage report. *)
+  let test_play_cpu_turn_medium _ =
+    let unit_generator = Quickcheck.Generator.singleton () in
+    Quickcheck.test 
+      unit_generator 
+      ~trials:100 
+      ~f:(fun () ->
+        Game.initialize_game(Medium); (* Initialize game with Medium difficulty *)
+        match !Game.game_state with
+        | Some state -> 
+          let updated_state = {state with current_player_index = 1; direction = 1} in
+          let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
+          assert_equal 1 cpu_index;
+          assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
+        | None -> failwith "Game not initialized."
+      );
+      ()
+
+  
+
 let series =
   "Game Tests" >:::
   ["Game Initialization" >:: test_initialize_game;
@@ -393,6 +455,7 @@ let series =
    "Game Draw Two Card Handling" >:: test_handle_draw_two;
    "Game Draw Two Card Handling - CPU #1 Turn" >:: test_handle_draw_two_cpu_1;
    "Game Draw Two Card Handling - CPU #2 Turn" >:: test_handle_draw_two_cpu_2;
+   "Game Draw Two Card Handling - CPU #2 Stacking" >:: test_handle_draw_two_stacked_cpu;
    "Game Draw Two Card Handling - Not a Draw Two Card" >:: test_handle_draw_two_random_card;
    "Game Wild Card Handling - Blue Chosen" >:: test_handle_wild_card_blue;
    "Game Wild Card Handling - Red Chosen" >:: test_handle_wild_card_red;
@@ -406,4 +469,6 @@ let series =
    "Game CPU Turn Handling" >:: test_play_cpu_turn;
    "Game Hand Playability with Top Card" >:: test_any_playable_card;
    "Game Initialization - Hard" >:: test_initialize_hard_game;
-   "Game CPU Turn Handling - Hard" >:: test_play_cpu_turn_hard;]
+   "Game CPU Turn Handling - Hard" >:: test_play_cpu_turn_hard;
+   "Game Initialization - Medium" >:: test_initialize_medium_game;
+   "Game CPU Turn Handling - Medium" >:: test_play_cpu_turn_medium;]
