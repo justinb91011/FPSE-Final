@@ -152,10 +152,30 @@ module Algorithm = struct
   
 
   let rank_card card ~hand ~opponents ~top_card =
+<<<<<<< HEAD
   <span data-count="136">i</span>f UnoCard.is_playable (UnoCardInstance.get_colo<span data-count="136">r</span> card) (UnoCardInstance.get_valu<span data-count="136">e</span> card)
     (UnoCardInstance.get_colo<span data-count="136">r</span> top_card) (UnoCardInstance.get_valu<span data-count="136">e</span> top_card) then
     <span data-count="132">m</span>atch UnoCardInstance.get_value card with
     | <span data-count="64">N</span>umber _ -&gt; 1
+=======
+<<<<<<< HEAD
+  <span data-count="32">i</span>f UnoCard.is_playable (UnoCardInstance.get_colo<span data-count="32">r</span> card) (UnoCardInstance.get_valu<span data-count="32">e</span> card)
+    (UnoCardInstance.get_colo<span data-count="32">r</span> top_card) (UnoCardInstance.get_valu<span data-count="32">e</span> top_card) then
+    <span data-count="28">m</span>atch UnoCardInstance.get_value card with
+    | <span data-count="8">N</span>umber _ -&gt; 1
+
+    | <span data-count="3">R</span>everse -&gt;
+      let front = List.hd_exn opponents in
+      <span data-count="3">l</span>et back = List.hd_exn (List.re<span data-count="3">v</span> opponents) in
+      <span data-count="3">i</span>f ab<span data-count="3">s</span> (front - back) = 1 then <span data-count="1">2</span>
+      else <span data-count="2">i</span>f front &gt; back then <span data-count="1">1</span>
+      else <span data-count="1">3</span>
+=======
+  <span data-count="75">i</span>f UnoCard.is_playable (UnoCardInstance.get_colo<span data-count="75">r</span> card) (UnoCardInstance.get_valu<span data-count="75">e</span> card)
+    (UnoCardInstance.get_colo<span data-count="75">r</span> top_card) (UnoCardInstance.get_valu<span data-count="75">e</span> top_card) then
+    <span data-count="71">m</span>atch UnoCardInstance.get_value card with
+    | <span data-count="35">N</span>umber _ -&gt; 1
+>>>>>>> 28194602cf75341a3e49d856ec049ca72f084a7f
 
     | <span data-count="8">R</span>everse -&gt;
       let front = List.hd_exn opponents in
@@ -163,6 +183,7 @@ module Algorithm = struct
       <span data-count="8">i</span>f ab<span data-count="8">s</span> (front - back) = 1 then <span data-count="1">2</span>
       else <span data-count="7">i</span>f front &gt; back then <span data-count="1">1</span>
       else <span data-count="6">3</span>
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
     
     | <span data-count="11">S</span>kip -&gt;
       let front = List.hd_exn opponents in

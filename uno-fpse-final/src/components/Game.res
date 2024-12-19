@@ -290,11 +290,11 @@ let make = (~_difficulty: string) => {
         })
       |> Js.Promise.catch(err => {
           Js.log("Error during " ++ cpuName ++ "'s turn:");
-          Js.log(err); /* Log the error */
-          setIsCpuTurn(_ => false); /* Ensure the game state doesn't hang */
-          Js.Promise.resolve(); /* Return a resolved promise of unit */
+          Js.log(err);
+          setIsCpuTurn(_ => false);
+          Js.Promise.resolve();
         })
-      |> ignore; /* Ensure the ignore is applied to the full promise chain */
+      |> ignore;
     }, 3000)); /* 3-second delay */
     ();
   };

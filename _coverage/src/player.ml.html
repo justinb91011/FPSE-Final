@@ -117,7 +117,23 @@ module Player = struct
   }
 
   let create (name : string) : t =
+<<<<<<< HEAD
     <span data-count="148">{</span>name; hand = []}
+=======
+<<<<<<< HEAD
+    <span data-count="42">{</span>name; hand = []}
+
+  let get_name (player : t) : string =
+    <span data-count="3">p</span>layer.name
+
+  let get_hand (player : t) : UnoCardInstance.t list =
+    <span data-count="18">p</span>layer.hand
+
+  let add_cards (player : t) (cards : UnoCardInstance.t list) : t =
+    <span data-count="43">{</span>player with hand = player.hand @ cards}
+=======
+    <span data-count="145">{</span>name; hand = []}
+>>>>>>> 28194602cf75341a3e49d856ec049ca72f084a7f
 
   let get_name (player : t) : string =
     <span data-count="4">p</span>layer.name
@@ -126,7 +142,12 @@ module Player = struct
     <span data-count="51">p</span>layer.hand
 
   let add_cards (player : t) (cards : UnoCardInstance.t list) : t =
+<<<<<<< HEAD
     <span data-count="149">{</span>player with hand = player.hand @ cards}
+=======
+    <span data-count="146">{</span>player with hand = player.hand @ cards}
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
+>>>>>>> 28194602cf75341a3e49d856ec049ca72f084a7f
 
   let play_card (player : t) (card : UnoCardInstance.t) (top_card : UnoCardInstance.t) : t =
     <span data-count="5">i</span>f UnoCard.is_playable 

@@ -93,17 +93,39 @@ end
 
 module Make (Card : Card_game_rules) = struct
   
+<<<<<<< HEAD
   <span data-count="4">t</span>ype t = { <span data-count="4">c</span>olor : <span data-count="2610">C</span>ard.color; <span data-count="4">v</span>alue : Card.value } [@@deriving compare, equal, sexp] [@@coverage off] 
+=======
+<<<<<<< HEAD
+  <span data-count="2">t</span>ype t = { <span data-count="2">c</span>olor : <span data-count="606">C</span>ard.color; <span data-count="2">v</span>alue : Card.value } [@@deriving compare, equal, sexp] [@@coverage off] 
+=======
+  <span data-count="2">t</span>ype t = { <span data-count="2">c</span>olor : <span data-count="2560">C</span>ard.color; <span data-count="2">v</span>alue : Card.value } [@@deriving compare, equal, sexp] [@@coverage off] 
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
+>>>>>>> 28194602cf75341a3e49d856ec049ca72f084a7f
   (** [t] represents a card using a combination of [color] and [value]. *)
 
   let create (card_color : Card.color) (card_value : Card.value) = 
     <span data-count="17002">{</span>color = card_color; value = card_value}
 
   let get_color (card : t) =
+<<<<<<< HEAD
     <span data-count="3032">c</span>ard.color
 
   let get_value (card : t) =
     <span data-count="2512">c</span>ard.value
+=======
+<<<<<<< HEAD
+    <span data-count="348">c</span>ard.color
+
+  let get_value (card : t) =
+    <span data-count="456">c</span>ard.value
+=======
+    <span data-count="2370">c</span>ard.color
+
+  let get_value (card : t) =
+    <span data-count="2160">c</span>ard.value
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
+>>>>>>> 28194602cf75341a3e49d856ec049ca72f084a7f
 end
 </code></pre>
       </div>
