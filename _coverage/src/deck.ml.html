@@ -184,25 +184,25 @@ module Deck = struct
     List.rev (List.fold_lef<span data-count="48">t</span> ~init:[] colors ~f:(fun acc color -&gt; <span data-count="240">d</span>eck_creator acc values color))
 
   let shuffle (deck : t) : t = 
-    <span data-count="38">L</span>ist.permute deck
+    <span data-count="39">L</span>ist.permute deck
   
   let draw_card (deck : t) : UnoCardInstance.t * t =
-    <span data-count="49">m</span>atch deck with
+    <span data-count="50">m</span>atch deck with
     | <span data-count="1">[</span>] -&gt; failwith "Cannot draw from an empty deck."
-    | <span data-count="48">t</span>op_card :: rest -&gt; (top_card, rest)
+    | <span data-count="49">t</span>op_card :: rest -&gt; (top_card, rest)
 
   let draw_cards n (deck : t) : UnoCardInstance.t list * t =
     <span data-count="103">l</span>et rec draw acc n deck = 
-      <span data-count="871">i</span>f n = 0 then <span data-count="102">(</span>List.re<span data-count="102">v</span> acc, deck)
+      <span data-count="857">i</span>f n = 0 then <span data-count="102">(</span>List.re<span data-count="102">v</span> acc, deck)
       else
-        <span data-count="769">m</span>atch deck with
+        <span data-count="755">m</span>atch deck with
         | <span data-count="1">[</span>] -&gt; failwith "Not enough cards to draw."
-        | <span data-count="768">t</span>op_card :: rest -&gt; draw (top_card :: acc) (n - 1) rest
+        | <span data-count="754">t</span>op_card :: rest -&gt; draw (top_card :: acc) (n - 1) rest
     in
     draw [] n deck
 
   let add_card (card : UnoCardInstance.t) (deck : t) : t =
-    <span data-count="7">d</span>eck @ [card]
+    <span data-count="8">d</span>eck @ [card]
 
   let remaining_cards (deck : t) : int =
     <span data-count="27">L</span>ist.length deck
