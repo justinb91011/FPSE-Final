@@ -142,10 +142,10 @@ module Game = struct
       | CPU.Medium ->
         let rand = Random.float 1.0 in
         if Float.(rand < 0.75) then
-          (* 80% probability to act as Easy *)
+          (* 75% probability to act as Easy *)
           CPU.choose_card current_cpu top_discard state.deck
         else
-          (* 20% probability to act as Hard *)
+          (* 25% probability to act as Hard *)
           let opponents_card_counts = get_opponents_card_counts state cpu_index in
           CPU.choose_card_hard current_cpu top_discard state.deck opponents_card_counts
         
@@ -291,7 +291,6 @@ module Game = struct
       | DrawFour ->
         (match chosen_color_opt with
          | None -> 
-           (* Optionally, you can default to a color or return an error *)
            None [@coverage off]
          | Some chosen_color ->
            let valid_color = match String.lowercase chosen_color with

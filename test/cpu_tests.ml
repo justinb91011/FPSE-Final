@@ -294,6 +294,44 @@ let test_choose_card_hard_playable_wildcards _ =
   assert_equal (Deck.remaining_cards full_deck) (Deck.remaining_cards remaining_deck);
   (* CPUs hand should decrease by one card since one was played. *)
   assert_equal (1) (List.length (CPU.get_hand updated_cpu))
+
+let test_choose_card_hard_playable_wildcards_and_non_wild _ =
+  (* IF NON-WILD >= WILDCARDS. *)
+  let top_card = UnoCardInstance.create Red (Number 2) in
+  let card1 = UnoCardInstance.create WildColor (WildValue) in
+  let card2 = UnoCardInstance.create Red (DrawTwo) in
+  let card3 = UnoCardInstance.create Green (Number 2) in
+  let cpu = CPU.add_cards (CPU.create Hard) [card2; card1; card3] in
+  let full_deck = Deck.create_deck() in
+  let chosen_card, remaining_deck, updated_cpu, _ = CPU.choose_card_hard cpu top_card full_deck [4;5] in
+  (* First, check the CPU chose a playable card. *)
+  assert_bool "The CPU should have chosen a playable card."
+  (UnoCard.is_playable
+  (UnoCardInstance.get_color chosen_card) (UnoCardInstance.get_value chosen_card)
+  (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card));
+  (* Deck should also remain the same since no drawing took place. *)
+  assert_equal (Deck.remaining_cards full_deck) (Deck.remaining_cards remaining_deck);
+  (* CPUs hand should decrease by one card since one was played. *)
+  assert_equal (2) (List.length (CPU.get_hand updated_cpu));
+  (* ELSE *)
+  let new_cpu = CPU.add_cards (CPU.create Hard) [card2; card1; card1] in
+  let new_chosen_card, new_remaining_deck, new_updated_cpu, new_color_chosen_opt = CPU.choose_card_hard new_cpu top_card full_deck [4;5] in
+  (* First, check the CPU chose a playable card. *)
+  assert_bool "The CPU should have chosen a playable card."
+  (UnoCard.is_playable
+  (UnoCardInstance.get_color new_chosen_card) (UnoCardInstance.get_value new_chosen_card)
+  (UnoCardInstance.get_color top_card) (UnoCardInstance.get_value top_card));
+  (* Since we are playing a wildcard or draw four, a color should be chosen. *)
+  let valid_colors = ["Blue"; "Red"; "Green"; "Yellow"] in
+  let color_chosen = Option.value_exn new_color_chosen_opt in
+  assert_bool "Chosen color should be one of Blue, Red, Green, or Yellow." (List.exists valid_colors ~f:(String.equal color_chosen));
+  (* Deck should also remain the same since no drawing took place. *)
+  assert_equal (Deck.remaining_cards full_deck) (Deck.remaining_cards new_remaining_deck);
+  (* CPUs hand should decrease by one card since one was played. *)
+  assert_equal (2) (List.length (CPU.get_hand new_updated_cpu))
+
+
+
 let series =
   "Cpu Tests" >:::
   ["Cpu Creation" >:: test_create;
@@ -309,4 +347,5 @@ let series =
    "Cpu Card Choice - Hard - Drawn Draw Four" >:: test_choose_card_hard_drawfour_drawn;
    "Cpu Card Choice - Hard - Numbered Cards" >:: test_choose_card_hard_playable_numbered_cards;
    "Cpu Card Choice - Hard - Wildcards & DrawFours" >:: test_choose_card_hard_playable_wildcards;
+   "Cpu Card Choice - Hard - Wildcards & Numbered" >:: test_choose_card_hard_playable_wildcards_and_non_wild;
    "Cpu Win Check - Easy" >:: test_has_won]

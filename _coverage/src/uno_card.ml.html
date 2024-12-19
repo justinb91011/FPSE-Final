@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8"/>
     <title>uno_card.ml &mdash; Coverage report</title>
-    <meta name="description" content="73.91% coverage in src/uno_card.ml">
+    <meta name="description" content="78.26% coverage in src/uno_card.ml">
     <link rel="stylesheet" href="../coverage.css"/>
     <script src="../highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
@@ -15,7 +15,7 @@
           <span class="dirname">src/</span>uno_card.ml
         </a>
       </h1>
-      <h2>73.91%</h2>
+      <h2>78.26%</h2>
     </div>
     <div id="navbar">
       <span class="some-visited" style="top:21.05%"></span>
@@ -70,17 +70,17 @@
 <pre><code class="ocaml">open Core
 
 module UnoCard = struct
-  <span data-count="0">t</span>ype color = <span data-count="0">R</span>ed <span data-count="0">|</span> Yellow <span data-count="0">|</span> Green <span data-count="2">|</span> Blue <span data-count="0">|</span> WildColor [@@deriving compare, equal, sexp] [@@coverage off]
+  <span data-count="0">t</span>ype color = <span data-count="0">R</span>ed <span data-count="0">|</span> Yellow <span data-count="0">|</span> Green <span data-count="2">|</span> Blue <span data-count="2">|</span> WildColor [@@deriving compare, equal, sexp] [@@coverage off]
 
-  <span data-count="94632">t</span>ype value = <span data-count="29195">N</span>umber of int <span data-count="3026">|</span> Skip <span data-count="3015">|</span> Reverse <span data-count="3002">|</span> DrawTwo <span data-count="3014">|</span> DrawFour <span data-count="0">|</span> WildValue [@@deriving compare, equal, sexp]
+  <span data-count="98020">t</span>ype value = <span data-count="30210">N</span>umber of int <span data-count="3130">|</span> Skip <span data-count="3124">|</span> Reverse <span data-count="3132">|</span> DrawTwo <span data-count="3131">|</span> DrawFour <span data-count="0">|</span> WildValue [@@deriving compare, equal, sexp]
   
   let is_playable (color1 : color) (value1 : value) (color2 : color) (value2 : value) =
-    <span data-count="873">m</span>atch (color1, value1), (color2, value2) with
-    | <span data-count="41">(</span>_, WildValue), _ -&gt; true
-    | <span data-count="56">(</span>WildColor, _), _ -&gt; true
-    | <span data-count="776">(</span>c1, _), (c2, _) when equal_colo<span data-count="776">r</span> c1 c2 -&gt; <span data-count="217">t</span>rue
-    | <span data-count="559">(</span>_, v1), (_, v2) when equal_valu<span data-count="559">e</span> v1 v2 -&gt; <span data-count="64">t</span>rue
-    | <span data-count="495">_</span> -&gt; false
+    <span data-count="958">m</span>atch (color1, value1), (color2, value2) with
+    | <span data-count="65">(</span>_, WildValue), _ -&gt; true
+    | <span data-count="51">(</span>WildColor, _), _ -&gt; true
+    | <span data-count="842">(</span>c1, _), (c2, _) when equal_colo<span data-count="842">r</span> c1 c2 -&gt; <span data-count="262">t</span>rue
+    | <span data-count="580">(</span>_, v1), (_, v2) when equal_valu<span data-count="580">e</span> v1 v2 -&gt; <span data-count="67">t</span>rue
+    | <span data-count="513">_</span> -&gt; false
 end
 
 module UnoCardInstance = Card.Make(UnoCard)

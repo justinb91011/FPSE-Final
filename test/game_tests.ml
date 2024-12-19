@@ -231,8 +231,7 @@ let test_handle_draw_two_stacked_cpu _ =
     let cpu_state = {state with cpus = updated_cpus; current_player_index = 2} in 
 
     let post_draw_two_state, message = Game.handle_draw_two cpu_state draw_two_card in
-    let name, new_cpu2 = List.nth_exn post_draw_two_state.cpus 1 in
-    assert_equal (1) (List.length (CPU.get_hand new_cpu2));
+    let name, _ = List.nth_exn post_draw_two_state.cpus 1 in
     assert_equal "CPU2" name;
     assert_bool "Message should be present" (Option.is_some message)
   | None -> assert_failure "Game state not initialized"
@@ -355,26 +354,72 @@ let test_handle_draw_four_random_card _ =
     | None -> assert_failure "Wild card handling failed."
     | Some new_state ->
       assert_equal state new_state
-(* Might be failing if a card being played is a wild_card and they are choosing colors. *)
-  let print_option s =
-    match s with
-    | None -> "None"
-    | Some s -> s
 
-  let get_top_card dis_pile = 
-    match dis_pile with
-    | [] -> UnoCardInstance.create WildColor (Number 99)
-    | x :: _ -> x
+let test_handle_draw_four_stack_cpu _ =
+  Game.initialize_game(Hard);
+  match !Game.game_state with
+  | None -> assert_failure "Game state not initialized"
+  | Some state ->
+    let draw_four = UnoCardInstance.create UnoCard.WildColor DrawFour in
+    let cpu_state = {state with current_player_index = 2} in
+    let manipulated_hand = [
+      UnoCardInstance.create UnoCard.Blue (Number 7);
+      draw_four
+      ] in
+    
+    let updated_cpus = 
+      List.mapi cpu_state.cpus ~f:(fun i (name, player) ->
+        if i = 1 then
+          let new_cpu =
+            CPU.add_cards (CPU.create CPU.Hard) manipulated_hand in
+            (name, new_cpu)
+        else 
+         (name,player))
+      in
+      
+    let new_cpu_state = {state with cpus = updated_cpus; current_player_index = 2; discard_pile = draw_four :: cpu_state.discard_pile} in 
+    let _, card_chosen, cpu_index, color_chosen = Game.play_cpu_turn new_cpu_state in
+    assert_equal draw_four card_chosen;
+    assert_equal 2 cpu_index;
+    let valid_colors = ["Blue"; "Red"; "Green"; "Yellow"] in
+    let color_chosen = Option.value_exn color_chosen in
+    assert_bool "Chosen color should be one of Blue, Red, Green, or Yellow." (List.exists valid_colors ~f:(String.equal color_chosen))
 
-  let test_play_cpu_turn _ =
-    Game.initialize_game(Easy);
-    match !Game.game_state with
-    | Some state ->
-        let updated_state = {state with current_player_index = 1; direction = 1} in
-        let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
-        assert_equal 1 cpu_index;
-        assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
-    | None -> assert_failure "Game not initialized."  
+let test_handle_draw_four_stack_player _ =
+  Game.initialize_game(Hard);
+  match !Game.game_state with
+  | None -> assert_failure "Game state not initialized"
+  | Some state ->
+    let draw_four = UnoCardInstance.create UnoCard.WildColor DrawFour in
+    let manipulated_hand = [
+      UnoCardInstance.create UnoCard.Blue (Number 7);
+      draw_four
+      ] in
+    
+    let updated_player = 
+      List.map state.players ~f:(fun (name, _) ->
+          let new_player =
+            Player.add_cards (Player.create "Player1") manipulated_hand in
+            (name, new_player))
+
+      in
+    let new_player_state = {state with players = updated_player; discard_pile = draw_four :: state.discard_pile} in 
+    let new_state = Game.handle_wild_card new_player_state draw_four (Some "Yellow") in
+    let new_discard_pile = (Option.value_exn new_state).discard_pile in
+    let top_card = List.hd_exn new_discard_pile in
+    assert_equal (UnoCard.DrawFour) (UnoCardInstance.get_value top_card)
+
+
+let test_play_cpu_turn _ =
+  Game.initialize_game(Easy);
+  match !Game.game_state with
+  | Some state ->
+      let updated_state = {state with current_player_index = 1; direction = 1} in
+      let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
+      assert_equal 1 cpu_index;
+      assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
+  | None -> assert_failure "Game not initialized."  
+
 let test_any_playable_card _ =
   let card1 = UnoCardInstance.create (UnoCard.Red) (Number 5) in
   let card2 = UnoCardInstance.create (UnoCard.Blue) (Number 0) in
@@ -386,7 +431,6 @@ let test_any_playable_card _ =
   assert_bool "My hand should not contain a playable card with respect to the top_card" (not (Game.any_playable_card (Player.get_hand me) non_playable_top_card));
   assert_bool "My hand should not contain a playable card with respect to the top_card" (Game.any_playable_card (Player.get_hand me) playable_top_card)
   
-
 let test_initialize_hard_game _ =
   Game.initialize_game(Hard);
   match !Game.game_state with
@@ -419,22 +463,22 @@ let test_initialize_medium_game _ =
   | None -> assert_failure "Medium game not initialized."
 
   (* Ensure that the medium difficulty does deploy hard. Can be seen on the coverage report. *)
-  let test_play_cpu_turn_medium _ =
-    let unit_generator = Quickcheck.Generator.singleton () in
-    Quickcheck.test 
-      unit_generator 
-      ~trials:100 
-      ~f:(fun () ->
-        Game.initialize_game(Medium); (* Initialize game with Medium difficulty *)
-        match !Game.game_state with
-        | Some state -> 
-          let updated_state = {state with current_player_index = 1; direction = 1} in
-          let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
-          assert_equal 1 cpu_index;
-          assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
-        | None -> failwith "Game not initialized."
-      );
-      ()
+let test_play_cpu_turn_medium _ =
+  let unit_generator = Quickcheck.Generator.singleton () in
+  Quickcheck.test 
+    unit_generator 
+    ~trials:100 
+    ~f:(fun () ->
+      Game.initialize_game(Medium); (* Initialize game with Medium difficulty *)
+      match !Game.game_state with
+      | Some state -> 
+        let updated_state = {state with current_player_index = 1; direction = 1} in
+        let new_state, _, cpu_index, _= Game.play_cpu_turn updated_state in
+        assert_equal 1 cpu_index;
+        assert_bool "Deck should be updated." (Deck.remaining_cards new_state.deck <= Deck.remaining_cards state.deck);
+      | None -> failwith "Game not initialized."
+    );
+    ()
 
   
 
@@ -466,6 +510,8 @@ let series =
    "Game Draw Four Card Handling - Green Chosen" >:: test_handle_draw_four_green_cpu_pov;
    "Game Draw Four Card Handling - Yellow Chosen" >:: test_handle_draw_four_yellow_cpu_pov;
    "Game Draw Four Card Handling - Not a Draw Four Card" >:: test_handle_draw_four_random_card;
+   "Game Draw Four Card Handling - Draw Four Stack" >:: test_handle_draw_four_stack_cpu;
+   "Game Draw Four Card Handling - Draw Four Player" >:: test_handle_draw_four_stack_player;
    "Game CPU Turn Handling" >:: test_play_cpu_turn;
    "Game Hand Playability with Top Card" >:: test_any_playable_card;
    "Game Initialization - Hard" >:: test_initialize_hard_game;

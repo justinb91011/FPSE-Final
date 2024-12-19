@@ -1,5 +1,3 @@
-(* cpu.ml *)
-
 open Core
 open Uno_card
 open Deck
@@ -191,7 +189,7 @@ module CPU = struct
       let updated_hand = remove_first_occurrence cpu.hand chosen_card in
       let updated_cpu = { cpu with hand = updated_hand } in
       (* Determine the color to choose if the card is a Wild or Draw Four *)
-    if UnoCard.equal_color (UnoCardInstance.get_color chosen_card) UnoCard.WildColor ||
+    if UnoCard.equal_value (UnoCardInstance.get_value chosen_card) UnoCard.WildValue ||
         UnoCard.equal_value (UnoCardInstance.get_value chosen_card) DrawFour then
     begin
       let colors = [UnoCard.Red; UnoCard.Blue; UnoCard.Green; UnoCard.Yellow] in
@@ -224,7 +222,7 @@ module CPU = struct
           | Blue -> "Blue"
           | Green -> "Green"
           | Yellow -> "Yellow"
-          | WildColor -> "Blue"  (* Default to Blue if somehow WildColor *)
+          | WildColor -> "Blue"  (* Default to Blue if somehow WildColor *) [@coverage off]
       in
       (chosen_card, deck, updated_cpu, Some color_chosen)
     end

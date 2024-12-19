@@ -1,4 +1,3 @@
-(* open Card *)
 open Uno_card
 
 module Algorithm : sig
@@ -11,6 +10,5 @@ module Algorithm : sig
     card to play using the minimax algorithm.
     - [hand]: The CPU's hand.
     - [top_card]: The top card in the discard pile.
-    - [opponent_counts]: The number of cards each opponent has.
-    - [is_maximizing]: Whether the current player is maximizing or minimizing the ranking. *)
+    - [opponent_counts]: The number of cards each opponent has. *)
 end
