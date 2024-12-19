@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8"/>
     <title>cpu.ml &mdash; Coverage report</title>
-    <meta name="description" content="86.00% coverage in src/cpu.ml">
+    <meta name="description" content="94.00% coverage in src/cpu.ml">
     <link rel="stylesheet" href="../coverage.css"/>
     <script src="../highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
@@ -15,25 +15,20 @@
           <span class="dirname">src/</span>cpu.ml
         </a>
       </h1>
-      <h2>86.00%</h2>
+      <h2>94.00%</h2>
     </div>
     <div id="navbar">
-      <span class="unvisited" style="bottom:22.88%"></span>
-      <span class="unvisited" style="bottom:21.61%"></span>
-      <span class="unvisited" style="bottom:21.19%"></span>
       <span class="unvisited" style="bottom:20.34%"></span>
       <span class="some-visited" style="bottom:17.37%"></span>
-      <span class="some-visited" style="bottom:14.83%"></span>
       <span class="unvisited" style="bottom:10.59%"></span>
-      <span class="unvisited" style="bottom:10.17%"></span>
-      <span class="unvisited" style="bottom:9.32%"></span>
       <span class="unvisited" style="bottom:8.90%"></span>
-      <span class="unvisited" style="bottom:8.47%"></span>
-      <span class="unvisited" style="bottom:8.05%"></span>
       <span class="unvisited" style="bottom:7.63%"></span>
       <span class="unvisited" style="bottom:5.08%"></span>
+<<<<<<< HEAD
       <span class="unvisited" style="bottom:4.66%"></span>
       <span class="unvisited" style="bottom:4.24%"></span>
+=======
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
       <span class="unvisited" style="bottom:3.81%"></span>
     </div>
     <div id="report">
@@ -220,11 +215,11 @@
 <a id="L179"></a><span class="visited"> </span>
 <a id="L180"></a><span > </span>
 <a id="L181"></a><span class="visited"> </span>
-<a id="L182"></a><span class="unvisited"> </span>
+<a id="L182"></a><span class="visited"> </span>
 <a id="L183"></a><span > </span>
 <a id="L184"></a><span > </span>
-<a id="L185"></a><span class="unvisited"> </span>
-<a id="L186"></a><span class="unvisited"> </span>
+<a id="L185"></a><span class="visited"> </span>
+<a id="L186"></a><span class="visited"> </span>
 <a id="L187"></a><span > </span>
 <a id="L188"></a><span class="unvisited"> </span>
 <a id="L189"></a><span > </span>
@@ -239,7 +234,7 @@
 <a id="L198"></a><span class="visited"> </span>
 <a id="L199"></a><span class="visited"> </span>
 <a id="L200"></a><span > </span>
-<a id="L201"></a><span class="some-visited"> </span>
+<a id="L201"></a><span class="visited"> </span>
 <a id="L202"></a><span > </span>
 <a id="L203"></a><span > </span>
 <a id="L204"></a><span class="visited"> </span>
@@ -250,12 +245,12 @@
 <a id="L209"></a><span class="visited"> </span>
 <a id="L210"></a><span > </span>
 <a id="L211"></a><span class="unvisited"> </span>
-<a id="L212"></a><span class="unvisited"> </span>
+<a id="L212"></a><span class="visited"> </span>
 <a id="L213"></a><span > </span>
-<a id="L214"></a><span class="unvisited"> </span>
+<a id="L214"></a><span class="visited"> </span>
 <a id="L215"></a><span class="unvisited"> </span>
-<a id="L216"></a><span class="unvisited"> </span>
-<a id="L217"></a><span class="unvisited"> </span>
+<a id="L216"></a><span class="visited"> </span>
+<a id="L217"></a><span class="visited"> </span>
 <a id="L218"></a><span class="unvisited"> </span>
 <a id="L219"></a><span class="visited"> </span>
 <a id="L220"></a><span > </span>
@@ -263,8 +258,13 @@
 <a id="L222"></a><span class="visited"> </span>
 <a id="L223"></a><span class="visited"> </span>
 <a id="L224"></a><span class="unvisited"> </span>
+<<<<<<< HEAD
 <a id="L225"></a><span class="unvisited"> </span>
 <a id="L226"></a><span class="unvisited"> </span>
+=======
+<a id="L225"></a><span class="visited"> </span>
+<a id="L226"></a><span class="visited"> </span>
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
 <a id="L227"></a><span class="unvisited"> </span>
 <a id="L228"></a><span > </span>
 <a id="L229"></a><span > </span>
@@ -532,6 +532,7 @@ module CPU = struct
   }
 
   let create (diff : difficulty) : t =
+<<<<<<< HEAD
     <span data-count="102">{</span> diff; hand = [] }
 
   let get_difficulty (cpu : t) : difficulty =
@@ -542,90 +543,116 @@ module CPU = struct
 
   let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
     <span data-count="103">{</span> cpu with hand = cpu.hand @ cards }
+=======
+    <span data-count="307">{</span> diff; hand = [] }
+
+  let get_difficulty (cpu : t) : difficulty =
+    <span data-count="107">c</span>pu.diff
+
+  let get_hand (cpu : t) : UnoCardInstance.t list = 
+    <span data-count="169">c</span>pu.hand
+
+  let add_cards (cpu : t) (cards : UnoCardInstance.t list) : t =
+    <span data-count="309">{</span> cpu with hand = cpu.hand @ cards }
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
 
   (* Helper function to remove the first occurrence of a card from the hand *)
   let remove_first_occurrence hand card =
-    <span data-count="26">l</span>et rec aux acc = function
+    <span data-count="125">l</span>et rec aux acc = function
       | <span data-count="18">[</span>] -&gt; List.rev acc  (* Should not happen if card is in hand *)
+<<<<<<< HEAD
       | <span data-count="45">c</span> :: rest -&gt;
+=======
+      | <span data-count="432">c</span> :: rest -&gt;
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
         if UnoCardInstance.equal c card then
-          <span data-count="26">L</span>ist.rev_append acc rest
+          <span data-count="125">L</span>ist.rev_append acc rest
         else
+<<<<<<< HEAD
           <span data-count="37">a</span>ux (c :: acc) rest
+=======
+          <span data-count="325">a</span>ux (c :: acc) rest
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
     in
     aux [] hand
 
   (* Helper function to count the number of cards of a specific color in the CPU's hand *)
   let count_color hand color =
-    <span data-count="17">L</span>ist.count hand ~f:(fun c -&gt; <span data-count="61">U</span>noCard.equal_color (UnoCardInstance.get_colo<span data-count="65">r</span> c) color)
+    <span data-count="77">L</span>ist.count hand ~f:(fun c -&gt; <span data-count="481">U</span>noCard.equal_color (UnoCardInstance.get_colo<span data-count="485">r</span> c) color)
 
   (* Helper function to determine the dominant color in the CPU's hand *)
   let dominant_color hand =
-    <span data-count="7">l</span>et colors = [UnoCard.Red; UnoCard.Blue; UnoCard.Green; UnoCard.Yellow] in
-    let color_counts = List.map colors ~f:(fun color -&gt; <span data-count="13">(</span>color, count_colo<span data-count="13">r</span> hand color)) in
-    <span data-count="4">l</span>et max_count = 
-      List.fold color_counts ~init:0 ~f:(fun acc (_, count) -&gt; <span data-count="16">i</span>f count &gt; acc then <span data-count="5">c</span>ount else <span data-count="8">a</span>cc)
+    <span data-count="16">l</span>et colors = [UnoCard.Red; UnoCard.Blue; UnoCard.Green; UnoCard.Yellow] in
+    let color_counts = List.map colors ~f:(fun color -&gt; <span data-count="49">(</span>color, count_colo<span data-count="49">r</span> hand color)) in
+    <span data-count="13">l</span>et max_count = 
+      List.fold color_counts ~init:0 ~f:(fun acc (_, count) -&gt; <span data-count="52">i</span>f count &gt; acc then <span data-count="16">c</span>ount else <span data-count="33">a</span>cc)
     in
-    <span data-count="3">l</span>et dominant_colors = 
-      List.filter color_counts ~f:(fun (_, count) -&gt; <span data-count="12">c</span>ount = max_count)
-      |&gt; <span data-count="7">L</span>ist.map ~f:fst
+    <span data-count="12">l</span>et dominant_colors = 
+      List.filter color_counts ~f:(fun (_, count) -&gt; <span data-count="48">c</span>ount = max_count)
+      |&gt; <span data-count="16">L</span>ist.map ~f:fst
     in
+<<<<<<< HEAD
     <span data-count="7">m</span>atch dominant_colors with
     | <span data-count="6">[</span>color] -&gt; color  (* Single dominant color *)
     | <span data-count="5">_</span> -&gt; List.random_element_exn colors  (* Multiple dominant colors or no cards: choose randomly *)
+=======
+    <span data-count="16">m</span>atch dominant_colors with
+    | <span data-count="11">[</span>color] -&gt; color  (* Single dominant color *)
+    | <span data-count="9">_</span> -&gt; List.random_element_exn colors  (* Multiple dominant colors or no cards: choose randomly *)
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
 
   (* Existing choose_card function for Easy difficulty *)
   let choose_card (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) : UnoCardInstance.t * Deck.t * t * string option =
-      <span data-count="8">l</span>et playable_cards =
+      <span data-count="93">l</span>et playable_cards =
         List.filter ~f:(fun card -&gt;
-            <span data-count="20">U</span>noCard.is_playable
-              (UnoCardInstance.get_colo<span data-count="21">r</span> card) (UnoCardInstance.get_valu<span data-count="25">e</span> card)
-              (UnoCardInstance.get_colo<span data-count="25">r</span> top_card) (UnoCardInstance.get_valu<span data-count="20">e</span> top_card))
+            <span data-count="615">U</span>noCard.is_playable
+              (UnoCardInstance.get_colo<span data-count="616">r</span> card) (UnoCardInstance.get_valu<span data-count="620">e</span> card)
+              (UnoCardInstance.get_colo<span data-count="620">r</span> top_card) (UnoCardInstance.get_valu<span data-count="615">e</span> top_card))
           cpu.hand
       in
-      <span data-count="8">i</span>f List.is_empty playable_cards then
+      <span data-count="93">i</span>f List.is_empty playable_cards then
         (* No playable card in hand, draw a card from the deck *)
-        <span data-count="4">l</span>et drawn_card, updated_deck = Deck.draw_card deck in
+        <span data-count="5">l</span>et drawn_card, updated_deck = Deck.draw_card deck in
         (* Check if the drawn card is playable *)
-        <span data-count="4">i</span>f UnoCard.is_playable
-             (UnoCardInstance.get_colo<span data-count="4">r</span> drawn_card) (UnoCardInstance.get_valu<span data-count="4">e</span> drawn_card)
-             (UnoCardInstance.get_colo<span data-count="4">r</span> top_card) (UnoCardInstance.get_valu<span data-count="4">e</span> top_card)
+        <span data-count="5">i</span>f UnoCard.is_playable
+             (UnoCardInstance.get_colo<span data-count="5">r</span> drawn_card) (UnoCardInstance.get_valu<span data-count="5">e</span> drawn_card)
+             (UnoCardInstance.get_colo<span data-count="5">r</span> top_card) (UnoCardInstance.get_valu<span data-count="5">e</span> top_card)
         then
           (* Drawn card is playable *)
-          <span data-count="3">i</span>f UnoCard.equal_valu<span data-count="3">e</span> (UnoCardInstance.get_valu<span data-count="3">e</span> drawn_card) UnoCard.WildValu<span data-count="1">e</span> ||
-              UnoCard.equal_valu<span data-count="2">e</span> (UnoCardInstance.get_valu<span data-count="2">e</span> drawn_card) UnoCard.DrawFou<span data-count="1">r</span>
+          <span data-count="4">i</span>f UnoCard.equal_valu<span data-count="4">e</span> (UnoCardInstance.get_valu<span data-count="4">e</span> drawn_card) UnoCard.WildValu<span data-count="1">e</span> ||
+              UnoCard.equal_valu<span data-count="3">e</span> (UnoCardInstance.get_valu<span data-count="3">e</span> drawn_card) UnoCard.DrawFou<span data-count="1">r</span>
           then 
             <span data-count="2">l</span>et color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in
             <span data-count="2">(</span>drawn_card, updated_deck, cpu, Some color_chosen)
           else 
-          <span data-count="1">(</span>drawn_card, updated_deck, cpu, None)
+          <span data-count="2">(</span>drawn_card, updated_deck, cpu, None)
         else
           (* Drawn card is not playable; add it to the CPU's hand *)
           <span data-count="1">l</span>et updated_cpu = { cpu with hand = drawn_card :: cpu.hand } in
           (drawn_card, updated_deck, updated_cpu, None)
       else
         (* There is at least one playable card in hand, choose one at random *)
-        <span data-count="4">l</span>et chosen_card = List.random_element_exn playable_cards in
-        <span data-count="4">l</span>et updated_hand = remove_first_occurrence cpu.hand chosen_card in
-        <span data-count="4">l</span>et updated_cpu = { cpu with hand = updated_hand } in
-        if UnoCard.equal_color (UnoCardInstance.get_colo<span data-count="4">r</span> chosen_card) UnoCard.WildColor then
-          <span data-count="1">l</span>et color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in
-          <span data-count="1">(</span>chosen_card, deck, updated_cpu, Some color_chosen)
+        <span data-count="88">l</span>et chosen_card = List.random_element_exn playable_cards in
+        <span data-count="88">l</span>et updated_hand = remove_first_occurrence cpu.hand chosen_card in
+        <span data-count="88">l</span>et updated_cpu = { cpu with hand = updated_hand } in
+        if UnoCard.equal_color (UnoCardInstance.get_colo<span data-count="88">r</span> chosen_card) UnoCard.WildColor then
+          <span data-count="29">l</span>et color_chosen = List.random_element_exn ["Blue"; "Red"; "Green"; "Yellow"] in
+          <span data-count="29">(</span>chosen_card, deck, updated_cpu, Some color_chosen)
         else
-          <span data-count="3">(</span>chosen_card, deck, updated_cpu, None)
+          <span data-count="59">(</span>chosen_card, deck, updated_cpu, None)
 
   
   (* New function for Hard difficulty *)
   let choose_card_hard (cpu : t) (top_card : UnoCardInstance.t) (deck : Deck.t) (opponents : int list) : UnoCardInstance.t * Deck.t * t * string option =
     (* Implementing Hard CPU logic *)
-    <span data-count="8">l</span>et playable_cards =
+    <span data-count="23">l</span>et playable_cards =
       List.filter ~f:(fun card -&gt;
-        <span data-count="23">U</span>noCard.is_playable
-        (UnoCardInstance.get_colo<span data-count="23">r</span> card) (UnoCardInstance.get_valu<span data-count="23">e</span> card)
-        (UnoCardInstance.get_colo<span data-count="23">r</span> top_card) (UnoCardInstance.get_valu<span data-count="23">e</span> top_card))
+        <span data-count="128">U</span>noCard.is_playable
+        (UnoCardInstance.get_colo<span data-count="128">r</span> card) (UnoCardInstance.get_valu<span data-count="128">e</span> card)
+        (UnoCardInstance.get_colo<span data-count="128">r</span> top_card) (UnoCardInstance.get_valu<span data-count="128">e</span> top_card))
       cpu.hand
     in
-    <span data-count="8">i</span>f List.is_empty playable_cards then
+    <span data-count="23">i</span>f List.is_empty playable_cards then
       (* No playable card in hand, draw a card from the deck *)
       <span data-count="4">l</span>et drawn_card, updated_deck = Deck.draw_card deck in
       (* Check if the drawn card is playable *)
@@ -647,17 +674,25 @@ module CPU = struct
       (drawn_card, updated_deck, updated_cpu, None)
     else
       (* There are playable cards; rank them using rank_card *)
-      <span data-count="4">l</span>et ranked_cards =
+      <span data-count="19">l</span>et ranked_cards =
         List.map playable_cards ~f:(fun card -&gt;
+<<<<<<< HEAD
           <span data-count="7">l</span>et rank = 
             Algorithm.rank_card card ~hand:cpu.hand ~opponents ~top_card 
         in
           <span data-count="7">(</span>card, rank)
+=======
+          <span data-count="50">l</span>et rank = 
+            Algorithm.rank_card card ~hand:cpu.hand ~opponents ~top_card 
+        in
+          <span data-count="50">(</span>card, rank)
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
         )
       in
       (* Find the maximum rank *)
-      <span data-count="4">l</span>et max_rank =
+      <span data-count="19">l</span>et max_rank =
         List.fold ranked_cards ~init:0 ~f:(fun acc (_, rank) -&gt;
+<<<<<<< HEAD
         <span data-count="7">i</span>f rank &gt; acc then <span data-count="4">r</span>ank else <span data-count="3">a</span>cc
         )
         in
@@ -665,89 +700,112 @@ module CPU = struct
       <span data-count="4">l</span>et top_ranked_cards =
         List.filter ranked_cards ~f:(fun (_, rank) -&gt; <span data-count="7">r</span>ank = max_rank)
         |&gt; <span data-count="4">L</span>ist.map ~f:fst
+=======
+        <span data-count="50">i</span>f rank &gt; acc then <span data-count="31">r</span>ank else <span data-count="19">a</span>cc
+        )
+        in
+        (* Gather all cards with the maximum rank *)
+      <span data-count="19">l</span>et top_ranked_cards =
+        List.filter ranked_cards ~f:(fun (_, rank) -&gt; <span data-count="50">r</span>ank = max_rank)
+        |&gt; <span data-count="19">L</span>ist.map ~f:fst
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
       in
       (* Separate Wild cards from other top-ranked cards *)
-      <span data-count="4">l</span>et wild_cards, non_wild_cards =
+      <span data-count="19">l</span>et wild_cards, non_wild_cards =
       List.partition_tf top_ranked_cards ~f:(fun card -&gt;
-          <span data-count="7">U</span>noCard.equal_valu<span data-count="7">e</span> (UnoCardInstance.get_valu<span data-count="7">e</span> card) UnoCard.WildValu<span data-count="1">e</span> ||
-          UnoCard.equal_value (UnoCardInstance.get_valu<span data-count="6">e</span> card) DrawFour
+          <span data-count="30">U</span>noCard.equal_valu<span data-count="30">e</span> (UnoCardInstance.get_valu<span data-count="30">e</span> card) UnoCard.WildValu<span data-count="5">e</span> ||
+          UnoCard.equal_value (UnoCardInstance.get_valu<span data-count="25">e</span> card) DrawFour
       )
       in
       (* Function to choose a card based on color dominance *)
-      <span data-count="4">l</span>et choose_based_on_color cards =
+      <span data-count="19">l</span>et choose_based_on_color cards =
       (* Determine the dominant color in CPU's hand *)
-      <span data-count="3">l</span>et dominant = dominant_color cpu.hand in
+      <span data-count="12">l</span>et dominant = dominant_color cpu.hand in
       (* Filter cards matching the dominant color *)
-      <span data-count="3">l</span>et matching_color_cards =
+      <span data-count="12">l</span>et matching_color_cards =
         List.filter cards ~f:(fun card -&gt;
-        <span data-count="5">U</span>noCard.equal_color (UnoCardInstance.get_colo<span data-count="5">r</span> card) dominant
+        <span data-count="20">U</span>noCard.equal_color (UnoCardInstance.get_colo<span data-count="20">r</span> card) dominant
         )
       in
+<<<<<<< HEAD
       <span data-count="3">m</span>atch matching_color_cards with
       | <span data-count="1">[</span>] -&gt; List.random_element_exn cards  (* No matching color; choose randomly *)
       | <span data-count="2">c</span> :: _ -&gt; c  (* Choose the first matching color card *)
+=======
+      <span data-count="12">m</span>atch matching_color_cards with
+      | <span data-count="9">[</span>] -&gt; List.random_element_exn cards  (* No matching color; choose randomly *)
+      | <span data-count="3">c</span> :: _ -&gt; c  (* Choose the first matching color card *)
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
       in
       (* Determine the chosen card *)
       let chosen_card =
         match non_wild_cards, wild_cards with
       | [], [] -&gt; failwith "No playable cards found." [@coverage off] (* Will never reach this case*)
-      | <span data-count="3">_</span>, [] -&gt;
+      | <span data-count="11">_</span>, [] -&gt;
         (* Only non-wild top-ranked cards *)
-        choose_based_on_colo<span data-count="3">r</span> non_wild_cards
-      | <span data-count="1">[</span>], _ -&gt;
+        choose_based_on_colo<span data-count="11">r</span> non_wild_cards
+      | <span data-count="7">[</span>], _ -&gt;
         (* Only wild cards among top-ranked cards *)
-        List.random_element_ex<span data-count="1">n</span> wild_cards
-      | <span data-count="0">n</span>on_wild, wild -&gt;
+        List.random_element_ex<span data-count="7">n</span> wild_cards
+      | <span data-count="1">n</span>on_wild, wild -&gt;
         (* Both non-wild and wild cards have top rank *)
         (* Prefer non-wild cards over wild cards *)
-        if List.lengt<span data-count="0">h</span> non_wild &gt;= List.lengt<span data-count="0">h</span> wild then
-          <span data-count="0">c</span>hoose_based_on_colo<span data-count="0">r</span> non_wild
+        if List.lengt<span data-count="1">h</span> non_wild &gt;= List.lengt<span data-count="1">h</span> wild then
+          <span data-count="1">c</span>hoose_based_on_colo<span data-count="1">r</span> non_wild
         else
           <span data-count="0">L</span>ist.random_element_ex<span data-count="0">n</span> wild
         in
       (* Remove the chosen card from the CPU's hand *)
       let updated_hand = remove_first_occurrence cpu.hand chosen_card in
-      <span data-count="4">l</span>et updated_cpu = { cpu with hand = updated_hand } in
+      <span data-count="19">l</span>et updated_cpu = { cpu with hand = updated_hand } in
       (* Determine the color to choose if the card is a Wild or Draw Four *)
-    if UnoCard.equal_colo<span data-count="4">r</span> (UnoCardInstance.get_colo<span data-count="4">r</span> chosen_card) UnoCard.WildColo<span data-count="1">r</span> ||
-        UnoCard.equal_valu<span data-count="3">e</span> (UnoCardInstance.get_valu<span data-count="3">e</span> chosen_card) DrawFou<span data-count="0">r</span> then
-    <span data-count="1">b</span>egin
+    if UnoCard.equal_colo<span data-count="19">r</span> (UnoCardInstance.get_colo<span data-count="19">r</span> chosen_card) UnoCard.WildColo<span data-count="7">r</span> ||
+        UnoCard.equal_valu<span data-count="12">e</span> (UnoCardInstance.get_valu<span data-count="12">e</span> chosen_card) DrawFou<span data-count="0">r</span> then
+    <span data-count="7">b</span>egin
       let colors = [UnoCard.Red; UnoCard.Blue; UnoCard.Green; UnoCard.Yellow] in
-      let color_counts = List.map colors ~f:(fun color -&gt; <span data-count="4">(</span>color, count_colo<span data-count="4">r</span> cpu.hand color)) in
-      <span data-count="1">l</span>et max_count = 
+      let color_counts = List.map colors ~f:(fun color -&gt; <span data-count="28">(</span>color, count_colo<span data-count="28">r</span> cpu.hand color)) in
+      <span data-count="7">l</span>et max_count = 
         List.fold color_counts ~init:0 ~f:(fun acc (_, count) -&gt;
-          <span data-count="4">i</span>f count &gt; acc then <span data-count="0">c</span>ount else <span data-count="4">a</span>cc
+          <span data-count="28">i</span>f count &gt; acc then <span data-count="8">c</span>ount else <span data-count="20">a</span>cc
         )
       in
-      <span data-count="1">l</span>et dominant_colors =
-        List.filter color_counts ~f:(fun (_, count) -&gt; <span data-count="4">c</span>ount = max_count)
-        |&gt; <span data-count="1">L</span>ist.map ~f:fst
+      <span data-count="7">l</span>et dominant_colors =
+        List.filter color_counts ~f:(fun (_, count) -&gt; <span data-count="28">c</span>ount = max_count)
+        |&gt; <span data-count="7">L</span>ist.map ~f:fst
       in
       (* Determine the color to choose *)
-      <span data-count="1">l</span>et color_chosen =
+      <span data-count="7">l</span>et color_chosen =
         match List.length dominant_colors with
         | <span data-count="0">0</span> -&gt; List.random_element_ex<span data-count="0">n</span> ["Blue"; "Red"; "Green"; "Yellow"]  (* No cards: choose randomly *)
-        | <span data-count="0">1</span> -&gt; 
+        | <span data-count="3">1</span> -&gt; 
           (match List.hd_exn dominant_colors with
-          | <span data-count="0">R</span>ed -&gt; "Red"
+          | <span data-count="1">R</span>ed -&gt; "Red"
           | <span data-count="0">B</span>lue -&gt; "Blue"
-          | <span data-count="0">G</span>reen -&gt; "Green"
-          | <span data-count="0">Y</span>ellow -&gt; "Yellow"
+          | <span data-count="1">G</span>reen -&gt; "Green"
+          | <span data-count="1">Y</span>ellow -&gt; "Yellow"
           | <span data-count="0">W</span>ildColor -&gt; "Blue")  (* Default to Blue if somehow WildColor *)
-        | <span data-count="1">_</span> -&gt; 
+        | <span data-count="4">_</span> -&gt; 
           (* Multiple colors with the same max count; choose randomly *)
           let color = List.random_element_exn dominant_colors in
+<<<<<<< HEAD
           <span data-count="1">m</span>atch color with
           | <span data-count="1">R</span>ed -&gt; "Red"
           | <span data-count="0">B</span>lue -&gt; "Blue"
           | <span data-count="0">G</span>reen -&gt; "Green"
           | <span data-count="0">Y</span>ellow -&gt; "Yellow"
+=======
+          <span data-count="4">m</span>atch color with
+          | <span data-count="1">R</span>ed -&gt; "Red"
+          | <span data-count="0">B</span>lue -&gt; "Blue"
+          | <span data-count="2">G</span>reen -&gt; "Green"
+          | <span data-count="1">Y</span>ellow -&gt; "Yellow"
+>>>>>>> dd4844d05e6e660b45cc9a5298e9b5eda7706732
           | <span data-count="0">W</span>ildColor -&gt; "Blue"  (* Default to Blue if somehow WildColor *)
       in
       (chosen_card, deck, updated_cpu, Some color_chosen)
     end
   else
-    <span data-count="3">(</span>chosen_card, deck, updated_cpu, None)
+    <span data-count="12">(</span>chosen_card, deck, updated_cpu, None)
 
   let has_won (cpu : t) : bool =
     <span data-count="2">L</span>ist.is_empty cpu.hand

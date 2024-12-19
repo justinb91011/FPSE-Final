@@ -245,7 +245,6 @@ module Game = struct
             if is_player then
               let (pname, p) = List.hd_exn state.players in
               let p' = remove_card_from_player p chosen in
-              (* let p' = Player.play_card p chosen played_card in *)
               { state with
                 players = [(pname, p')];
                 discard_pile = chosen :: state.discard_pile
@@ -254,7 +253,6 @@ module Game = struct
               let i = current_index - 1 in
               let (cname, c) = List.nth_exn state.cpus i in
               let c' = remove_card_from_cpu c chosen in
-              (* let c' = CPU.choose_card c chosen in *)
               let cpus = List.mapi state.cpus ~f:(fun idx (nm, cc) ->
                 if idx = i then (cname, c') else (nm, cc)
               ) in
